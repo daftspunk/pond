@@ -1,0 +1,12 @@
+{
+  "name": "Octobercmspond",
+  "version": "0.0.1",
+  "description": "October CMS Pond",
+  "devDependencies": {
+    "nw-builder": "^3.2.0"
+  },
+  "scripts": {
+    "postinstall": "cd ./app  &&  npm install",
+    "dev": "nw app/"
+  }
+}
