@@ -17,16 +17,23 @@ First, download and install NodeJS and NPM. Then:
 
 ## Start the development building process
 
-* `cd app`
-* `watchify -t vueify -p [ vueify/plugins/extract-css -o dist/main.css ] -e src/js/main.js -o dist/main.js -v`
+* `npm run watch`
 
-This will be updating assets in /dist in live mode. `watchify` takes ~15 seconds to load first, but subsequent updates take milliseconds.
+This will be updating assets in app/dist in live mode. It could take ~15 seconds to load first, but subsequent updates take milliseconds.
 
 After that, in another terminal tab, start NW.js:
 
-* `npm run dev` (in the outer directory, not in `app`)
+* `npm run dev`
 
 The application still should be refreshed manually in NW.js window when needed. This can be done in NW.js console using the command: `nw.Window.get().reload()`. To open the console use normal Chrome development tools hot keys.
+
+## Compiling LESS
+
+LESS is compiled automatically when `watch` command runs. If there was a compilation error (file not found, missing semicolon, etc.) it might be needed to save `theme.less` or any `.vue` file to reanimate the compiler.
+
+## Copying assets
+
+Assets (images) are currently copied only once, when `watch` command starts. Restart `watch` after changing assets. This will be automated later.
 
 ## TODO
 
@@ -34,5 +41,7 @@ The application still should be refreshed manually in NW.js window when needed. 
 * The NW.js production building process should copy index.htm to the temporary directory
 * The NW.js production building should generate minified versions of main.js and main.css
 * The NW.js production build should use production flavor of nw, not the SDK one
+* The NW.js production build copy assets to dist
+* Automate asset copying in `watch`
 * Find a suitable license. No liability, can't be modified or published by others.
 * It's possible to implement automatic reloading on change with gulp. Do that if manual reloading gets annoying.

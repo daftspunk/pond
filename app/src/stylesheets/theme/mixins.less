@@ -1,0 +1,23 @@
+.icons-sprite(@offsetX: 0, @offsetY: 0, @version: "") {
+    background-image: url("/dist/assets/icons@{version}.png");
+    background-position: -(@offsetX) -(@offsetY);
+
+    @media only screen and (-webkit-min-device-pixel-ratio: 1.3),
+        only screen and (-o-min-device-pixel-ratio: 13/10),
+        only screen and (min-resolution: 120dpi) {
+            .icons-sprite2x(@version);
+    }
+}
+
+.icons-sprite2x(@version: "") {
+    background-image: url("/dist/assets/icons@{version}@2x.png");
+    background-size: 1200px 800px;
+}
+
+.icons-sprite-pseudo(@width, @height, @offsetX: 0, @offsetY: 0, @version: "") {
+    content: '';
+    width: @width;
+    height: @height;
+    display: inline-block;
+    .icons-sprite(@offsetX, @offsetY, @version);
+}

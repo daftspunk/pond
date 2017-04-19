@@ -5,6 +5,6 @@ module.exports = [
     },
     {
         path: '/settings',
-        component: require('./../components/sidebar.vue')
+        component: require('./../components/settings.vue')
     }
 ]

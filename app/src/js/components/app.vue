@@ -1,19 +1,17 @@
-<style lang="less" src="../../stylesheets/main.less"></style>
+<style lang="less" src="../../stylesheets/theme.less"></style>
 
 <template>
-    <div>
-        <p>Root component</p>
+    <div class="app-container">
+        <sidebar></sidebar>
 
-        <p>
-            <router-link to="/">Index</router-link>
-            <router-link to="/settings">Settings</router-link>
-        </p>
-
-        <router-view></router-view>
+        <div class="flex-item main-view">
+            <router-view></router-view>
+        </div>
     </div>
 </template>
 
 <script>
+import Sidebar from "./sidebar.vue"
 export default {
     // data () {
     //     return {
@@ -22,8 +20,7 @@ export default {
     // }
     // ,
     components: {
-        // RouterLink,
-        // RouterView
+        Sidebar
     }
 }
 </script>

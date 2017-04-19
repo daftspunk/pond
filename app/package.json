@@ -3,11 +3,11 @@
   "version": "0.0.1",
   "description": "October CMS Pond",
   "main": "index.html",
-  "window":{
+  "window": {
     "min_width": 400,
     "min_height": 400,
     "title": "October CMS Pond",
-    "icon":"assets/icon.png"
+    "icon": "assets/icon.png"
   },
   "author": "Alexey Bobkov <aleksey.bobkov@gmail.com>",
   "contributors": [
@@ -16,8 +16,11 @@
   "devDependencies": {
     "babel-core": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
+    "bootstrap": "^3.3.7",
+    "jquery": "^3.2.1",
     "less": "^2.7.2",
     "vue": "^2.2.6",
+    "vue-i18n": "^6.1.0",
     "vue-router": "^2.4.0",
     "vueify": "^9.4.1",
     "vuex": "^2.3.0"
