@@ -12,7 +12,8 @@ div.sidebar {
                 padding: 0 0 30px 0;
                 text-align: center;
                 color: @color-sidebar-inactive-text;
-
+                text-decoration: none;
+                
                 &.router-link-active {
                     color: @color-sidebar-active-text;
                 }
@@ -20,20 +21,32 @@ div.sidebar {
                 &:before {
                     display: block!important;
                     position: relative;
-                    left: 30px;
+                    left: 28px;
                     margin-bottom: 8px;
                 }
             }
 
             &.projects {
-                a:before {
-                    .icons-sprite-pseudo(32px, 30px, 4px, 5px);
+                a {
+                    &:before {
+                        .icons-sprite-pseudo(32px, 30px, 4px, 5px);
+                    }
+
+                    &.router-link-active:before {
+                        .icons-sprite-pseudo(32px, 30px, 4px, 45px);
+                    }
                 }
             }
 
             &.settings {
-                a:before {
-                    .icons-sprite-pseudo(32px, 30px, 44px, 6px);
+                a {
+                    &:before {
+                        .icons-sprite-pseudo(32px, 30px, 44px, 6px);
+                    }
+
+                    &.router-link-active:before {
+                        .icons-sprite-pseudo(32px, 30px, 44px, 46px);
+                    }
                 }
             }
         }

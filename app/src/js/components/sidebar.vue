@@ -2,7 +2,7 @@
     <div class="flex-item sidebar">
         <ul>
             <li class="projects">
-                <router-link to="/">{{ $t('projects.title') }}</router-link>
+                <router-link to="/" exact>{{ $t('projects.title') }}</router-link>
             </li>
 
             <li class="settings">

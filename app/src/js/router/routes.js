@@ -1,7 +1,7 @@
 module.exports = [
     {
         path: '/',
-        component: require('./../components/project-list.vue')
+        component: require('./../components/projects-view.vue')
     },
     {
         path: '/settings',
