@@ -1,0 +1,21 @@
+div.projects-side-panel-search {
+    position: relative;
+
+    &:before {
+        .icons-sprite-pseudo(13px, 14px, 143px, 103px);
+        position: absolute;
+        left: 10px;
+        top: 10px;
+    }
+
+    input[type=text] {
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        padding-left: 30px;
+
+        &, &:focus {
+            border-bottom-color: @color-layout-grid-lines;
+        }
+    }
+}
