@@ -42,19 +42,27 @@ module.exports = {
                 ]
             }
         ],
-        selectedProject: {},
-        listFilterString: ''
+        selectedProject: null
     },
 
     mutations: {
         SET_SELECTED_PROJECT (state, project) {
             state.selectedProject = project
+        },
+        SET_STARRED (state, payload) {
+            payload.project.starred = payload.starred
         }
     },
 
     actions: {
         setSelectedProject (context, project) {
             context.commit('SET_SELECTED_PROJECT', project)
+        },
+        toggleProjectStar (context, project) {
+            context.commit('SET_STARRED', {
+                project: project,
+                starred: !project.starred
+            })
         }
     }
 }

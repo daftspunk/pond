@@ -1,0 +1,88 @@
+.current-project-view-panel {
+    .project-header {
+        height: 60px;
+        border-bottom: 1px solid @color-layout-grid-lines;
+        vertical-align: middle;
+
+        h3 {
+            font-size: 16px;
+            font-weight: bold;
+            color: @color-primary-header;
+            display: inline-block;
+            line-height: 60px;
+            margin: 0;
+            width: calc(~"100% - 120px");
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        a.settings-link {
+            display: inline-block;
+            width: 14px;
+            height: 15px;
+            float: right;
+            margin: 21px 21px 0 0;
+            cursor: pointer;
+            .hide-text();
+
+            &:before {
+                .icons-sprite-pseudo(14px, 15px, 163px, 62px);
+            }
+        }
+
+        a.star-indicator {
+            display: inline-block;
+            width: 14px;
+            height: 15px;
+            cursor: pointer;
+            float: right;
+            margin: 21px 10px 0 0;
+
+            &:before {
+                .icons-sprite-pseudo(14px, 14px, 143px, 63px);
+            }
+
+            &.starred:before {
+                .icons-sprite-pseudo(14px, 14px, 143px, 42px);
+            }
+        }
+
+        div.project-status {
+            margin: 23px 10px 0 25px;
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            float: left;
+
+            &:before {
+                .icons-sprite-pseudo(12px, 12px, 124px, 85px);
+            }
+
+            &.online:before {
+                .icons-sprite-pseudo(12px, 12px, 104px, 85px);
+            }
+        }
+    }
+
+    .no-project-selected {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+
+        > div {
+            &:before {
+                .icons-sprite-pseudo(80px, 88px, 200px, 1px);
+                display: inline-block;
+                margin-bottom: 30px;
+            }
+
+            h3 {
+                font-size: 18px;
+                margin: 0 0 15px 0;
+            }
+        }
+    }
+}
