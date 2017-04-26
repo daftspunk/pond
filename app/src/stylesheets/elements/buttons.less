@@ -1,0 +1,24 @@
+a.btn {
+    text-decoration: none;
+}
+
+.btn {
+    border: none;
+
+    &.btn-default {
+        &:hover {
+        }
+    }
+
+    &:hover {
+        outline: none;
+    }
+
+    &[btn-icon] {
+        &:before {
+            position: inline-block;
+            margin-right: 3px;
+            vertical-align: middle;
+        }
+    }
+}

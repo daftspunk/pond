@@ -8,25 +8,37 @@ module.exports = {
                         name: 'Amazon Store',
                         starred: true,
                         serverType: 'built-in',
-                        online: true
+
+                        metadata: {
+                            online: true
+                        }
                     },
                     {
                         name: 'RESTful API',
                         starred: true,
                         serverType: 'built-in',
-                        online: false
+
+                        metadata: {
+                            online: false
+                        }
                     },
                     {
                         name: 'Clients portal',
                         starred: false,
                         serverType: 'built-in',
-                        online: true
+
+                        metadata: {
+                            online: true
+                        }
                     },
                     {
                         name: 'Ecommerce website',
                         starred: false,
                         serverType: 'built-in',
-                        online: false
+
+                        metadata: {
+                            online: false
+                        }
                     }
                 ]
             },
@@ -37,17 +49,22 @@ module.exports = {
                         name: 'October test',
                         starred: false,
                         serverType: 'built-in',
-                        online: false
+
+                        metadata: {
+                            online: false
+                        }
                     }
                 ]
             }
         ],
-        selectedProject: null
+        selectedProject: null,
+        selectedClient: null
     },
 
     mutations: {
-        SET_SELECTED_PROJECT (state, project) {
-            state.selectedProject = project
+        SET_SELECTED_CLIENT_AND_PROJECT (state, payload) {
+            state.selectedProject = payload.project
+            state.selectedClient = payload.client
         },
         SET_STARRED (state, payload) {
             payload.project.starred = payload.starred
@@ -55,8 +72,8 @@ module.exports = {
     },
 
     actions: {
-        setSelectedProject (context, project) {
-            context.commit('SET_SELECTED_PROJECT', project)
+        setSelectedClientAndProject (context, payload) {
+            context.commit('SET_SELECTED_CLIENT_AND_PROJECT', payload)
         },
         toggleProjectStar (context, project) {
             context.commit('SET_STARRED', {
