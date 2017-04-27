@@ -1,4 +1,6 @@
 .current-project-view-panel {
+    position: relative;
+
     .project-header {
         height: 73px;
         border-bottom: 1px solid @color-layout-grid-lines;
@@ -65,7 +67,7 @@
         }
 
         div.project-status {
-            margin: 20px 10px 0 25px;
+            margin: 20px 10px 0 @standard-padding;
             display: inline-block;
             width: 12px;
             height: 12px;
@@ -100,5 +102,12 @@
                 margin: 0 0 15px 0;
             }
         }
+    }
+
+    .project-view-contents {
+        position: absolute;
+        width: 100%;
+        left: 0;
+        top: 0;
     }
 }

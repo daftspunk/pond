@@ -17,8 +17,23 @@ a.btn {
     &[btn-icon] {
         &:before {
             position: inline-block;
-            margin-right: 3px;
+            margin-right: 5px;
             vertical-align: middle;
         }
+    }
+
+    &[btn-icon=start] {
+        &:before { .icons-sprite-pseudo(14px, 14px, 5px, 165px); }
+        &[disabled]:before { .icons-sprite-pseudo(14px, 14px, 5px, 185px);}
+    }
+
+    &[btn-icon=stop] {
+        &:before { .icons-sprite-pseudo(14px, 14px, 24px, 165px); }
+        &[disabled]:before { .icons-sprite-pseudo(14px, 14px, 24px, 185px);}
+    }
+
+    &[btn-icon=deploy] {
+        &:before { .icons-sprite-pseudo(14px, 14px, 44px, 165px); }
+        &[disabled]:before { .icons-sprite-pseudo(14px, 14px, 44px, 185px);}
     }
 }

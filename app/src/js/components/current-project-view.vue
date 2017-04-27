@@ -1,6 +1,6 @@
 <template>
     <div class="flex-item current-project-view-panel">
-        <div v-if="selectedProject">
+        <div v-if="selectedProject" class="project-view-contents">
             <div class="project-header">
                 <div class="project-status" v-bind:class="{ online: selectedProject.metadata.online }"></div>
                 <h3>{{ selectedProject.name }}</h3>
@@ -15,6 +15,29 @@
                 <a class="btn btn-default" btn-icon="stop" v-bind:disabled="!selectedProject.metadata.online" href="#">{{ $t('projects.stop') }}</a>
                 <a class="btn btn-primary pull-right" btn-icon="deploy" href="#">{{ $t('projects.deploy') }}</a>
             </div>
+
+            <div class="standard-panel-paddings" data-open-links-in-browser v-html="description"></div>
+
+            <div class="standard-panel-paddings">
+                <table class="attribute-table" data-open-links-in-browser>
+                    <tr>
+                        <th>{{ $t('projects.server') }}</th>
+                        <td>{{ $t(serverType) }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ $t('projects.location') }}</th>
+                        <td>{{ selectedProject.location }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ $t('projects.local') }}</th>
+                        <td><a v-bind:href="localUrl">{{ localUrl }}</a></td>
+                    </tr>
+                    <tr>
+                        <th>{{ $t('projects.production') }}</th>
+                        <td><a v-bind:href="productionUrl">{{ productionUrl }}</a></td>
+                    </tr>
+                </table>
+            </div>
         </div>
         <div v-else class="no-project-selected">
             <div>
@@ -26,6 +49,8 @@
 </template>
 
 <script>
+import {markdown} from "markdown"
+import {typeToString} from "../projects/server-types-enum"
 export default {
     computed: {
         selectedProject () {
@@ -33,6 +58,26 @@ export default {
         },
         selectedClient () {
             return this.$store.state.projects.selectedClient
+        },
+        description () {
+            if (!this.selectedProject) {
+                return ''
+            }
+
+            return this.selectedProject.description === undefined ? '' : markdown.toHTML(this.selectedProject.description)
+        },
+        serverType () {
+            if (!this.selectedProject) {
+                return ''
+            }
+
+            return typeToString(this.selectedProject.serverType)
+        },
+        localUrl () {
+            return 'http://localhost:9291'
+        },
+        productionUrl () {
+            return 'http://landing.acme.com'
         }
     },
     methods: {

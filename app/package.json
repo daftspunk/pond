@@ -4,8 +4,8 @@
   "description": "October CMS Pond",
   "main": "index.html",
   "window": {
-    "min_width": 400,
-    "min_height": 400,
+    "min_width": 800,
+    "min_height": 500,
     "title": "October CMS Pond",
     "icon": "assets/icon.png"
   },
@@ -19,6 +19,7 @@
     "bootstrap": "^3.3.7",
     "jquery": "^3.2.1",
     "less": "^2.7.2",
+    "markdown": "^0.5.0",
     "vue": "^2.2.6",
     "vue-i18n": "^6.1.0",
     "vue-router": "^2.4.0",

@@ -8,7 +8,18 @@ module.exports = {
         settings_link: 'settings',
         start: 'Start',
         stop: 'Stop',
-        deploy: 'Deploy'
+        deploy: 'Deploy',
+        server: 'Server',
+        location: 'Location',
+        local: 'Local',
+        production: 'Production',
+        server_type: {
+            unknown: 'Unknown',
+            pond: 'Built-in Pond server',
+            vagrant: 'Vagrant',
+            docker: 'Docker',
+            lamp: 'Bring your own LAMP'
+        }
     },
     settings: {
         title: 'Settings'

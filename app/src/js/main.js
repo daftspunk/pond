@@ -7,6 +7,7 @@ const App = require('./components/app.vue')
 const AppRouter = require('./router')
 const I18n = require('./i18n')
 const Store = require('./stores')
+const LinksWatcher = require('./html-utils/links-watcher')
 
 Vue.use(AppRouter.getVueRouter())
 Vue.use(I18n.getVueI18n())

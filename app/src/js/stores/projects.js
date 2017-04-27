@@ -7,7 +7,8 @@ module.exports = {
                     {
                         name: 'Amazon Store',
                         starred: true,
-                        serverType: 'built-in',
+                        serverType: 'pond',
+                        location: '/Users/alexeybobkov/October/pond/acme/amazon',
 
                         metadata: {
                             online: true
@@ -16,7 +17,8 @@ module.exports = {
                     {
                         name: 'RESTful API',
                         starred: true,
-                        serverType: 'built-in',
+                        serverType: 'lamp',
+                        location: '/Users/alexeybobkov/October/pond/acme/restful',
 
                         metadata: {
                             online: false
@@ -25,7 +27,9 @@ module.exports = {
                     {
                         name: 'Clients portal',
                         starred: false,
-                        serverType: 'built-in',
+                        serverType: 'pond',
+                        description: 'Static landing pages for various ACME marketing campaigns, hosted on a separate server. Project [in Basecamp](http://google.com).',
+                        location: '/Users/alexeybobkov/October/pond/acme/clients-portal',
 
                         metadata: {
                             online: true
@@ -34,7 +38,8 @@ module.exports = {
                     {
                         name: 'Ecommerce website',
                         starred: false,
-                        serverType: 'built-in',
+                        serverType: 'docker',
+                        location: '/Users/alexeybobkov/October/pond/acme/ecommerce',
 
                         metadata: {
                             online: false
@@ -48,7 +53,8 @@ module.exports = {
                     {
                         name: 'October test',
                         starred: false,
-                        serverType: 'built-in',
+                        serverType: 'pond',
+                        location: '/Users/alexeybobkov/October/pond/inner/test',
 
                         metadata: {
                             online: false
