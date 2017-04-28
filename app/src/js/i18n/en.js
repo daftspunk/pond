@@ -13,6 +13,11 @@ module.exports = {
         location: 'Location',
         local: 'Local',
         production: 'Production',
+        application_log: 'Application log',
+        error_log: 'Error log',
+        php_log: 'PHP log',
+        refresh: 'Refresh',
+        clear: 'Clear',
         server_type: {
             unknown: 'Unknown',
             pond: 'Built-in Pond server',

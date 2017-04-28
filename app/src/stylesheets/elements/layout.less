@@ -1,0 +1,30 @@
+.layout-relative {
+    position: relative;
+}
+
+.layout-full-size {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+.layout-flex-rows-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: flex-start;
+
+    > .layout-flex-row {
+        order: 0;
+        flex: 0 1 auto;
+        align-self: stretch;
+    }
+
+    > .layout-stretch {
+        flex: 1 0 auto;
+    }
+}

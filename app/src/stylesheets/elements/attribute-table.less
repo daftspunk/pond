@@ -1,3 +1,32 @@
 table.attribute-table {
-    
+    vertical-align: top;
+    font-size: @font-size-base;
+
+    th, td {
+        padding: 8px;
+        border-bottom: 1px solid @color-layout-grid-lines-minor;
+    }
+
+    tr:first-child {
+        th, td {
+            padding-top: 0;
+        }
+    }
+
+    tr:last-child {
+        th, td {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+    }
+
+    th {
+        padding-left: 0;
+        font-weight: normal;
+        color: @color-text-minor;
+    }
+
+    td {
+        padding-right: 0;
+    }
 }
