@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Brace from "brace"
+import Brace from 'brace'
 
 export default {
     mounted () {

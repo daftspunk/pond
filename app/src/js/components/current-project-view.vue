@@ -4,7 +4,7 @@
 
             <div class="layout-flex-row">
                 <div class="project-header">
-                    <div class="project-status" v-bind:class="{ online: selectedProject.metadata.online }"></div>
+                    <div class="project-status" v-bind:class="{ online: selectedProject.runtime.online }"></div>
                     <h3>{{ selectedProject.name }}</h3>
                     <h4>{{ selectedClient.name }}</h4>
 
@@ -13,8 +13,8 @@
                 </div>
 
                 <div class="control-toolbar clearfix">
-                    <a class="btn btn-default" btn-icon="start" v-bind:disabled="selectedProject.metadata.online" href="#">{{ $t('projects.start') }}</a>
-                    <a class="btn btn-default" btn-icon="stop" v-bind:disabled="!selectedProject.metadata.online" href="#">{{ $t('projects.stop') }}</a>
+                    <a class="btn btn-default" btn-icon="start" v-bind:disabled="selectedProject.runtime.online" href="#">{{ $t('projects.start') }}</a>
+                    <a class="btn btn-default" btn-icon="stop" v-bind:disabled="!selectedProject.runtime.online" href="#">{{ $t('projects.stop') }}</a>
                     <a class="btn btn-primary pull-right" btn-icon="deploy" href="#">{{ $t('projects.deploy') }}</a>
                 </div>
 
@@ -24,7 +24,7 @@
                     <table class="table attribute-table" data-open-links-in-browser>
                         <tr>
                             <th>{{ $t('projects.server') }}</th>
-                            <td>{{ $t(serverType) }}</td>
+                            <td>{{ $t(environmentType) }}</td>
                         </tr>
                         <tr>
                             <th>{{ $t('projects.location') }}</th>
@@ -75,9 +75,10 @@
 </template>
 
 <script>
-import {markdown} from "markdown"
-import {typeToString} from "../projects/server-types-enum"
-import LogPanel from "./log-panel.vue"
+import {markdown} from 'markdown'
+import LogPanel from './log-panel.vue'
+import Environments from '../environments'
+
 export default {
     computed: {
         selectedProject () {
@@ -93,12 +94,14 @@ export default {
 
             return this.selectedProject.description === undefined ? '' : markdown.toHTML(this.selectedProject.description)
         },
-        serverType () {
+        environmentType () {
             if (!this.selectedProject) {
                 return ''
             }
 
-            return typeToString(this.selectedProject.serverType)
+            // TODO - get the environment and request the server type from it
+
+            //return typeToString(this.selectedProject.serverType)
         },
         localUrl () {
             return 'http://localhost:9291'
@@ -109,6 +112,7 @@ export default {
     },
     methods: {
         toggleStar (project) {
+console.log(Environments.get(project))
             this.$store.dispatch('toggleProjectStar', project)
         }
     },

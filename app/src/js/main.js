@@ -22,3 +22,7 @@ new Vue({
     store: Store.makeStore(),
     render: h => h(App)
 })
+
+window.onerror = function(error) {
+    alert(error)
+}

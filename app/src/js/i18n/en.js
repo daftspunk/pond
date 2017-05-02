@@ -18,12 +18,16 @@ module.exports = {
         php_log: 'PHP log',
         refresh: 'Refresh',
         clear: 'Clear',
-        server_type: {
+        environment_type: {
             unknown: 'Unknown',
             pond: 'Built-in Pond server',
             vagrant: 'Vagrant',
             docker: 'Docker',
             lamp: 'Bring your own LAMP'
+        },
+        platform_type: {
+            win32: 'Windows',
+            darwin: 'macOS'
         }
     },
     settings: {

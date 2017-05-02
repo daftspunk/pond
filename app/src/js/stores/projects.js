@@ -5,43 +5,47 @@ module.exports = {
                 name: 'ACME client',
                 projects: [
                     {
+                        id: 1,
                         name: 'Amazon Store',
                         starred: true,
-                        serverType: 'pond',
+                        environmentType: 'pond',
                         location: '/Users/alexeybobkov/October/pond/acme/amazon',
 
-                        metadata: {
+                        runtime: {
                             online: true
                         }
                     },
                     {
+                        id: 2,
                         name: 'RESTful API',
                         starred: true,
-                        serverType: 'lamp',
+                        environmentType: 'lamp',
                         location: '/Users/alexeybobkov/October/pond/acme/restful',
 
-                        metadata: {
+                        runtime: {
                             online: false
                         }
                     },
                     {
+                        id: 3,
                         name: 'Clients portal',
                         starred: false,
-                        serverType: 'pond',
+                        environmentType: 'pond',
                         description: 'Static landing pages for various ACME marketing campaigns, hosted on a separate server. Project [in Basecamp](http://google.com).',
                         location: '/Users/alexeybobkov/October/pond/acme/clients-portal',
 
-                        metadata: {
+                        runtime: {
                             online: true
                         }
                     },
                     {
+                        id: 4,
                         name: 'Ecommerce website',
                         starred: false,
-                        serverType: 'docker',
+                        environmentType: 'docker',
                         location: '/Users/alexeybobkov/October/pond/acme/ecommerce',
 
-                        metadata: {
+                        runtime: {
                             online: false
                         }
                     }
@@ -51,12 +55,13 @@ module.exports = {
                 name: 'Inner projects',
                 projects: [
                     {
+                        id: 5,
                         name: 'October test',
                         starred: false,
-                        serverType: 'pond',
+                        environmentType: 'pond',
                         location: '/Users/alexeybobkov/October/pond/inner/test',
 
-                        metadata: {
+                        runtime: {
                             online: false
                         }
                     }

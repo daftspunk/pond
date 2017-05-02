@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import ProjectsSidePanel from "./projects-side-panel.vue"
-import CurrentProjectView from "./current-project-view.vue"
+import ProjectsSidePanel from './projects-side-panel.vue'
+import CurrentProjectView from './current-project-view.vue'
 export default {
     components: {
         ProjectsSidePanel,

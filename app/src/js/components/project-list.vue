@@ -13,7 +13,7 @@
                     @click="setSelectedClientAndProject(project, client)"
                     v-bind:class="{ selected: selectedProject === project }"
                 >
-                    <span class="status-indicator starred" v-bind:class="{ online: project.metadata.online }"></span>
+                    <span class="status-indicator starred" v-bind:class="{ online: project.runtime.online }"></span>
                     <h3>{{ project.name }}</h3>
                 </li>
             </template>
@@ -31,7 +31,7 @@
                         @click="setSelectedClientAndProject(project, client)"
                         v-bind:class="{ selected: selectedProject === project }"
                     >
-                        <span class="status-indicator" v-bind:class="{ online: project.metadata.online }"></span>
+                        <span class="status-indicator" v-bind:class="{ online: project.runtime.online }"></span>
                         <h3>{{ project.name }}</h3>
                     </li>
                 </ul>
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-    import projectSearchUtils from "../projects/search-utils"
+    import projectSearchUtils from '../projects/search-utils'
 
     function filterClientsAndProjects(filterString, projects) {
         return projects.filter(project => projectSearchUtils.projectMatchesSearchString(project, filterString))
