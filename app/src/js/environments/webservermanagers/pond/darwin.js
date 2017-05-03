@@ -1,3 +1,5 @@
+var BaseManager = require('../')
+
 /**
  * Web server manager: 
  *
@@ -6,10 +8,8 @@
  *  - Darwin platform
  */
 
-class Manager {
-    constructor () {
+class Manager extends BaseManager {
 
-    }
 }
 
 module.exports = Manager

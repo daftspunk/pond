@@ -10,7 +10,11 @@ class Pool {
             return this.environments[project.id]
         }
 
-        return this.environments[project.id] = EnvironmentFactory.createEnvironment(project)
+        console.log('Creating environment for '+project.id)
+
+        var environment = this.environments[project.id] = EnvironmentFactory.createEnvironment(project)
+
+        return environment
     }
 }
 

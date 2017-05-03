@@ -23,6 +23,10 @@ new Vue({
     render: h => h(App)
 })
 
+Vue.config.errorHandler = function (error, vm, info) {
+    alert(error)
+}
+
 window.onerror = function(error) {
     alert(error)
 }

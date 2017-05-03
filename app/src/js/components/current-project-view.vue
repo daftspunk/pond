@@ -4,18 +4,36 @@
 
             <div class="layout-flex-row">
                 <div class="project-header">
-                    <div class="project-status" v-bind:class="{ online: selectedProject.runtime.online }"></div>
+                    <div class="project-status" v-bind:class="{ online: status == 'online' }"></div>
                     <h3>{{ selectedProject.name }}</h3>
                     <h4>{{ selectedClient.name }}</h4>
 
                     <a class="settings-link">{{ $t('projects.settings_link') }}</a>
-                    <a class="star-indicator" v-on:click="toggleStar(selectedProject)" v-bind:class="{ starred: selectedProject.starred }"></a>
+                    <a class="star-indicator" v-on:click="toggleStar()" v-bind:class="{ starred: selectedProject.starred }"></a>
                 </div>
 
                 <div class="control-toolbar clearfix">
-                    <a class="btn btn-default" btn-icon="start" v-bind:disabled="selectedProject.runtime.online" href="#">{{ $t('projects.start') }}</a>
-                    <a class="btn btn-default" btn-icon="stop" v-bind:disabled="!selectedProject.runtime.online" href="#">{{ $t('projects.stop') }}</a>
-                    <a class="btn btn-primary pull-right" btn-icon="deploy" href="#">{{ $t('projects.deploy') }}</a>
+                    <a
+                        class="btn btn-default"
+                        btn-icon="start"
+                        v-bind:disabled="isStartButtonDisabled"
+                        @click.stop="startServer"
+                        href="#"
+                    >{{ $t('projects.start') }}</a>
+
+                    <a
+                        class="btn btn-default"
+                        btn-icon="stop"
+                        v-bind:disabled="isStopButtonDisabled"
+                        @click.stop="stopServer"
+                        href="#"
+                    >{{ $t('projects.stop') }}</a>
+
+                    <a
+                        class="btn btn-primary pull-right"
+                        btn-icon="deploy"
+                        href="#"
+                    >{{ $t('projects.deploy') }}</a>
                 </div>
 
                 <div class="standard-panel-paddings" data-open-links-in-browser v-html="description"></div>
@@ -78,6 +96,7 @@
 import {markdown} from 'markdown'
 import LogPanel from './log-panel.vue'
 import Environments from '../environments'
+import EnvironmentStatus from '../environments/status'
 
 export default {
     computed: {
@@ -99,21 +118,41 @@ export default {
                 return ''
             }
 
-            // TODO - get the environment and request the server type from it
-
-            //return typeToString(this.selectedProject.serverType)
+            return Environments.get(this.selectedProject).getEnvironmentTypeName()
         },
         localUrl () {
             return 'http://localhost:9291'
         },
         productionUrl () {
             return 'http://landing.acme.com'
+        },
+        status () {
+            return this.selectedProject.runtime.status
+        },
+        isStopButtonDisabled () {
+            return this.status == EnvironmentStatus.OFFLINE || this.status == EnvironmentStatus.STARTING || this.status == EnvironmentStatus.STOPPING
+        },
+        isStartButtonDisabled () {
+            return this.status == EnvironmentStatus.ONLINE || this.status == EnvironmentStatus.STARTING || this.status == EnvironmentStatus.STOPPING
         }
     },
     methods: {
-        toggleStar (project) {
-console.log(Environments.get(project))
-            this.$store.dispatch('toggleProjectStar', project)
+        toggleStar () {
+            this.$store.dispatch('toggleProjectStar', this.selectedProject)
+        },
+        startServer () {
+            if (this.status != EnvironmentStatus.OFFLINE) {
+                return
+            }
+
+            this.$store.dispatch('startServer', this.selectedProject)
+        },
+        stopServer () {
+            if (this.status != EnvironmentStatus.ONLINE) {
+                return
+            }
+
+            console.log('Stopping server')
         }
     },
     components: {

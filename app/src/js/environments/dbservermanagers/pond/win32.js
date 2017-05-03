@@ -5,7 +5,7 @@ var BaseManager = require('../')
  *
  *  - Pond built-in environment
  *  - SQLite server
- *  - Darwin platform
+ *  - win32 platform
  */
 
 class Manager extends BaseManager {}
