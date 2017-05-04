@@ -1,4 +1,5 @@
-var BaseManager = require('../')
+const BaseManager = require('../')
+const spawn = require('child_process').spawn
 
 /**
  * Web server manager: 
@@ -9,7 +10,9 @@ var BaseManager = require('../')
  */
 
 class Manager extends BaseManager {
-
+    getChildProcessCommand () {
+        return 'php'
+    }
 }
 
 module.exports = Manager

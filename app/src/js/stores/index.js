@@ -1,10 +1,13 @@
 const Vuex = require('vuex')
 
+var store = null
+
 module.exports = {
-    makeStore: () => new Vuex.Store({
+    makeStore: () => store = new Vuex.Store({
         modules: {
             projects: require('./projects')
         }
     }),
+    getStore: () => store,
     getVuex: () => Vuex
 }

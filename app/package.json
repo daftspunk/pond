@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "October CMS Pond",
   "main": "index.html",
+  "node-main": "dist/main.js",
   "window": {
     "min_width": 800,
     "min_height": 500,

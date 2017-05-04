@@ -13,22 +13,13 @@ module.exports = {
     },
     startServer (context, project) {
         context.commit('SET_PROJECT_STATUS', {
-            project,
+            projectId: project.id,
             status: EnvironmentStatus.STARTING
         })
 
         Environments.get(project).start()
-            .then(() => {
-                context.commit('SET_PROJECT_STATUS', {
-                    project,
-                    status: EnvironmentStatus.ONLINE
-                })
-            })
-            .catch(() => {
-                context.commit('SET_PROJECT_STATUS', {
-                    project,
-                    status: EnvironmentStatus.OFFLINE
-                })
-            })
+    },
+    setProjectStatus (context, payload) {
+        context.commit('SET_PROJECT_STATUS', payload)
     }
 }
