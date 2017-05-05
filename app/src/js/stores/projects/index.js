@@ -36,6 +36,7 @@ module.exports = {
                         environmentType: 'pond',
                         description: 'Static landing pages for various ACME marketing campaigns, hosted on a separate server. Project [in Basecamp](http://google.com).',
                         location: '/Users/alexeybobkov/October/pond/test-projects/acme/clients-portal',
+                        localPort: 8000,
 
                         runtime: {
                             status: 'offline' // The projects JSON is temporary, no need to refer to a constant here
@@ -47,6 +48,7 @@ module.exports = {
                         starred: false,
                         environmentType: 'pond',
                         location: '/Users/alexeybobkov/October/pond/test-projects/acme/ecommerce',
+                        localPort: 8001,
 
                         runtime: {
                             status: 'offline' // The projects JSON is temporary, no need to refer to a constant here

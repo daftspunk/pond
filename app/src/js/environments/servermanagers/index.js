@@ -6,13 +6,14 @@
  */
 
 const EventEmitter = require('events').EventEmitter
-const spawn = nw.require('child_process').spawn
 
 class Manager extends EventEmitter {
     constructor (project) {
         super()
 
         this.serverProcess = null
+
+        this._setProjectInfo(project)
 
         // Don't keep references to the project
         // itself
@@ -28,7 +29,7 @@ class Manager extends EventEmitter {
 
     stop () {
         if (this.serverProcess === null) {
-            throw new Error('Server child process is already running')
+            return
         }
 
         this.serverProcess.kill()
@@ -45,6 +46,10 @@ class Manager extends EventEmitter {
         }
     }
 
+    getLocalUrl () {
+        throw new Error('Implement getLocalUrl in a child server manager class')
+    }
+
     getChildProcessCommand () {
         throw new Error('Implement getChildProcessCommand in a child server manager class')
     }
@@ -56,6 +61,9 @@ class Manager extends EventEmitter {
 
         console.log('Spawning the server child process')
 
+        const spawn = nw.require('child_process').spawn
+        this.emit('start')
+
         this.serverProcess = spawn(
             this.getChildProcessCommand(),
             this.getChildProcessArguments(),
@@ -65,21 +73,29 @@ class Manager extends EventEmitter {
         this.serverProcess.once('error', (err) => {
             console.log('Error in the server child process', err)
 
-            this.serverProcess.kill()
+            this.stop()
             this.emit('error', err)
-            this._cleanUp()
         })
 
         this.serverProcess.once('close', (code, signal) => {
             console.log('Closing the server child process')
 
             this._cleanUp()
-            this.emit('stopped')
+            this.emit('stop')
+        })
+
+        this.serverProcess.stderr.on('data', (data) => {
+            if (typeof data === 'string') {
+                this.emit('error', data)
+            }
+            else {
+                this.emit('error', data.toString('utf8'))
+            }
         })
     }
 
     //
-    // Private methods
+    // Protected methods
     //
 
     _cleanUp () {
@@ -88,8 +104,16 @@ class Manager extends EventEmitter {
         }
 
         this.serverProcess.removeAllListeners(['error', 'close'])
+        this.serverProcess.stderr.removeAllListeners(['data'])
 
         this.serverProcess = null
+    }
+
+    _setProjectInfo (project) {
+        // Don't keep references to the project
+        // itself
+
+        this.location = project.location
     }
 }
 

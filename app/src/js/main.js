@@ -25,6 +25,8 @@ new Vue({
 
 Vue.config.errorHandler = function (error, vm, info) {
     alert(error)
+
+    // throw error
 }
 
 window.onerror = function(error) {

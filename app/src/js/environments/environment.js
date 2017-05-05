@@ -16,6 +16,10 @@ class Environment {
         return EnvironmentTypes.typeToString(this.environmentType)
     }
 
+    getLocalUrl () {
+        return this.serverManager.getLocalUrl()
+    }
+
     /**
      * Starts the environment and servers associated with it
      */
@@ -32,8 +36,10 @@ class Environment {
 
     /**
      * Removes references and listeners
+     * TODO: not in use yet. Call when deleting a project and on application exit.
      */
     cleanup () {
+        this.stop()
         this.serverManager.removeAllListeners(['start', 'stop', 'error'])
 
         this.serverManager = null
@@ -55,29 +61,32 @@ class Environment {
     }
 
     _setupListeners () {
-        this.serverManager.on('start', this._serverStarted)
-        this.serverManager.on('stop', this._serverStopped)
-        this.serverManager.on('error', this._serverError)
+        this.serverManager.on('start', () => this._serverStarted())
+        this.serverManager.on('stop', () => this._serverStopped())
+        this.serverManager.on('error', (err) => this._serverError(err))
     }
 
     _serverStarted () {
-        Store.dispatch('setProjectStatus', {
-            projectId: project.id,
+console.log('Got server started event')
+        Store.getStore().dispatch('setProjectStatus', {
+            projectId: this.projectId,
             status: EnvironmentStatus.ONLINE
         })
     }
 
     _serverStopped () {
-        Store.dispatch('setProjectStatus', {
-            projectId: project.id,
+console.log('Got server stopped event')
+        Store.getStore().dispatch('setProjectStatus', {
+            projectId: this.projectId,
             status: EnvironmentStatus.OFFLINE
         })
     }
 
     _serverError (err) {
-        Store.dispatch('setProjectStatus', {
-            projectId: project.id,
-            status: EnvironmentStatus.OFFLINE
+console.log('Got server error event', err)
+        Store.getStore().dispatch('logServerEvent', {
+            projectId: this.projectId,
+            error: err
         })
 
         // TODO - send the error through the Vuex action 

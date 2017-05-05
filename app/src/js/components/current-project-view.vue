@@ -50,7 +50,7 @@
                         </tr>
                         <tr>
                             <th>{{ $t('projects.local') }}</th>
-                            <td><a v-bind:href="localUrl">{{ localUrl }}</a></td>
+                            <td><a v-bind:href="localUrl" v-bind:class="{ 'text-muted': status != 'online' }">{{ localUrl }}</a></td>
                         </tr>
                         <tr>
                             <th>{{ $t('projects.production') }}</th>
@@ -121,7 +121,7 @@ export default {
             return Environments.get(this.selectedProject).getEnvironmentTypeName()
         },
         localUrl () {
-            return 'http://localhost:9291'
+            return Environments.get(this.selectedProject).getLocalUrl()
         },
         productionUrl () {
             return 'http://landing.acme.com'
@@ -152,7 +152,7 @@ export default {
                 return
             }
 
-            console.log('Stopping server')
+            this.$store.dispatch('stopServer', this.selectedProject)
         }
     },
     components: {

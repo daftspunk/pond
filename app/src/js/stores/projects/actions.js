@@ -19,6 +19,14 @@ module.exports = {
 
         Environments.get(project).start()
     },
+    stopServer (context, project) {
+        context.commit('SET_PROJECT_STATUS', {
+            projectId: project.id,
+            status: EnvironmentStatus.STARTING
+        })
+
+        Environments.get(project).stop()
+    },
     setProjectStatus (context, payload) {
         context.commit('SET_PROJECT_STATUS', payload)
     }
