@@ -64,19 +64,19 @@
                 <div class="material-tabs layout-flex-row layout-stretch layout-flex-rows-container">
                     <ul class="tabs layout-flex-row">
                         <li class="active"><a href="#tab-application-log" data-toggle="tab">{{ $t('projects.application_log') }}</a></li>
-                        <li><a href="#tab-php-log" data-toggle="tab">{{ $t('projects.php_log') }}</a></li>
-                        <li><a href="#tab-error-log" data-toggle="tab">{{ $t('projects.error_log') }} <span class="badge badge-error">4</span></a></li>
+                        <li><a href="#tab-server-log" data-toggle="tab">{{ $t('projects.server_log') }}</a></li>
+                        <li><a href="#tab-php-error-log" data-toggle="tab">{{ $t('projects.php_error_log') }} <span class="badge badge-error">4</span></a></li>
                     </ul>
 
                     <div class="tab-content layout-flex-row layout-stretch layout-flex-rows-container layout-relative">
                         <div role="tabpanel" class="tab-pane active layout-full-size" id="tab-application-log">
-                            <log-panel></log-panel>
+                            <log-panel v-bind:log="selectedProject.runtime.applicationLog"></log-panel>
                         </div>
-                        <div role="tabpanel" class="tab-pane layout-full-size" id="tab-php-log">
-                            <log-panel></log-panel>
+                        <div role="tabpanel" class="tab-pane layout-full-size" id="tab-server-log">
+                            <log-panel v-bind:log="selectedProject.runtime.serverLog"></log-panel>
                         </div>
-                        <div role="tabpanel" class="tab-pane layout-full-size" id="tab-error-log">
-                            <log-panel></log-panel>
+                        <div role="tabpanel" class="tab-pane layout-full-size" id="tab-php-error-log">
+                            <log-panel v-bind:log="selectedProject.runtime.phpErrorLog"></log-panel>
                         </div>
                     </div>
                 </div>

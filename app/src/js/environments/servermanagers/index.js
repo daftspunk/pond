@@ -12,13 +12,7 @@ class Manager extends EventEmitter {
         super()
 
         this.serverProcess = null
-
-        this._setProjectInfo(project)
-
-        // Don't keep references to the project
-        // itself
-
-        this.location = project.location
+        this.project = project
     }
 
     start () {
@@ -37,17 +31,17 @@ class Manager extends EventEmitter {
 
     getChildProcessArguments () {
         // TODO - the port should be dynamic
-        return ['-S', 'localhost:8000', 'server.php']
+        return ['-S', 'localhost:'+this.project.localPort, 'server.php']
     }
 
     getChildProcessOptions () {
         return {
-            cwd: this.location
+            cwd: this.project.location
         }
     }
 
     getLocalUrl () {
-        throw new Error('Implement getLocalUrl in a child server manager class')
+        return 'http://localhost:'+this.project.localPort
     }
 
     getChildProcessCommand () {
@@ -80,7 +74,7 @@ class Manager extends EventEmitter {
         this.serverProcess.once('close', (code, signal) => {
             console.log('Closing the server child process')
 
-            this._cleanUp()
+            this._cleanUpServer()
             this.emit('stop')
         })
 
@@ -95,25 +89,20 @@ class Manager extends EventEmitter {
     }
 
     //
-    // Protected methods
+    // Private methods
     //
 
-    _cleanUp () {
+    _cleanUpServer () {
         if (this.serverProcess === null) {
             throw new Error('Invalid cleanUp call - server child process is not running')
         }
+
+        console.log('Cleaning up the server manager')
 
         this.serverProcess.removeAllListeners(['error', 'close'])
         this.serverProcess.stderr.removeAllListeners(['data'])
 
         this.serverProcess = null
-    }
-
-    _setProjectInfo (project) {
-        // Don't keep references to the project
-        // itself
-
-        this.location = project.location
     }
 }
 

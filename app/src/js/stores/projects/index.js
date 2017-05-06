@@ -1,5 +1,6 @@
-var Actions = require('./actions')
-var Mutations = require('./mutations')
+const Actions = require('./actions')
+const Mutations = require('./mutations')
+const LogState = require('../../projects/log-state')
 
 module.exports = {
     state: {
@@ -15,7 +16,10 @@ module.exports = {
                         location: '/Users/alexeybobkov/October/pond/test-projects/acme/amazon',
 
                         runtime: {
-                            status: 'offline' // The projects JSON is temporary, no need to refer to a constant here
+                            status: 'offline', // The projects JSON is temporary, no need to refer to a constant here
+                            serverLog: new LogState(),
+                            applicationLog: new LogState(),
+                            phpErrorLog: new LogState()
                         }
                     },
                     {
@@ -26,7 +30,10 @@ module.exports = {
                         location: '/Users/alexeybobkov/October/pond/test-projects/acme/restful',
 
                         runtime: {
-                            status: 'online' // The projects JSON is temporary, no need to refer to a constant here
+                            status: 'online', // The projects JSON is temporary, no need to refer to a constant here,
+                            serverLog: new LogState(),
+                            applicationLog: new LogState(),
+                            phpErrorLog: new LogState()
                         }
                     },
                     {
@@ -36,10 +43,13 @@ module.exports = {
                         environmentType: 'pond',
                         description: 'Static landing pages for various ACME marketing campaigns, hosted on a separate server. Project [in Basecamp](http://google.com).',
                         location: '/Users/alexeybobkov/October/pond/test-projects/acme/clients-portal',
-                        localPort: 8000,
+                        localPort: 8002,
 
                         runtime: {
-                            status: 'offline' // The projects JSON is temporary, no need to refer to a constant here
+                            status: 'offline', // The projects JSON is temporary, no need to refer to a constant here
+                            serverLog: new LogState(),
+                            applicationLog: new LogState(),
+                            phpErrorLog: new LogState()
                         }
                     },
                     {
@@ -51,7 +61,10 @@ module.exports = {
                         localPort: 8001,
 
                         runtime: {
-                            status: 'offline' // The projects JSON is temporary, no need to refer to a constant here
+                            status: 'offline', // The projects JSON is temporary, no need to refer to a constant here
+                            serverLog: new LogState(),
+                            applicationLog: new LogState(),
+                            phpErrorLog: new LogState()
                         }
                     }
                 ]
@@ -67,7 +80,10 @@ module.exports = {
                         location: '/Users/alexeybobkov/October/pond/test-projects/inner/test',
 
                         runtime: {
-                            status: 'offline'
+                            status: 'offline',
+                            serverLog: new LogState(),
+                            applicationLog: new LogState(),
+                            phpErrorLog: new LogState()
                         }
                     }
                 ]

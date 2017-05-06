@@ -12,13 +12,32 @@
 
 <script>
 import Sidebar from './sidebar.vue'
+import Environments from '../environments'
+
 export default {
-    // data () {
-    //     return {
-    //         msg: 'Hello world! :-)'
-    //     }
-    // }
-    // ,
+    mounted () {
+        //
+        // Clean up on exit
+        //
+
+        const win = nw.Window.get()
+
+        win.on('closed', function() {
+            Environments.cleanup()
+        })
+
+
+        // process.on('exit', () => {
+        //     Environments.cleanup()
+        // process.stdin.write('Here')
+
+        // })
+
+        // process.on('SIGINT', () => {
+        //     Environments.cleanup()
+        // process.stdin.write('Here 2')
+        // })
+    },
     components: {
         Sidebar
     }

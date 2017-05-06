@@ -36,5 +36,13 @@ module.exports = {
         if (project) {
             project.runtime.status = payload.status
         }
+    },
+    LOG_SERVER_EVENT (state, payload)
+    {
+        const project = findProjectById(state, payload.projectId)
+
+        if (project) {
+            project.runtime.serverLog.addLine(payload.message)
+        }
     }
 }

@@ -14,8 +14,8 @@ module.exports = {
         local: 'Local',
         production: 'Production',
         application_log: 'Application log',
-        error_log: 'Error log',
-        php_log: 'PHP log',
+        server_log: 'Web server log',
+        php_error_log: 'PHP error log',
         refresh: 'Refresh',
         clear: 'Clear',
         environment_type: {

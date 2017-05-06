@@ -29,5 +29,8 @@ module.exports = {
     },
     setProjectStatus (context, payload) {
         context.commit('SET_PROJECT_STATUS', payload)
+    },
+    logServerEvent (context, payload) {
+        context.commit('LOG_SERVER_EVENT', payload)
     }
 }

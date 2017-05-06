@@ -7,13 +7,13 @@ class Environment {
         this.serverManager = serverManager
         this.provisioner = provisioner
         this.installer = installer
+        this.project = project
 
-        this._setProjectInfo(project)
         this._setupListeners()
     }
 
     getEnvironmentTypeName () {
-        return EnvironmentTypes.typeToString(this.environmentType)
+        return EnvironmentTypes.typeToString(this.project.environmentType)
     }
 
     getLocalUrl () {
@@ -41,24 +41,17 @@ class Environment {
     cleanup () {
         this.stop()
         this.serverManager.removeAllListeners(['start', 'stop', 'error'])
+        console.log('Cleaning up the environment for project '+this.project.name)
 
         this.serverManager = null
         this.provisioner = null
         this.installer = null
+        this.project = null
     }
 
     //
     // Private methods
     //
-
-    _setProjectInfo (project) {
-        // Note - do not save references
-        // to projects in environment objects.
-
-        this.location = project.location
-        this.environmentType = project.environmentType
-        this.projectId = project.id
-    }
 
     _setupListeners () {
         this.serverManager.on('start', () => this._serverStarted())
@@ -67,30 +60,36 @@ class Environment {
     }
 
     _serverStarted () {
-console.log('Got server started event')
         Store.getStore().dispatch('setProjectStatus', {
-            projectId: this.projectId,
+            projectId: this.project.id,
             status: EnvironmentStatus.ONLINE
         })
     }
 
     _serverStopped () {
-console.log('Got server stopped event')
+        if (!this.project) {
+            // The project is empty during the clean up,
+            // it's safe to ignore any problems
+            return
+        }
+
         Store.getStore().dispatch('setProjectStatus', {
-            projectId: this.projectId,
+            projectId: this.project.id,
             status: EnvironmentStatus.OFFLINE
         })
     }
 
     _serverError (err) {
-console.log('Got server error event', err)
-        Store.getStore().dispatch('logServerEvent', {
-            projectId: this.projectId,
-            error: err
-        })
+        if (!this.project) {
+            // The project is empty during the clean up,
+            // it's safe to ignore any problems
+            return
+        }
 
-        // TODO - send the error through the Vuex action 
-        // to the project's runtime state
+        Store.getStore().dispatch('logServerEvent', {
+            projectId: this.project.id,
+            message: err
+        })
     }
 }
 

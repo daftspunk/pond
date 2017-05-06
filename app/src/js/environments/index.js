@@ -16,6 +16,13 @@ class Pool {
 
         return environment
     }
+
+    cleanup () {
+        for (var projectId in this.environments) {
+            this.environments[projectId].cleanup()
+            // delete this.environments[projectId]
+        }
+    }
 }
 
 module.exports = new Pool()
