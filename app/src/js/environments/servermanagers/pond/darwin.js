@@ -1,4 +1,4 @@
-const BaseManager = require('../')
+const BaseManager = require('./')
 const spawn = require('child_process').spawn
 
 /**

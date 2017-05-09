@@ -40,7 +40,7 @@ class Environment {
      */
     cleanup () {
         this.stop()
-        this.serverManager.removeAllListeners(['start', 'stop', 'error'])
+        this.serverManager.removeAllListeners(['start', 'stop', 'log'])
         console.log('Cleaning up the environment for project '+this.project.name)
 
         this.serverManager = null
@@ -56,7 +56,7 @@ class Environment {
     _setupListeners () {
         this.serverManager.on('start', () => this._serverStarted())
         this.serverManager.on('stop', () => this._serverStopped())
-        this.serverManager.on('error', (err) => this._serverError(err))
+        this.serverManager.on('log', (message) => this._logMessage(message))
     }
 
     _serverStarted () {
@@ -79,7 +79,7 @@ class Environment {
         })
     }
 
-    _serverError (err) {
+    _logMessage (message) {
         if (!this.project) {
             // The project is empty during the clean up,
             // it's safe to ignore any problems
@@ -88,7 +88,7 @@ class Environment {
 
         Store.getStore().dispatch('logServerEvent', {
             projectId: this.project.id,
-            message: err
+            message: message
         })
     }
 }
