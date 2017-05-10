@@ -21,7 +21,10 @@ module.exports = {
     // remove all event listeners inside the environment
     // and nullify internal references.
 
-
+    SET_CLIENTS_AND_PROJECTS (state, payload) {
+        state.loading = false
+        state.clients = payload.clients
+    },
     SET_SELECTED_CLIENT_AND_PROJECT (state, payload) {
         state.selectedProject = payload.project
         state.selectedClient = payload.client

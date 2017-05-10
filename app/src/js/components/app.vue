@@ -16,6 +16,10 @@ import Environments from '../environments'
 
 export default {
     mounted () {
+        this.$store.dispatch('loadState').catch((error) => {
+            throw error
+        })
+
         //
         // Clean up on exit
         //
@@ -25,18 +29,6 @@ export default {
         win.on('closed', function() {
             Environments.cleanup()
         })
-
-
-        // process.on('exit', () => {
-        //     Environments.cleanup()
-        // process.stdin.write('Here')
-
-        // })
-
-        // process.on('SIGINT', () => {
-        //     Environments.cleanup()
-        // process.stdin.write('Here 2')
-        // })
     },
     components: {
         Sidebar

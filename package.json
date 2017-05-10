@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "October CMS Pond",
   "devDependencies": {
-    "nw-builder": "^3.2.0"
+    "nw-builder": "^3.2.0",
+    "pouchdb-find": "^6.2.0"
   },
   "author": "Alexey Bobkov <aleksey.bobkov@gmail.com>",
   "contributors": [

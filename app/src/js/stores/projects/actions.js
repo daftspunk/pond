@@ -1,7 +1,14 @@
 const Environments = require('../../environments')
 const EnvironmentStatus = require('../../environments/status')
 
+const Clients = require('../../database/clients')
+
 module.exports = {
+    loadState (context, payload) {
+        return Clients.getManager().listClientsWithProjects().then((clients) => {
+            context.commit('SET_CLIENTS_AND_PROJECTS', clients)
+        })
+    },
     setSelectedClientAndProject (context, payload) {
         context.commit('SET_SELECTED_CLIENT_AND_PROJECT', payload)
     },

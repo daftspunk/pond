@@ -4,6 +4,7 @@ const LogState = require('../../projects/log-state')
 
 module.exports = {
     state: {
+        loading: true,
         clients: [
             {
                 name: 'ACME client',
