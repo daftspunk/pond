@@ -4,37 +4,30 @@ const TYPE = 'client'
 
 class ClientManager {
     list () {
-        return new Promise((resolve, reject) => {
-            Database.get().then((db) => {
+        return Database.get()
+            .then(db => 
                 db.find({
                     selector: {
-                        $and: [
-                            {documentType: TYPE},
-                            {name: {'$gte': null}}
-                        ]
+// TODO - add doc type filter here
+                        name: {
+                            $gt: null
+                        }
                     },
                     sort: ['name']
                 })
-                .then(resolve)
-                .catch(reject)
-            }).catch(reject)
-        })
+            )
+            .then(result => result.docs)
     }
 
     listClientsWithProjects () {
-console.log('Loading clients with projects')
-        return new Promise((resolve, reject) => {
-            this.list().then((clients) => {
-console.log(clients)
-                clients.reduce((sequence, client) => {
-                    return sequence.then(() => {
-                        return this._loadProjectsForClient(client)
-                    })
-                }, Promise.resolve())
-                .then(() => resolve(clients))
-                .catch(reject)
-            }).catch(reject)
-        })
+        return this.list()
+            .then(clients =>
+                clients.reduce(
+                    (sequence, client) => sequence.then(_ => this._loadProjectsForClient(client)), 
+                    Promise.resolve()
+                )
+                .then(_ => clients)
+            )
     }
 
     //
@@ -42,15 +35,9 @@ console.log(clients)
     //
 
     _loadProjectsForClient (client) {
-        const projects = Projects.getManager()
-
-        return new Promise((resolve, reject) => {
-            projects.listForClient(client._id).then((projects) => {
-                client.projects = projects
-
-                resolve()
-            }).catch(reject)
-        })
+        return Projects.getManager()
+            .listForClient(client._id)
+            .then(projects => client.projects = projects)
     }
 }
 

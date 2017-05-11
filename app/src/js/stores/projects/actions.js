@@ -6,7 +6,9 @@ const Clients = require('../../database/clients')
 module.exports = {
     loadState (context, payload) {
         return Clients.getManager().listClientsWithProjects().then((clients) => {
-            context.commit('SET_CLIENTS_AND_PROJECTS', clients)
+            context.commit('SET_CLIENTS_AND_PROJECTS', {
+                clients
+            })
         })
     },
     setSelectedClientAndProject (context, payload) {

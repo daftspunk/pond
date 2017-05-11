@@ -3,20 +3,19 @@ const TYPE = 'project'
 
 class ProjectManager {
     listForClient (clientId) {
-        return new Promise((resolve, reject) => {
-            Database.get().then((db) => {
-                db.find({
+        return Database.get()
+            .then(db => db.find({
                     selector: {
                         documentType: TYPE,
-                        name: {'$gte': null},
+                        name: {
+                            $gt: null
+                        },
                         clientId
                     },
                     sort: ['name']
                 })
-                .then(resolve)
-                .catch(reject)
-            }).catch(reject)
-        })
+            )
+            .then(result => result.docs)
     }
 }
 

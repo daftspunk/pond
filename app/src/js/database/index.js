@@ -10,13 +10,14 @@ class DbManager {
     get () {
         if (this.database === null) {
             this.database = new PouchDB('octobercms-pond', {
-                adapter: 'idb'
+                adapter: 'idb',
+                auto_compaction: true
             })
 
             return this._initializeDatabase()
         }
 
-        return new Promise.resolve(database)
+        return Promise.resolve(this.database)
     }
 
     //
@@ -26,6 +27,11 @@ class DbManager {
     _initializeDatabase () {
         return new Promise((resolve, reject) => {
             Promise.all([
+                this.database.createIndex({
+                    index: {
+                        fields: ['name']
+                    }
+                }),
                 this.database.createIndex({
                     index: {
                         fields: ['documentType', 'name']
