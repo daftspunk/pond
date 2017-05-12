@@ -1,18 +1,18 @@
 const Environments = require('../../environments')
 const EnvironmentStatus = require('../../environments/status')
 
-const Clients = require('../../database/clients')
+const Projects = require('../../database/projects')
 
 module.exports = {
     loadState (context, payload) {
-        return Clients.getManager().listClientsWithProjects().then((clients) => {
-            context.commit('SET_CLIENTS_AND_PROJECTS', {
-                clients
+        return Projects.getManager().list().then((projects) => {
+            context.commit('SET_PROJECTS', {
+                projects
             })
         })
     },
-    setSelectedClientAndProject (context, payload) {
-        context.commit('SET_SELECTED_CLIENT_AND_PROJECT', payload)
+    setSelectedProject (context, payload) {
+        context.commit('SET_SELECTED_PROJECT', payload)
     },
     toggleProjectStar (context, project) {
         context.commit('SET_STARRED', {

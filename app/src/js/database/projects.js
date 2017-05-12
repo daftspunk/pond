@@ -1,16 +1,17 @@
 const Database = require('./')
 const TYPE = 'project'
 
+// TODO - projects should be ordered by client and name
+
 class ProjectManager {
-    listForClient (clientId) {
+    list () {
         return Database.get()
             .then(db => db.find({
                     selector: {
                         documentType: TYPE,
                         name: {
                             $gt: null
-                        },
-                        clientId
+                        }
                     },
                     sort: ['name']
                 })

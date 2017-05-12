@@ -1,17 +1,5 @@
 function findProjectById(state, id) {
-    for (var clientIndex in state.clients) {
-        var client = state.clients[clientIndex]
-
-        var project = client.projects.find((project) => {
-            return project.id == id
-        })
-
-        if (project) {
-            return project
-        }
-    }
-
-    return null
+    return state.list.find(project => project.id == id)
 }
 
 module.exports = {
@@ -21,13 +9,12 @@ module.exports = {
     // remove all event listeners inside the environment
     // and nullify internal references.
 
-    SET_CLIENTS_AND_PROJECTS (state, payload) {
+    SET_PROJECTS (state, payload) {
         state.loading = false
-        state.clients = payload.clients
+        state.list = payload.projects
     },
-    SET_SELECTED_CLIENT_AND_PROJECT (state, payload) {
+    SET_SELECTED_PROJECT (state, payload) {
         state.selectedProject = payload.project
-        state.selectedClient = payload.client
     },
     SET_STARRED (state, payload) {
         payload.project.starred = payload.starred

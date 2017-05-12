@@ -6,7 +6,7 @@
                 <div class="project-header">
                     <div class="project-status" v-bind:class="{ online: status == 'online' }"></div>
                     <h3>{{ selectedProject.name }}</h3>
-                    <h4>{{ selectedClient.name }}</h4>
+                    <h4>{{ selectedProject.client }}</h4>
 
                     <a class="settings-link">{{ $t('projects.settings_link') }}</a>
                     <a class="star-indicator" v-on:click="toggleStar()" v-bind:class="{ starred: selectedProject.starred }"></a>
@@ -102,9 +102,6 @@ export default {
     computed: {
         selectedProject () {
             return this.$store.state.projects.selectedProject
-        },
-        selectedClient () {
-            return this.$store.state.projects.selectedClient
         },
         description () {
             if (!this.selectedProject) {

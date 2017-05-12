@@ -36,11 +36,6 @@ class DbManager {
                     index: {
                         fields: ['documentType', 'name']
                     }
-                }),
-                this.database.createIndex({
-                    index: {
-                        fields: ['documentType', 'clientId', 'name']
-                    }
                 })
             ]).then(() => {
                 resolve(this.database)
