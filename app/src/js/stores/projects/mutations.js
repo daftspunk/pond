@@ -11,7 +11,7 @@ module.exports = {
 
     SET_PROJECTS (state, payload) {
         state.loading = false
-        state.list = payload.projects
+        // state.list = payload.projects
     },
     SET_SELECTED_PROJECT (state, payload) {
         state.selectedProject = payload.project

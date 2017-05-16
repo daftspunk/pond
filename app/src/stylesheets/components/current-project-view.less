@@ -1,32 +1,12 @@
 .current-project-view-panel {
     position: relative;
 
-    .project-header {
-        height: 73px;
-        border-bottom: 1px solid @color-layout-grid-lines;
-        vertical-align: middle;
-        position: relative;
+    .screen-header {
+        padding-left: 0;
+        padding-right: 0;
 
         h3, h4 {
             width: calc(~"100% - 120px");
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            line-height: 100%;
-            display: inline-block;
-        }
-
-        h3 {
-            font-size: 16px;
-            font-weight: bold;
-            color: @color-primary-header;
-            margin: 19px 0 0 0;
-        }
-
-        h4 {
-            font-size: 14px;
-            font-weight: normal;
-            margin: 2px 0 0 47px;
         }
 
         a.settings-link, a.star-indicator {

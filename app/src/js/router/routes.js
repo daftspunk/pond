@@ -6,5 +6,9 @@ module.exports = [
     {
         path: '/settings',
         component: require('./../components/settings.vue')
+    },
+    {
+        path: '/new-project',
+        component: require('./../components/new-project.vue')
     }
 ]

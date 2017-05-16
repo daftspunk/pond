@@ -3,7 +3,7 @@
         <div v-if="selectedProject" class="project-view-contents layout-full-size layout-flex-rows-container">
 
             <div class="layout-flex-row">
-                <div class="project-header">
+                <div class="screen-header">
                     <div class="project-status" v-bind:class="{ online: status == 'online' }"></div>
                     <h3>{{ selectedProject.name }}</h3>
                     <h4>{{ selectedProject.client }}</h4>
@@ -86,7 +86,10 @@
         <div v-else class="no-project-selected">
             <div>
                 <h3>{{ $t('projects.no_project_selected') }}</h3>
-                <p>{{ $t('projects.select_project_or') }} <a href="#">{{ $t('projects.create_new_project') }}</a></p>
+                <p>
+                    {{ $t('projects.select_project_or') }} 
+                    <router-link to="/new-project">{{ $t('projects.create_new_project') }}</router-link>
+                </p>
             </div>
         </div>
     </div>

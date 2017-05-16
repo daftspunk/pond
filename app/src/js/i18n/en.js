@@ -28,6 +28,9 @@ module.exports = {
         platform_type: {
             win32: 'Windows',
             darwin: 'macOS'
+        },
+        create_project: {
+            title: 'Create project'
         }
     },
     settings: {

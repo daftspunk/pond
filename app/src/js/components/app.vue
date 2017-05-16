@@ -1,17 +1,12 @@
 <style lang="less" src="../../stylesheets/theme.less"></style>
 
 <template>
-    <div class="app-container">
-        <sidebar></sidebar>
-
-        <div class="flex-item main-view">
-            <router-view></router-view>
-        </div>
+    <div class="layout-full-size">
+        <router-view></router-view>
     </div>
 </template>
 
 <script>
-import Sidebar from './sidebar.vue'
 import Environments from '../environments'
 
 export default {
@@ -29,9 +24,6 @@ export default {
         win.on('closed', function() {
             Environments.cleanup()
         })
-    },
-    components: {
-        Sidebar
     }
 }
 </script>

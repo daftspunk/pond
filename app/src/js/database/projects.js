@@ -1,8 +1,6 @@
 const Database = require('./')
 const TYPE = 'project'
 
-// TODO - projects should be ordered by client and name
-
 class ProjectManager {
     list () {
         return Database.get()
