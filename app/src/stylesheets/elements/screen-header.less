@@ -31,4 +31,41 @@ div.screen-header  {
         font-weight: normal;
         margin: 2px 0 0 47px;
     }
+
+    .header-icon {
+        display: inline-block;
+        cursor: pointer;
+        position: absolute;
+        top: 19px;
+        user-select: none;
+
+        &.close-screen-router-link {
+            // This is for span.header-icon.close-screen-router-link router-link a.close-screen-link
+            // Used in new-project-general.vue
+
+            top: 28px;
+            right: @standard-padding;
+
+            a.close-screen-link {
+                display: block;
+            }
+        }
+
+    }
+
+    a.close-screen-link {
+        .hide-text();
+        width: 16px;
+        height: 16px;
+        top: 28px;
+        right: @standard-padding;
+
+        &:before {
+            .icons-sprite-pseudo(16px, 16px, 162px, 103px);
+        }
+
+        &:hover:before {
+            .icons-sprite-pseudo(16px, 16px, 182px, 103px);
+        }
+    }
 }

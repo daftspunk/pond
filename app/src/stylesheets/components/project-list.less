@@ -85,13 +85,16 @@ div.project-list {
         }
 
         input[type=text] {
+            .dematerialize-input();
+
             border-top: none;
             border-left: none;
             border-right: none;
             padding-left: 30px;
+            width: 100%;
 
             &, &:focus {
-                border-bottom-color: @color-layout-grid-lines;
+                border-bottom: 1px solid @color-layout-grid-lines;
             }
         }
     }

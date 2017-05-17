@@ -21,3 +21,31 @@
     display: inline-block;
     .icons-sprite(@offsetX, @offsetY, @version);
 }
+
+.dematerialize-input() {
+    box-shadow: none!important;
+    background-color: white;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    height: auto;
+    width: auto;
+    font-size: @font-size-base;
+    margin: 0;
+    padding: @padding-base-vertical @padding-base-horizontal;
+    box-sizing: border-box;
+    transition: none;
+}
+
+.dematerialize-badge() {
+    min-width: 0;
+    padding: 3px 6px 3px 5px;
+    margin-left: 0;
+    text-align: center;
+    font-size: inherit;
+    line-height: 100%;
+    height: auto;
+    color: white;
+    float: none;
+    box-sizing: border-box;
+}

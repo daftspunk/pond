@@ -7,6 +7,11 @@
         border-bottom: 1px solid @color-layout-grid-lines;
         user-select: none;
 
+        // These cancel some Materialize settings
+        overflow-x: visible;
+        overflow-y: visible;
+        height: auto;
+
         li {
             display: inline-block;
             margin: 0 10px -1 0;
@@ -28,6 +33,11 @@
 
             &:last-child {
                 margin-right: 0;
+            }
+
+            .badge {
+                .dematerialize-badge();
+                font-size: 11px;
             }
         }
     }

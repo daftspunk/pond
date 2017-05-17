@@ -8,8 +8,8 @@
                     <h3>{{ selectedProject.name }}</h3>
                     <h4>{{ selectedProject.client }}</h4>
 
-                    <a class="settings-link">{{ $t('projects.settings_link') }}</a>
-                    <a class="star-indicator" v-on:click="toggleStar()" v-bind:class="{ starred: selectedProject.starred }"></a>
+                    <a class="header-icon settings-link">{{ $t('projects.settings_link') }}</a>
+                    <a class="header-icon star-indicator" v-on:click="toggleStar()" v-bind:class="{ starred: selectedProject.starred }"></a>
                 </div>
 
                 <div class="control-toolbar clearfix">

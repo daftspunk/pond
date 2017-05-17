@@ -30,10 +30,18 @@ module.exports = {
             darwin: 'macOS'
         },
         create_project: {
-            title: 'Create project'
+            title: 'Create project',
+            project_name: 'Project name',
+            client_name: 'Client',
+            description: 'Description'
         }
     },
     settings: {
         title: 'Settings'
+    },
+    common: {
+        close: 'Close',
+        save: 'Save',
+        continue: 'Continue'
     }
 }

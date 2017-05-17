@@ -2,6 +2,11 @@ const $ = require('jquery');
 window.$ = window.jQuery = $;
 const Bootstrap = require('bootstrap')
 
+// const Materialize = require('materialize-css') - this won't work.
+// https://github.com/Dogfalo/materialize/issues/1422 - the issue
+// was never solved. Materialize script is loaded from the
+// assets folder in index.htm.
+
 const Vue = require('vue')
 const App = require('./components/app.vue')
 const AppRouter = require('./router')

@@ -1,6 +1,51 @@
+// Bootstrap forms
+
 .form-control {
     &:focus {
         box-shadow: none;
         outline: none;
+    }
+}
+
+// Materialize forms
+
+.input-field {
+    margin-top: 25px;
+
+    input:not([type]),
+    input[type=text],
+    input[type=password],
+    input[type=email],
+    input[type=url],
+    input[type=time],
+    input[type=date],
+    input[type=datetime],
+    input[type=datetime-local],
+    input[type=tel],
+    input[type=number],
+    input[type=search],
+    textarea.materialize-textarea {
+        box-shadow: none!important;
+        font-size: @font-size-base;
+        color: @text-color;
+
+        &:focus {
+            border-bottom: 1px solid @color-form-input-border-active;
+        }
+    }
+
+    textarea.materialize-textarea {
+        
+    }
+
+    label {
+        font-weight: normal;
+        color: @color-form-label-inactive!important;
+        font-size: @font-size-base;
+
+        &:not(.label-icon).active {
+            font-size: 13px;
+            color: @color-form-label-active!important;
+        }
     }
 }
