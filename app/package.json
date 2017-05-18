@@ -25,6 +25,7 @@
     "materialize-css": "^0.98.2",
     "pouchdb": "^6.2.0",
     "vue": "^2.2.6",
+    "vue-focus": "^2.1.0",
     "vue-i18n": "^6.1.0",
     "vue-router": "^2.4.0",
     "vueify": "^9.4.1",
