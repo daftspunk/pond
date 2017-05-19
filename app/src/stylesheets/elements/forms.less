@@ -7,6 +7,24 @@
     }
 }
 
+// Custom form elements
+
+.validation-error {
+    display: none;
+    color: @color-danger;
+    font-size: 13px;
+}
+
+h4.invalid {
+    color: @color-danger;
+
+    + .validation-error {
+        display: block;
+        margin-top: -25px;
+        margin-bottom: @standard-padding;
+    }
+}
+
 // Materialize forms
 
 label {
@@ -42,12 +60,28 @@ label {
         &:focus {
             border-bottom: 1px solid @color-form-input-border-active;
         }
+
+        // We don't use Materialize default validation
+        // styles. See new-project-general.vue for usage
+        // examples.
+
+        &.invalid {
+            border-bottom: 1px solid @color-danger!important;
+
+            + label {
+                + span.validation-error {
+                    display: block;
+                    margin-top: -15px;
+                }
+            }
+        }
     }
 
     label {
         font-weight: normal;
         color: @color-form-label-inactive!important;
         font-size: @font-size-base;
+        width: 100%;
 
         &:not(.label-icon).active {
             font-size: 13px;
@@ -79,19 +113,3 @@ label {
         border-color: @brand-primary;
     }
 }
-
-div.directory-selector-container {
-    position: relative;
-
-    input[webkitdirectory] {
-        position: absolute;
-        cursor: pointer;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        left: 0;
-        top: 0; 
-    }
-}
-
-

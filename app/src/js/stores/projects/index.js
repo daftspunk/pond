@@ -85,7 +85,13 @@ module.exports = {
                 }
             }
         ],
-        selectedProject: null
+        selectedProject: null,
+        newProject: {
+            name: '',
+            environmentType: '',
+            location: '',
+            client: ''
+        }
     },
 
     mutations: Mutations,
