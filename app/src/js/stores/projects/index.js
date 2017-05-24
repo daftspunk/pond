@@ -90,7 +90,8 @@ module.exports = {
             name: '',
             environmentType: '',
             location: '',
-            client: ''
+            client: '',
+            localPort: null
         }
     },
 

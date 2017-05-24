@@ -9,6 +9,6 @@ module.exports = [
     },
     {
         path: '/new-project',
-        component: require('./../components/new-project.vue')
+        component: require('./../components/new-project/index.vue')
     }
 ]

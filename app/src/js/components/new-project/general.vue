@@ -21,8 +21,9 @@
                                     type="text"
                                     v-model="project.name"
                                     class="validation"
+                                    ref="nameInput"
                                     v-bind:class="{ invalid: errorBag.has('name') }">
-                                <label for="project-name">{{ $t('projects.create_project.project_name') }}</label>
+                                <label class="active" for="project-name">{{ $t('projects.create_project.project_name') }}</label>
                                 <span class="validation-error">{{ $t(errorBag.get('name')) }}</span>
                             </div>
                         </div>
@@ -90,9 +91,9 @@
 </template>
 
 <script>
-import VueFocus from 'vue-focus'
-import ErrorBag from '../validation/error-bag'
-import PreValidator from '../environments/project-prevalidator'
+import ErrorBag from '../../validation/error-bag'
+import PreValidator from '../../environments/project-prevalidator'
+import Vue from 'vue'
 
 export default {
     data () {
@@ -100,9 +101,6 @@ export default {
             errorBag: new ErrorBag()
         }
     },
-    mixins: [
-        VueFocus.mixin
-    ],
     computed: {
         project () {
             return this.$store.state.projects.newProject
@@ -113,11 +111,17 @@ export default {
             const validator = new PreValidator()
             this.errorBag.cleanup()
             validator.validate(this.project, this.errorBag)
+
+            if (!this.errorBag.hasErrors()) {
+                this.$emit('show-env-config-step')
+            }
         }
     },
     mounted () {
         $(this.$refs.directoryLocationLabel).addClass('active')
         this.errorBag.cleanup()
+
+        Vue.nextTick(() => this.$refs.nameInput.focus())
     }
 }
 </script>

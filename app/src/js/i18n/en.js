@@ -41,7 +41,10 @@ module.exports = {
             directory_location: 'Directory location',
             error_project_name_empty: 'Project name cannot be empty',
             error_client_name_empty: 'Client name cannot be empty',
-            error_environment_type_empty: 'Please select environment type'
+            error_environment_type_empty: 'Please select environment type',
+            local_port: 'Local TCP port number',
+            local_port_description: 'Choose a <a href="https://en.wikipedia.org/wiki/Port_(computer_networking)">TCP port number</a> for your new project. The port should not be used by another Pond project or any other application.',
+            new_url_label: 'Your new environment URL'
         }
     },
     settings: {

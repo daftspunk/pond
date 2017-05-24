@@ -24,7 +24,12 @@ table.attribute-table {
     th {
         padding-left: 0;
         font-weight: normal;
+        white-space: nowrap;
         color: @color-text-minor;
+
+        &.min-width {
+            width: 80px;
+        }
     }
 
     td {
