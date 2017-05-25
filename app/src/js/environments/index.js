@@ -17,6 +17,10 @@ class Pool {
         return environment
     }
 
+    makeNonCached (project) {
+        return EnvironmentFactory.createEnvironment(project)
+    }
+
     cleanup () {
         for (var projectId in this.environments) {
             this.environments[projectId].cleanup()

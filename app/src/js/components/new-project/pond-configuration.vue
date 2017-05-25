@@ -10,7 +10,7 @@
             </span>
         </div>
 
-        <form class="layout-flex-row layout-stretch layout-relative" @submit.prevent="goNextStep">
+        <form class="layout-flex-row layout-stretch layout-relative" @submit.prevent="goFinalStep">
             <div class="layout-full-size scrollable">
                 <div class="standard-panel-paddings standard-padding-bottom standard-padding-top">
                     <div class="row">
@@ -27,7 +27,10 @@
                                 <span class="validation-error">{{ $t(errorBag.get('localPort')) }}</span>
                             </div>
 
-                            <p class="standard-padding-top standard-padding-bottom" data-open-links-in-browser v-html="$t('projects.create_project.local_port_description')"></p>
+                            <p
+                                class="standard-padding-top standard-padding-bottom"
+                                data-open-links-in-browser
+                                v-html="$t('projects.create_project.local_port_description')"></p>
 
                             <table class="table attribute-table" data-open-links-in-browser>
                                 <tr>
@@ -38,7 +41,9 @@
                         </div>
                     </div>
 
-                    <input type="submit" class="btn btn-primary" v-bind:value="$t('common.continue')">
+                    <input type="submit" class="btn btn-primary"  v-bind:value="$t('common.continue')">
+                    <span class="button-or">or</span>
+                    <button type="button" class="btn btn-link" @click="goPrevStep()">go back</button>
                 </div>
             </div>
         </form>
@@ -48,6 +53,7 @@
 <script>
 import ErrorBag from '../../validation/error-bag'
 import PortFinder from '../../environments/port-finder'
+import Environments from '../../environments'
 import Vue from 'vue'
 
 export default {
@@ -62,8 +68,23 @@ export default {
         }
     },
     methods: {
-        goNextStep () {
-           
+        async goFinalStep () {
+            this.errorBag.cleanup()
+            const environment = Environments.makeNonCached(this.project)
+
+            try {
+                var result = await environment.validateProvisionerConfiguration(this.errorBag, this.$store.state.projects.list);
+
+                if (!this.errorBag.hasErrors()) {
+                    // this.$emit('show-env-config-step')
+                }
+            } catch (e) {
+console.log(e)
+            }
+
+        },
+        goPrevStep () {
+            this.$emit('show-general-step')
         }
     },
     mounted () {

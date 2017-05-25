@@ -34,6 +34,10 @@ class Environment {
         this.serverManager.stop()
     }
 
+    async validateProvisionerConfiguration (errorBag, projects) {
+        return this.provisioner.validateConfiguration(errorBag, projects)
+    }
+
     /**
      * Removes references and listeners
      * TODO: not in use yet. Call when deleting a project and on application exit.

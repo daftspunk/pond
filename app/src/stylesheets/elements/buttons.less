@@ -25,6 +25,14 @@ a.btn {
         }
     }
 
+    &.btn-link {
+        color: @color-text-minor;
+        text-decoration: underline;
+        box-shadow: none!important;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
     &[disabled] {
         cursor: default;
     }
@@ -43,4 +51,10 @@ a.btn {
         &:before { .icons-sprite-pseudo(14px, 14px, 44px, 165px); }
         &[disabled]:before { .icons-sprite-pseudo(14px, 14px, 44px, 185px);}
     }
+}
+
+span.button-or {
+    display: inline-block;
+    margin: 0 5px;
+    color: @color-text-minor;
 }

@@ -44,7 +44,9 @@ module.exports = {
             error_environment_type_empty: 'Please select environment type',
             local_port: 'Local TCP port number',
             local_port_description: 'Choose a <a href="https://en.wikipedia.org/wiki/Port_(computer_networking)">TCP port number</a> for your new project. The port should not be used by another Pond project or any other application.',
-            new_url_label: 'Your new environment URL'
+            new_url_label: 'Your new environment URL',
+            error_local_port_empty: 'Please provide the local port number',
+            error_local_port_not_integer: 'The local port must be integer',
         }
     },
     settings: {

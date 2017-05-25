@@ -16,7 +16,6 @@ class Manager extends EventEmitter {
     constructor (project) {
         super()
 
-        this.serverProcess = null
         this.project = project
     }
 

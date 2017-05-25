@@ -1,3 +1,5 @@
+const BaseProvisioner = require('./')
+
 /**
  * Environment provisioner: 
  *
@@ -5,9 +7,9 @@
  *  - Darwin platform
  */
 
-class Provisioner {
-    constructor () {
-
+class Provisioner extends BaseProvisioner {
+    constructor (project) {
+        super(project)
     }
 }
 

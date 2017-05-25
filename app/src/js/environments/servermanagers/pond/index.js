@@ -10,10 +10,9 @@ const spawn = require('child_process').spawn
 
 class Manager extends BaseManager {
     constructor (project) {
-        super()
+        super(project)
 
         this.serverProcess = null
-        this.project = project
     }
 
     start () {
