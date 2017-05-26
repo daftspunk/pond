@@ -16,7 +16,38 @@ class PortFinder {
     }
 
     isInUseByAProject (port, projects) {
-        return projects.some(project => project.localPort == port)
+        return projects.find(project => project.localPort == port)
+    }
+
+    isInUseByAnotherApp (port, hostname) {
+        // Note - in the browser context we must use
+        // nw.require to link native node.js modules.
+
+        const net = nw.require('net')
+        const server = new net.Server()
+
+        return new Promise((resolve, reject) => {
+            server.on('error', err => {
+                console.log(`Error listening port ${hostname}:${port}. Error: ${err}`)
+                server.close()
+
+                if (err.code === 'ENOTFOUND') {
+                    console.log(`Ignore DNS ENOTFOUND error, get free port ${hostname}:${port}`)
+                    resolve(port)
+                    return
+                }
+
+                reject(err)
+            })
+
+            server.listen(port, hostname, () => {
+                port = server.address().port
+                server.close()
+
+                console.log(`Found available port ${hostname}:${port}`)
+                resolve(port)
+            })
+        })
     }
 }
 

@@ -47,6 +47,8 @@ module.exports = {
             new_url_label: 'Your new environment URL',
             error_local_port_empty: 'Please provide the local port number',
             error_local_port_not_integer: 'The local port must be integer',
+            error_local_port_used_by_another_project: 'This port is already used by another project',
+            error_local_port_used_by_another_app: 'This port cannot be used - it\'s already in use by the OS or another application'
         }
     },
     settings: {
@@ -55,6 +57,7 @@ module.exports = {
     common: {
         close: 'Close',
         save: 'Save',
-        continue: 'Continue'
+        continue: 'Continue',
+        please_wait: 'Please wait...'
     }
 }

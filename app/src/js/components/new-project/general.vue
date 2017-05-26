@@ -35,7 +35,7 @@
                                     v-model="project.client"
                                     class="validation"
                                     v-bind:class="{ invalid: errorBag.has('client') }">
-                                <label for="client-name">{{ $t('projects.create_project.client_name') }}</label>
+                                <label v-bind:class="{active: project.client}" for="client-name">{{ $t('projects.create_project.client_name') }}</label>
                                 <span class="validation-error">{{ $t(errorBag.get('client')) }}</span>
                             </div>
                         </div>
@@ -43,7 +43,7 @@
 
                     <div class="input-field">
                         <input id="project-description" type="text" v-model="project.description">
-                        <label for="project-description">{{ $t('projects.create_project.description') }}</label>
+                        <label v-bind:class="{active: project.description}" for="project-description">{{ $t('projects.create_project.description') }}</label>
                     </div>
 
                     <div class="standard-padding-bottom">

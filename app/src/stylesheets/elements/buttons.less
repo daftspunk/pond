@@ -31,10 +31,15 @@ a.btn {
         box-shadow: none!important;
         padding-left: 0;
         padding-right: 0;
+
+        &[disabled] {
+            background: transparent!important;
+        }
     }
 
     &[disabled] {
         cursor: default;
+        box-shadow: none!important;
     }
 
     &[btn-icon=start] {

@@ -65,8 +65,12 @@ div.screen-header  {
             .icons-sprite-pseudo(16px, 16px, 162px, 103px);
         }
 
-        &:hover:before {
+        &:hover:before:not([disabled]) {
             .icons-sprite-pseudo(16px, 16px, 182px, 103px);
+        }
+
+        &[disabled] {
+            cursor: default;
         }
     }
 }

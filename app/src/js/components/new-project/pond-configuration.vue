@@ -1,11 +1,11 @@
 <template>
-    <div class="layout-full-size layout-flex-rows-container">
+    <div class="layout-full-size layout-flex-rows-container" v-bind:class="{waiting: waiting}">
         <div class="layout-flex-row screen-header">
             <h3 class="no-subheader">{{ $t('projects.create_project.title') }}</h3>
 
             <span class="header-icon close-screen-router-link">
                 <router-link tag="span" to="/">
-                    <a class="close-screen-link">{{ $t('common.close') }}</a>
+                    <a class="close-screen-link" v-bind:disabled="waiting">{{ $t('common.close') }}</a>
                 </router-link>
             </span>
         </div>
@@ -22,6 +22,7 @@
                                     v-model="project.localPort"
                                     class="validation"
                                     ref="localPortInput"
+                                    v-bind:disabled="waiting"
                                     v-bind:class="{ invalid: errorBag.has('localPort') }">
                                 <label class="active" ref="localPortLabel" for="project-local-port">{{ $t('projects.create_project.local_port') }}</label>
                                 <span class="validation-error">{{ $t(errorBag.get('localPort')) }}</span>
@@ -41,9 +42,13 @@
                         </div>
                     </div>
 
-                    <input type="submit" class="btn btn-primary"  v-bind:value="$t('common.continue')">
+                    <input
+                        type="submit"
+                        class="btn btn-primary"
+                        v-bind:value="waiting ? $t('common.please_wait') : $t('common.continue')" v-bind:disabled="waiting">
+
                     <span class="button-or">or</span>
-                    <button type="button" class="btn btn-link" @click="goPrevStep()">go back</button>
+                    <button type="button" class="btn btn-link" @click="goPrevStep()" v-bind:disabled="waiting">go back</button>
                 </div>
             </div>
         </form>
@@ -59,7 +64,8 @@ import Vue from 'vue'
 export default {
     data () {
         return {
-            errorBag: new ErrorBag()
+            errorBag: new ErrorBag(),
+            waiting: false
         }
     },
     computed: {
@@ -68,20 +74,30 @@ export default {
         }
     },
     methods: {
-        async goFinalStep () {
-            this.errorBag.cleanup()
+        validateAndGoToNext () {
             const environment = Environments.makeNonCached(this.project)
 
-            try {
-                var result = await environment.validateProvisionerConfiguration(this.errorBag, this.$store.state.projects.list);
-
-                if (!this.errorBag.hasErrors()) {
-                    // this.$emit('show-env-config-step')
-                }
-            } catch (e) {
-console.log(e)
-            }
-
+            environment.validateProvisionerConfiguration(this.errorBag,
+                this.$store.state.projects.list)
+                .then(() => {
+                    this.waiting = false
+                    if (!this.errorBag.hasErrors()) {
+                        // this.$emit('show-env-config-step')
+                    }
+                    else {
+                        this.$forceUpdate()
+                    }
+                })
+                .catch(e => {
+                    this.waiting = false
+                    throw e
+                })
+        },
+        goFinalStep () {
+            this.errorBag.cleanup()
+            this.waiting = true
+            
+            setTimeout(() => this.validateAndGoToNext(), 500)
         },
         goPrevStep () {
             this.$emit('show-general-step')
