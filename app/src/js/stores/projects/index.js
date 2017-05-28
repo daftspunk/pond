@@ -91,7 +91,8 @@ module.exports = {
             environmentType: '',
             location: '',
             client: '',
-            localPort: null
+            localPort: null,
+            initLog: new LogState()
         }
     },
 

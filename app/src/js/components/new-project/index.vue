@@ -7,15 +7,20 @@
 
         <pond-configuration
             v-if="stepCode == 'env-config' && project.environmentType == 'pond'"
-            @show-progress-step="showProgressStep"
+            @show-provisioning-step="showProvisioningStep"
             @show-general-step="showGeneralStep"
         ></pond-configuration>
+
+        <provisioning
+            v-if="stepCode == 'provisioning'"
+        ></provisioning>
     </div>
 </template>
 
 <script>
 import GeneralInformation from './general.vue'
 import PondConfiguration from './pond-configuration.vue'
+import Provisioning from './provisioning.vue'
 
 export default {
     data () {
@@ -30,7 +35,8 @@ export default {
     },
     components: {
         GeneralInformation,
-        PondConfiguration
+        PondConfiguration,
+        Provisioning
     },
     methods: {
         showEnvironmentConfigurationStep () {
@@ -39,8 +45,8 @@ export default {
         showGeneralStep () {
             this.stepCode = 'general'
         },
-        showProgressStep () {
-            
+        showProvisioningStep () {
+            this.stepCode = 'provisioning'
         }
     },
     mounted () {

@@ -48,7 +48,15 @@ module.exports = {
             error_local_port_empty: 'Please provide the local port number',
             error_local_port_not_integer: 'The local port must be integer',
             error_local_port_used_by_another_project: 'This port is already used by another project',
-            error_local_port_used_by_another_app: 'This port cannot be used - it\'s already in use by the OS or another application'
+            error_local_port_used_by_another_app: 'This port cannot be used - it\'s already in use by the OS or another application',
+            general_information: 'General information',
+            configure_pond_environment: 'Pond environment configuration',
+            provisioning: 'Provisioning',
+            pond_building_project: 'Pond is building your project...',
+            downloading: 'Downloading',
+            initializing: 'Initializing environment',
+            installing: 'Installing',
+            done: 'Done'
         }
     },
     settings: {

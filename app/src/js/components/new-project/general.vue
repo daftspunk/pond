@@ -1,7 +1,8 @@
 <template>
     <div class="layout-full-size layout-flex-rows-container">
         <div class="layout-flex-row screen-header">
-            <h3 class="no-subheader">{{ $t('projects.create_project.title') }}</h3>
+            <h3>{{ $t('projects.create_project.title') }}</h3>
+            <h4>{{ $t('projects.create_project.general_information') }}</h4>
 
             <span class="header-icon close-screen-router-link">
                 <router-link tag="span" to="/">

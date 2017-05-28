@@ -1,7 +1,8 @@
 <template>
     <div class="layout-full-size layout-flex-rows-container" v-bind:class="{waiting: waiting}">
         <div class="layout-flex-row screen-header">
-            <h3 class="no-subheader">{{ $t('projects.create_project.title') }}</h3>
+            <h3>{{ $t('projects.create_project.title') }}</h3>
+            <h4>{{ $t('projects.create_project.configure_pond_environment') }}</h4>
 
             <span class="header-icon close-screen-router-link">
                 <router-link tag="span" to="/">
@@ -82,7 +83,7 @@ export default {
                 .then(() => {
                     this.waiting = false
                     if (!this.errorBag.hasErrors()) {
-                        // this.$emit('show-env-config-step')
+                        this.$emit('show-provisioning-step')
                     }
                     else {
                         this.$forceUpdate()
