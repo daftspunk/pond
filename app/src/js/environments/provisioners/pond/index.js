@@ -41,7 +41,13 @@ class Provisioner extends BaseProvisioner {
             errorBag.add('localPort', 'projects.create_project.error_local_port_used_by_another_app')
             return
         }
+    }
 
+    async run() {
+        // In Pond environment we don't need to provision anything.
+        // Just create the directory and put the archive there.
+
+        // Create the directory with a parent method call
     }
 }
 

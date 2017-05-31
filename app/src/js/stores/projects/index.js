@@ -1,6 +1,7 @@
 const Actions = require('./actions')
 const Mutations = require('./mutations')
 const LogState = require('../../projects/log-state')
+const InitializationState = require('../../environments/initialization-state')
 
 module.exports = {
     state: {
@@ -92,7 +93,7 @@ module.exports = {
             location: '',
             client: '',
             localPort: null,
-            initLog: new LogState()
+            initState: new InitializationState.Tracker()
         }
     },
 

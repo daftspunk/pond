@@ -21,4 +21,9 @@ module.exports = function() {
     this.asText = function() {
         return this.lines.join("\n")
     }
+
+    this.clear = function() {
+        this.lines = []
+        this.totalLines = 0
+    }
 }

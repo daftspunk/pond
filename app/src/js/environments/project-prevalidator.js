@@ -23,6 +23,15 @@ class ProjectPrevalidator {
         if (ValidationUtils.isEmptyString(project.environmentType)) {
             errorBag.add('environmentType', 'projects.create_project.error_environment_type_empty')
         }
+
+        if (ValidationUtils.isEmptyString(project.location)) {
+            errorBag.add('location', 'projects.create_project.error_location_empty')
+        } 
+        else if (!ValidationUtils.isDirectory(project.location)) {
+            errorBag.add('location', 'projects.create_project.error_location_not_directory')
+        } else if (!ValidationUtils.isDirectoryEmpty(project.location)) {
+            errorBag.add('location', 'projects.create_project.error_location_not_empty')
+        }
     }
 }
 

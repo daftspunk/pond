@@ -24,6 +24,7 @@
     "markdown": "^0.5.0",
     "materialize-css": "^0.98.2",
     "pouchdb": "^6.2.0",
+    "temp": "^0.8.3",
     "vue": "^2.2.6",
     "vue-focus": "^2.1.0",
     "vue-i18n": "^6.1.0",

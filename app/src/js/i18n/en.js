@@ -49,6 +49,9 @@ module.exports = {
             error_local_port_not_integer: 'The local port must be integer',
             error_local_port_used_by_another_project: 'This port is already used by another project',
             error_local_port_used_by_another_app: 'This port cannot be used - it\'s already in use by the OS or another application',
+            error_location_empty: 'Please specify the project directory',
+            error_location_not_directory: 'The specified path is not a directory',
+            error_location_not_empty: 'The specified directory is not empty',
             general_information: 'General information',
             configure_pond_environment: 'Pond environment configuration',
             provisioning: 'Provisioning',
@@ -56,7 +59,9 @@ module.exports = {
             downloading: 'Downloading',
             initializing: 'Initializing environment',
             installing: 'Installing',
-            done: 'Done'
+            done: 'Done',
+            error: 'Error',
+            location_placeholder: 'Click to select location'
         }
     },
     settings: {
@@ -66,6 +71,8 @@ module.exports = {
         close: 'Close',
         save: 'Save',
         continue: 'Continue',
-        please_wait: 'Please wait...'
+        please_wait: 'Please wait...',
+        go_back: 'go back',
+        go_back_button: 'Go back'
     }
 }

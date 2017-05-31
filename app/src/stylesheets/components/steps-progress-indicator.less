@@ -31,7 +31,7 @@ div.steps-progress-indicator {
                     top: 14px;
                     border-radius: 14px;
                     background: @color-progress-indicator-inactive;
-                    transition: box-shadow 0.2s ease-in;
+                    transition: box-shadow 0.2s ease-in, background-color 0.2s ease-in;
                 }
 
                 &:before {
@@ -55,12 +55,17 @@ div.steps-progress-indicator {
                 z-index: 4;
                 display: none;
 
-                &:after {
+                &:after, &:before {
                     height: 2px;
-                    transition: width 0.5s ease-in;
+                    position: absolute;
+                    width: 0;
+                    transition: width 0.1s ease-in;
                     content: '';
                     display: block;
                     background: @color-progress-indicator-active;
+                }
+
+                &:before {
                     .animation(infinite-loader 60s linear);
                 }
             }
@@ -98,12 +103,11 @@ div.steps-progress-indicator {
                     }
                 }
 
-                span.progress-indicator{
+                span.progress-indicator {
                     display: block;
 
                     &:after {
-                        width: 150px!important;
-                        animation: none!important;
+                        width: 100%;
                     }
                 }
             }

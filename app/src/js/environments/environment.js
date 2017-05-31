@@ -1,6 +1,8 @@
 const EnvironmentTypes = require('./types')
 const Store = require('../stores')
 const EnvironmentStatus = require('./status')
+const Downloader = require('./downloader')
+const InitializationState = require('./initialization-state')
 
 class Environment {
     constructor (project, serverManager, provisioner, installer) {
@@ -32,6 +34,19 @@ class Environment {
      */
     stop () {
         this.serverManager.stop()
+    }
+
+    /**
+     * Downloads, provisions and installs October
+     */
+    async initProject() {
+        const downloader = new Downloader(this.project.initState.textLog)
+
+        this.project.initState.step = InitializationState.DOWNLOADING
+        const installerPath = await downloader.run()
+
+        this.project.initState.step = InitializationState.PROVISIONING
+        await this.provisioner.run()
     }
 
     async validateProvisionerConfiguration (errorBag, projects) {

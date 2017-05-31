@@ -51,6 +51,7 @@ label {
     input[type=datetime-local],
     input[type=tel],
     input[type=number],
+    input[type=file],
     input[type=search],
     textarea.materialize-textarea {
         box-shadow: none!important;
@@ -86,6 +87,49 @@ label {
         &:not(.label-icon).active {
             font-size: 13px;
             color: @color-form-label-active!important;
+        }
+    }
+
+    &.directory-selector {
+        margin-bottom: @standard-padding;
+        cursor: pointer;
+
+        label {
+            margin-bottom: 5px;
+        }
+
+        input[type="file"] {
+            display: none;
+
+            &.invalid {
+                + div.directory-location {
+                    border-bottom: 1px solid @color-danger!important;
+
+                    + label {
+                        + span.validation-error {
+                            display: block;
+                            margin-top: 5px;
+                        }
+                    }
+                }
+            }
+        }
+
+        div.directory-location {
+            padding-right: 30px;
+            position: relative;
+            border-bottom: 1px solid @color-form-input-border-inactive;
+
+            &:after {
+                position: absolute;
+                right: 0;
+                top: 14px;
+                .icons-sprite-pseudo(16px, 4px, 142px, 129px);
+            }
+
+            &:hover:after {
+                .icons-sprite-pseudo(16px, 4px, 163px, 129px);
+            }
         }
     }
 }

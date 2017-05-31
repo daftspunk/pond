@@ -1,3 +1,5 @@
+const fs = nw.require('fs')
+
 function toSafeString(value) {
     if (value === undefined || value === null) {
         return ''
@@ -14,8 +16,28 @@ function isInteger(value) {
     return /^[0-9]+$/.test(toSafeString(value))
 }
 
+function isDirectory(path) {
+    try {
+        const stat = fs.statSync(path)
+
+        return (stat.isDirectory())
+    } catch (err) {
+        return false
+    }
+}
+
+function isDirectoryEmpty(path) {
+    const contents = fs.readdirSync(path)
+
+    return !contents.some(fileName => {
+        return fileName.charAt(0) !== '.'
+    })
+}
+
 module.exports = {
     toSafeString,
     isEmptyString,
-    isInteger
+    isInteger,
+    isDirectory,
+    isDirectoryEmpty
 }

@@ -13,6 +13,7 @@
 
         <provisioning
             v-if="stepCode == 'provisioning'"
+            @show-env-config-step="showEnvironmentConfigurationStep"
         ></provisioning>
     </div>
 </template>

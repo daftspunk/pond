@@ -49,7 +49,7 @@
                         v-bind:value="waiting ? $t('common.please_wait') : $t('common.continue')" v-bind:disabled="waiting">
 
                     <span class="button-or">or</span>
-                    <button type="button" class="btn btn-link" @click="goPrevStep()" v-bind:disabled="waiting">go back</button>
+                    <button type="button" class="btn btn-link" @click="goPrevStep()" v-bind:disabled="waiting">{{ $t('common.go_back') }}</button>
                 </div>
             </div>
         </form>

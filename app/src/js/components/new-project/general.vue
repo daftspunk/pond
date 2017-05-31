@@ -48,9 +48,19 @@
                     </div>
 
                     <div class="standard-padding-bottom">
-                        <div class="input-field">
-                            <input disabled type="text" v-model="project.location" id="directory-location" placeholder="Please select an empty directory">
+                        <div class="input-field directory-selector" @click="onDirectoryClick">
+                            <input
+                                ref="directoryInput"
+                                type="file" nwdirectory="true"
+                                @change="directoryChanged($event)"
+                                v-bind:class="{ invalid: errorBag.has('location') }"
+                            />
+                            <directory-location
+                                v-bind:location="project.location"
+                                placeholder="projects.create_project.location_placeholder"
+                            ></directory-location>
                             <label ref="directoryLocationLabel" for="directory-location">{{ $t('projects.create_project.directory_location') }}</label>
+                            <span class="validation-error">{{ $t(errorBag.get('location')) }}</span>
                         </div>
                     </div>
 
@@ -94,6 +104,7 @@
 <script>
 import ErrorBag from '../../validation/error-bag'
 import PreValidator from '../../environments/project-prevalidator'
+import DirectoryLocation from '../directory-location.vue'
 import Vue from 'vue'
 
 export default {
@@ -107,6 +118,9 @@ export default {
             return this.$store.state.projects.newProject
         }
     },
+    components: {
+        DirectoryLocation
+    },
     methods: {
         goNextStep () {
             const validator = new PreValidator()
@@ -116,6 +130,16 @@ export default {
             if (!this.errorBag.hasErrors()) {
                 this.$emit('show-env-config-step')
             }
+        },
+
+        directoryChanged (ev) {
+            if (ev.target.value) {
+                this.project.location = ev.target.value
+            }
+        },
+
+        onDirectoryClick () {
+            this.$refs.directoryInput.click()
         }
     },
     mounted () {
