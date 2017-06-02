@@ -14,21 +14,7 @@ function typeToString(type) {
 }
 
 function getPlatform() {
-    // Not sure if it's a best way to detect the platform.
-    // os.platform is "browser" in nw.js. process.platform
-    // is undefined.
-
-    const release = Os.release()
-
-    if (/Windows/.test(release)) {
-        return 'win32'
-    }
-
-    if (/Mac/.test(release)) {
-        return 'darwin'
-    }
-
-    return 'unknown'
+    return nw.require("os").platform()
 }
 
 function isSupportedPlatform(platform) {

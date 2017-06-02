@@ -4,6 +4,7 @@
   "description": "October CMS Pond",
   "main": "index.html",
   "node-main": "dist/main.js",
+  "user-agent": "OctoberCMS Installer; Pond",
   "window": {
     "min_width": 800,
     "min_height": 500,

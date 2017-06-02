@@ -11,6 +11,8 @@ module.exports = function() {
             this.lines.splice(0, toDelete)
         }
         this.totalLines++
+
+        return line
     }
 
     this.getFirstLineNumber = function()

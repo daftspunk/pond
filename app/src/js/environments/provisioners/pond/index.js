@@ -45,9 +45,7 @@ class Provisioner extends BaseProvisioner {
 
     async run() {
         // In Pond environment we don't need to provision anything.
-        // Just create the directory and put the archive there.
-
-        // Create the directory with a parent method call
+        // Just put the archive here, extract and install Pond Agent.
     }
 }
 

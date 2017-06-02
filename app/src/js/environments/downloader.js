@@ -1,11 +1,9 @@
-const temp = nw.require('temp')
-const fs = nw.require('fs')
+require('temp') // Without this the `temp` package won't be available for later nw.require call. nw.require is not available here yet.
 
-const url = 'https://github.com/octobercms/install/archive/master.zip'
+const url = 'https://octobercms.com/api/installer/stable'
 
-// TODO: the download must go through our server with Google Analytics tracking.
-// Use an URL parameter to mark the download as Pond download in the analytics.
-// const url = 'https://octobercms.com/download/?pond=1'
+// TODO: downloads should be tracked with Google Analytics.
+// TODO: edge installations should be possible too (see advanced options in the TODO list).
 
 class Downloader {
     constructor (textLog) {
@@ -13,6 +11,9 @@ class Downloader {
     }
 
     run () {
+        const fs = nw.require('fs')
+        const temp = nw.require('temp')
+
         // This will remove the temporary file on application exit
         temp.track()
 
@@ -26,21 +27,27 @@ class Downloader {
 
             req.onload = () => {
                 if (req.status == 200) {
+                    const bytes = req.getResponseHeader('Content-Length')
                     this.textLog.addLine('Download complete')
-                    fs.writeSync(fileInfo.fd, req.response)
-                    fs.close(fileInfo.fd)
+
+                    try {
+                        fs.writeSync(fileInfo.fd, req.response)
+                    }
+                    catch (err) {
+                        reject('Unable to save downloaded file')
+                        fs.close(fileInfo.fd)
+                        return
+                    }
 
                     resolve(fileInfo.path)
                 }
                 else {
-                    this.textLog.addLine('There was a download error: '.req.statusText)
-                    reject(req.statusText)
+                    reject(this.textLog.addLine(`There was a download error. Status code: ${req.status}. ${req.responseText}`))
                 }
             }
 
             req.onerror = () => {
-                this.textLog.addLine('Unable to download the installer: there was a network error. Please check your Internet connection.')
-                reject('Unable to download the installer: there was a network error. Please check your Internet connection.')
+                reject(this.textLog.addLine('Unable to download the installer: there was a network error. Please check your Internet connection.'))
             }
 
             req.send()
