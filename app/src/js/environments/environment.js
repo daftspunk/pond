@@ -25,15 +25,15 @@ class Environment {
     /**
      * Starts the environment and servers associated with it
      */
-    start () {
-        this.serverManager.start()
+    async start () {
+        return this.serverManager.start()
     }
 
     /**
      * Stops the environment and servers associated with it
      */
-    stop () {
-        this.serverManager.stop()
+    async stop () {
+        return this.serverManager.stop()
     }
 
     /**
@@ -46,7 +46,17 @@ class Environment {
         const installerPath = await downloader.run()
 
         this.project.initState.step = InitializationState.PROVISIONING
-        await this.provisioner.run()
+        await this.provisioner.run(installerPath)
+
+        // TODO - here we should start the environment
+        // and bind start, stop and log events to the project's 
+        // init state log. After the environment is started, continue.
+        // The installer should 
+
+        this.project.initState.step = InitializationState.INSTALLING
+        await this.installer.run()
+
+        this.project.initState.step = InitializationState.DONE
     }
 
     async validateProvisionerConfiguration (errorBag, projects) {

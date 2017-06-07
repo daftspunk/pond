@@ -1,6 +1,7 @@
 require('temp') // Without this the `temp` package won't be available for later nw.require call. nw.require is not available here yet.
 
-const url = 'https://octobercms.com/api/installer/stable'
+const config = require('../config')
+const fileSystem = require('../filesystem')
 
 // TODO: downloads should be tracked with Google Analytics.
 // TODO: edge installations should be possible too (see advanced options in the TODO list).
@@ -10,7 +11,7 @@ class Downloader {
         this.textLog = textLog
     }
 
-    run () {
+    async run () {
         const fs = nw.require('fs')
         const temp = nw.require('temp')
 
@@ -19,11 +20,24 @@ class Downloader {
 
         const fileInfo = temp.openSync('october-installer-archive')
 
+        this.textLog.addLine('Downloading the installer...')
+
+        // TODO: this is temporary
+        // DEBUG
+        if ( nw.require('process').env.X_LOCAL_DEBUG == 1 ) {
+            return fileSystem
+                .copy('/Users/alexeybobkov/tmp/october-installer.qs6hcl', fileInfo.path)
+                .then(path => {
+                    this.textLog.addLine('Download complete')
+                    return path
+                })
+        }
+
         return new Promise((resolve, reject) => {
             var req = new XMLHttpRequest()
 
-            req.open('GET', url)
-            this.textLog.addLine('Downloading the installer...')
+            // TODO: should allow edge installs, see notes
+            req.open('GET', config.installerDownloadUrl.stable)
 
             req.onload = () => {
                 if (req.status == 200) {

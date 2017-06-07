@@ -13,6 +13,7 @@
   "scripts": {
     "postinstall": "cd ./app  &&  npm install",
     "dev": "nw app/",
-    "watch": "cd ./app && test -d dist/assets || mkdir -p dist/assets && cp -a src/assets/. dist/assets && watchify -t vueify -p [ vueify/plugins/extract-css -o dist/main.css ] -e src/js/main.js -o dist/main.js -v"
+    "watch": "cd ./app && test -d dist/assets || mkdir -p dist/assets && cp -a src/assets/. dist/assets && watchify -t vueify -p [ vueify/plugins/extract-css -o dist/main.css ] -e src/js/main.js -o dist/main.js -v",
+    "copy-assets": "cd ./app && test -d dist/assets || mkdir -p dist/assets && cp -a src/assets/. dist/assets"
   }
 }

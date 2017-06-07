@@ -9,37 +9,30 @@ const Platforms = require('./platforms')
 
 require('./servermanagers/pond/darwin')
 require('./provisioners/pond/darwin')
-require('./installers/pond/darwin')
+require('./installers')
 
 // require('./servermanagers/vagrant/darwin')
 // require('./provisioners/vagrant/darwin')
-// require('./installers/vagrant/darwin')
 // 
 // require('./servermanagers/docker/darwin')
 // require('./provisioners/docker/darwin')
-// require('./installers/docker/darwin')
 // 
 // require('./servermanagers/lamp/darwin')
 // require('./provisioners/lamp/darwin')
-// require('./installers/lamp/darwin')
 
 // Windows
 
 // require('./servermanagers/pond/win32')
 // require('./provisioners/pond/win32')
-// require('./installers/pond/win32')
 
 // require('./servermanagers/vagrant/win32')
 // require('./provisioners/vagrant/win32')
-// require('./installers/vagrant/win32')
 // 
 // require('./servermanagers/docker/win32')
 // require('./provisioners/docker/win32')
-// require('./installers/docker/win32')
 // 
 // require('./servermanagers/lamp/win32')
 // require('./provisioners/lamp/win32')
-// require('./installers/lamp/win32')
 
 function requireWithCheck(path, errorString) {
     try {
@@ -70,7 +63,7 @@ function getProvisionerClass(project, platform) {
 
 function getInstallerClass(project, platform) {
     return requireWithCheck(
-        './installers/'+project.environmentType+'/'+platform,
+        './installers',
         `October installer for ${project.environmentType}/${platform} is not currently supported`
     )
 }

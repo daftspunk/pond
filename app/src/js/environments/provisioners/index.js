@@ -1,10 +1,16 @@
+const fileSystem = require('../../filesystem')
+
 /**
- * Environment provisioner base classs.
+ * Environment provisioner base class.
  */
 
 class Provisioner {
     constructor (project) {
         this.project = project
+    }
+
+    getInstallerPackagePath () {
+        return this.project.location + '/installer.pak'
     }
 
     async validateConfiguration(errorBag, projects) {
@@ -15,7 +21,19 @@ class Provisioner {
         throw new Error('Implement run() in a child provisioner class')
     }
 
-    
+    async moveInstaller(installerTmpPath) {
+        this.project.initState.textLog.addLine('Copying the installer')
+        await fileSystem.copy(installerTmpPath, this.getInstallerPackagePath())
+
+        nw.require('fs').unlinkSync(installerTmpPath)
+    }
+
+    async run(installerTmpPath) {
+        // The default implementation moves the installer package
+        // to the project's directory.
+
+        await this.moveInstaller(installerTmpPath)
+    }
 }
 
 module.exports = Provisioner

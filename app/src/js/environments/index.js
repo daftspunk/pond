@@ -1,4 +1,4 @@
-const EnvironmentFactory = require('./factory')
+const environmentFactory = require('./factory')
 
 class Pool {
     constructor () {
@@ -12,13 +12,13 @@ class Pool {
 
         console.log('Creating environment for '+project.id)
 
-        var environment = this.environments[project.id] = EnvironmentFactory.createEnvironment(project)
+        var environment = this.environments[project.id] = environmentFactory.createEnvironment(project)
 
         return environment
     }
 
     makeNonCached (project) {
-        return EnvironmentFactory.createEnvironment(project)
+        return environmentFactory.createEnvironment(project)
     }
 
     cleanup () {

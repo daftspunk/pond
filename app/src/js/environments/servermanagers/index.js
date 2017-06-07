@@ -11,6 +11,7 @@
  */
 
 const EventEmitter = require('events').EventEmitter
+const request = require('request')
 
 class Manager extends EventEmitter {
     constructor (project) {
@@ -19,11 +20,11 @@ class Manager extends EventEmitter {
         this.project = project
     }
 
-    start () {
+    async start () {
         throw new Error('Implement start() in a child server manager class')
     }
 
-    stop () {
+    async stop () {
         throw new Error('Implement start() in a child server manager class')
     }
 
@@ -33,6 +34,42 @@ class Manager extends EventEmitter {
 
     getChildProcessCommand () {
         throw new Error('Implement getChildProcessCommand() in a child server manager class')
+    }
+
+    //
+    // Private methods
+    //
+
+    async _makeTestRequest () {
+        return new Promise((resolve, reject) => {
+            request
+                .get(this.getLocalUrl(), {'timeout': 200})
+                .on('response', response => {
+                    resolve()
+                })
+                .on('error', err => {
+                    reject()
+                    // if (err.code === 'ETIMEDOUT') {
+                    //     // Wait more...
+                    // }
+                })
+        })
+
+    }
+
+    async _waitWebServerStarted (timeout) {
+        return new Promise((resolve, reject) => {
+            var currentTime = new Date().getTime(),
+                endTime = currentTime + timeout
+
+            while (new Date().getTime() < endTime) {
+                if ( await _makeTestRequest() ) {
+                    resolve()
+                }
+            }
+
+            reject()
+        })
     }
 }
 
