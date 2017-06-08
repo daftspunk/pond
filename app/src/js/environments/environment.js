@@ -1,14 +1,10 @@
 const EnvironmentTypes = require('./types')
 const Store = require('../stores')
 const EnvironmentStatus = require('./status')
-const Downloader = require('./downloader')
-const InitializationState = require('./initialization-state')
 
 class Environment {
-    constructor (project, serverManager, provisioner, installer) {
+    constructor (project, serverManager) {
         this.serverManager = serverManager
-        this.provisioner = provisioner
-        this.installer = installer
         this.project = project
 
         this._setupListeners()
@@ -37,44 +33,16 @@ class Environment {
     }
 
     /**
-     * Downloads, provisions and installs October
-     */
-    async initProject() {
-        const downloader = new Downloader(this.project.initState.textLog)
-
-        this.project.initState.step = InitializationState.DOWNLOADING
-        const installerPath = await downloader.run()
-
-        this.project.initState.step = InitializationState.PROVISIONING
-        await this.provisioner.run(installerPath)
-
-        // TODO - here we should start the environment
-        // and bind start, stop and log events to the project's 
-        // init state log. After the environment is started, continue.
-        // The installer should 
-
-        this.project.initState.step = InitializationState.INSTALLING
-        await this.installer.run()
-
-        this.project.initState.step = InitializationState.DONE
-    }
-
-    async validateProvisionerConfiguration (errorBag, projects) {
-        return this.provisioner.validateConfiguration(errorBag, projects)
-    }
-
-    /**
      * Removes references and listeners
      * TODO: not in use yet. Call when deleting a project and on application exit.
      */
     cleanup () {
         this.stop()
         this.serverManager.removeAllListeners(['start', 'stop', 'log'])
+
         console.log('Cleaning up the environment for project '+this.project.name)
 
         this.serverManager = null
-        this.provisioner = null
-        this.installer = null
         this.project = null
     }
 

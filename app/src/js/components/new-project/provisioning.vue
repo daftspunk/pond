@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import Environments from '../../environments'
+import InitializerFactory from '../../environments/initializer-factory'
 import InitializationState from '../../environments/initialization-state'
 import StepsProgressIndicator from './steps-progress-indicator.vue'
 import LogPanel from '../log-panel.vue'
@@ -83,12 +83,13 @@ export default {
         }
     },
     mounted () {
-        const environment = Environments.makeNonCached(this.project)
+        const initializer = InitializerFactory.createInitializer(this.project)
         this.project.initState.textLog.clear()
 
-        environment.initProject().then(() => {
+        initializer.initProject().then(() => {
             // Go to the next step
         }).catch((err) => {
+            initializer.cleanup()
             this.isError = true
             this.errorMessage = err
 

@@ -23,4 +23,8 @@ function makeAgent(project, type) {
     }
 }
 
-module.exports = makeAgent
+module.exports = {
+    makeAgent,
+    EXTRACTOR,
+    CONFIGURATOR
+}

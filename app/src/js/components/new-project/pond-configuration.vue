@@ -59,7 +59,7 @@
 <script>
 import ErrorBag from '../../validation/error-bag'
 import PortFinder from '../../environments/port-finder'
-import Environments from '../../environments'
+import InitializerFactory from '../../environments/initializer-factory'
 import Vue from 'vue'
 
 export default {
@@ -76,9 +76,9 @@ export default {
     },
     methods: {
         validateAndGoToNext () {
-            const environment = Environments.makeNonCached(this.project)
+            const initializer = InitializerFactory.createInitializer(this.project)
 
-            environment.validateProvisionerConfiguration(this.errorBag,
+            initializer.validateProvisionerConfiguration(this.errorBag,
                 this.$store.state.projects.list)
                 .then(() => {
                     this.waiting = false

@@ -13,10 +13,21 @@ class Manager extends BaseManager {
         super(project)
 
         this.serverProcess = null
+
+        // Determines if the server process was terminated
+        // after receiving the 'close' event. If the server
+        // is already running or the port is in use, the
+        // waitWebServerStarted will resolve, but as the server
+        // cannot be started, the terminated property will be
+        // set by the `close` event handler.
+        //
+        // TODO: is it a best place to keep this state?
+        // 
+        this.terminated = false
     }
 
-    start () {
-        this.createChildProcess()
+    async start () {
+        return this.createChildProcess()
     }
 
     stop () {
@@ -42,7 +53,11 @@ class Manager extends BaseManager {
         return 'http://localhost:'+this.project.localPort
     }
 
-    createChildProcess () {
+    getServerStartTimeout () {
+        return 1000
+    }
+
+    async createChildProcess () {
         if (this.serverProcess !== null) {
             throw new Error('Server child process is already running')
         }
@@ -50,26 +65,18 @@ class Manager extends BaseManager {
         console.log('Spawning the server child process')
 
         const spawn = nw.require('child_process').spawn
-        this.emit('start')
-
         this.serverProcess = spawn(
-            this.getChildProcessCommand(),
-            this.getChildProcessArguments(),
-            this.getChildProcessOptions()
-        )
-
-        this.serverProcess.once('error', (err) => {
-            console.log('Error in the server child process', err)
-
-            this.stop()
-            this.emit('log', err)
-        })
+                this.getChildProcessCommand(),
+                this.getChildProcessArguments(),
+                this.getChildProcessOptions()
+            )
 
         this.serverProcess.once('close', (code, signal) => {
             console.log('Closing the server child process')
 
             this._cleanUpServer()
             this.emit('stop')
+            this.terminated = true
         })
 
         this.serverProcess.stderr.on('data', (data) => {
@@ -79,6 +86,37 @@ class Manager extends BaseManager {
             else {
                 this.emit('log', data.toString('utf8'))
             }
+        })
+
+        this.serverProcess.once('error', (err) => {
+            console.log('Error in the server child process', err)
+
+            this.stop()
+            this.emit('log', err)
+        })
+
+        this.emit('log', 'Waiting for the server...')
+
+        this.terminated = false
+
+        return new Promise((resolve, reject) => {
+            this.waitWebServerStarted()
+                .then(_ => {
+                    if (!this.terminated) {
+                        this.emit('start')
+                        this.emit('log', 'Server is ready')
+                    }
+                    else {
+                        reject('The server process was terminated')
+                    }
+                })
+                .catch(err => {
+                    this.emit('log', 'Cannot start the server')
+                    if (typeof err === 'string') {
+                        this.emit('log', err)
+                    }
+                    reject(err)
+                })
         })
     }
 

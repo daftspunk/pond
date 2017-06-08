@@ -24,7 +24,7 @@ class Manager extends EventEmitter {
         throw new Error('Implement start() in a child server manager class')
     }
 
-    async stop () {
+    stop () {
         throw new Error('Implement start() in a child server manager class')
     }
 
@@ -36,40 +36,54 @@ class Manager extends EventEmitter {
         throw new Error('Implement getChildProcessCommand() in a child server manager class')
     }
 
+    getServerStartTimeout () {
+        throw new Error('Implement getServerStartTimeout() in a child server manager class')
+    }
+
+    async waitWebServerStarted () {
+        return this._makeTestRequest(this.getServerStartTimeout())
+    }
+
     //
     // Private methods
     //
 
-    async _makeTestRequest () {
+    async _makeTestRequest (timeout) {
+        const currentTime = new Date().getTime()
+        const endTime = currentTime + timeout
+        const connectioTimeout = 200
+        const retryInterval = 300
+
         return new Promise((resolve, reject) => {
-            request
-                .get(this.getLocalUrl(), {'timeout': 200})
-                .on('response', response => {
-                    resolve()
-                })
-                .on('error', err => {
-                    reject()
-                    // if (err.code === 'ETIMEDOUT') {
-                    //     // Wait more...
-                    // }
-                })
-        })
+            var doRequest = () => {
+                console.log('Pinging the server...')
 
-    }
+                request
+                    .get(this.getLocalUrl(), {'timeout': connectioTimeout})
+                    .on('response', response => {
+                        console.log('Server response received')
+                        resolve()
+                    })
+                    .on('error', err => {
+                        console.log('Error received', err)
 
-    async _waitWebServerStarted (timeout) {
-        return new Promise((resolve, reject) => {
-            var currentTime = new Date().getTime(),
-                endTime = currentTime + timeout
+                        if (new Date().getTime() < endTime) {
+                            setTimeout(doRequest, retryInterval)
 
-            while (new Date().getTime() < endTime) {
-                if ( await _makeTestRequest() ) {
-                    resolve()
-                }
+                            return
+                        }
+                        else {
+                            reject()
+                        }
+                        // if (err.code === 'ETIMEDOUT') {
+                        //     // Wait more...
+                        // }
+                    })
             }
 
-            reject()
+            doRequest()
         })
+
     }
 }
 

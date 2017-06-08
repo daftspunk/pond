@@ -47,7 +47,7 @@ class Provisioner extends BaseProvisioner {
         await super.run(installerTmpPath, textLog)
 
         // In Pond environment we don't need to provision anything.
-        // Just put the archive here and install Pond Agent.
+        // Just put the archive to the project's directory.
     }
 }
 
