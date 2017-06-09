@@ -30,17 +30,25 @@ class Manager extends BaseManager {
         return this.createChildProcess()
     }
 
-    stop () {
+    async stop () {
         if (this.serverProcess === null) {
             return
         }
 
         this.serverProcess.kill()
+
+        return this.waitWebServerStopped()
     }
 
     getChildProcessArguments () {
         // TODO - the port should be dynamic
-        return ['-S', 'localhost:'+this.project.localPort, 'server.php']
+
+        if (!this.extractorMode) {
+            return ['-S', 'localhost:'+this.project.localPort, 'server.php']
+        }
+        else {
+            return ['-S', 'localhost:'+this.project.localPort]
+        }
     }
 
     getChildProcessOptions () {
@@ -54,6 +62,10 @@ class Manager extends BaseManager {
     }
 
     getServerStartTimeout () {
+        return 1000
+    }
+
+    getServerStopTimeout () {
         return 1000
     }
 
@@ -105,6 +117,7 @@ class Manager extends BaseManager {
                     if (!this.terminated) {
                         this.emit('start')
                         this.emit('log', 'Server is ready')
+                        resolve()
                     }
                     else {
                         reject('The server process was terminated')

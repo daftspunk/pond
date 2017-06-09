@@ -16,58 +16,68 @@ class Initializer {
         this.provisioner = provisioner
         this.installer = installer
         this.project = project
-
-        this._setupListeners()
     }
 
     /**
      * Downloads, provisions and installs October
      */
     async initProject() {
-        const downloader = new Downloader(this.project.initState.textLog)
+        try {
+            const downloader = new Downloader(this.project.initState.textLog)
 
-        this.project.initState.step = InitializationState.DOWNLOADING
-        const installerPath = await downloader.run()
+            this.project.initState.step = InitializationState.DOWNLOADING
+            const installerPath = await downloader.run()
 
-        this.project.initState.step = InitializationState.PROVISIONING
-        await this.provisioner.run(installerPath)
+            this.project.initState.step = InitializationState.PROVISIONING
+            await this.provisioner.run(installerPath)
 
-        this.project.initState.textLog.addLine('Starting the environment...')
-        await this.serverManager.start()
-        this.project.initState.textLog.addLine('Environment is ready')
+            this.serverManager.setExtractorModeOn()
+            await this.serverManager.start()
+            this.serverManager.setExtractorModeOff()
 
-        this.project.initState.step = InitializationState.INSTALLING
-        await this.installer.run()
+            this.project.initState.step = InitializationState.INSTALLING
+            await this.installer.runExtractor(
+                this.serverManager.getLocalUrl()
+            )
 
-        this.project.initState.step = InitializationState.DONE
+            // TODO: if the server extractor to normal switch more requires 
+            // a restart - restart the server (only for Pond). Add a method
+            // to the server manager class to determine whether restart is
+            // required.
+
+            // await this.installer.runConfigurator(
+            //     this.serverManager.getLocalUrl()
+            // )
+
+            this.project.initState.step = InitializationState.DONE
+        }
+        catch (err) {
+            await this.cleanup()
+            throw err
+        }
+
+        await this.cleanup(true)
     }
 
     async validateProvisionerConfiguration (errorBag, projects) {
         return this.provisioner.validateConfiguration(errorBag, projects)
     }
 
-    cleanup () {
-        this.serverManager.stop()
-        this.serverManager.removeAllListeners(['log'])
+    async cleanup (isSuccess) {
+        this.project.initState.textLog.addLine('Stopping the environment...')
+        await this.serverManager.stop()
+        this.project.initState.textLog.addLine('Server stopped')
 
         console.log('Cleaning up the initializer for project '+this.project.name)
+
+        if (isSuccess) {
+            this.project.initState.textLog.addLine('Done')
+        }
 
         this.serverManager = null
         this.provisioner = null
         this.installer = null
         this.project = null
-    }
-
-    //
-    // Private methods
-    //
-
-    _setupListeners () {
-        this.serverManager.on('log', (message) => this._logMessage(message))
-    }
-
-    _logMessage (message) {
-        this.project.initState.textLog.addLine(message)
     }
 }
 

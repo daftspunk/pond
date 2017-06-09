@@ -11,7 +11,7 @@
             </span>
         </div>
 
-        <div class="layout-flex-row layout-relative">
+        <div class="layout-flex-row layout-relative standard-padding-bottom">
             <div class="standard-panel-paddings standard-padding-bottom standard-padding-top">
                 <div class="row">
                     <div class="col-sm-12 double-padding-top text-center standard-padding-bottom" v-if="!isError">
@@ -54,6 +54,7 @@ import InitializationState from '../../environments/initialization-state'
 import StepsProgressIndicator from './steps-progress-indicator.vue'
 import LogPanel from '../log-panel.vue'
 import Vue from 'vue'
+import errorHandlingUtils from '../../error-handling/utils'
 
 export default {
     data () {
@@ -89,9 +90,12 @@ export default {
         initializer.initProject().then(() => {
             // Go to the next step
         }).catch((err) => {
-            initializer.cleanup()
+            var errorStr = errorHandlingUtils.getErrorString(err)
+
+            this.project.initState.textLog.addLine('ERROR. ' + errorStr)
+
             this.isError = true
-            this.errorMessage = err
+            this.errorMessage = errorStr
 
             console.log(err)
         })

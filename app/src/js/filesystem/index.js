@@ -21,6 +21,22 @@ async function copy(source, destination) {
     })
 }
 
+async function unlink(path) {
+    const fs = nw.require('fs')
+
+    return new Promise((resolve, reject) => {
+        fs.unlink(path, (err) => {
+            if (!err) {
+                resolve()
+            }
+            else {
+                reject(err)
+            }
+        })
+    })
+}
+
 module.exports = {
-    copy
+    copy,
+    unlink
 }

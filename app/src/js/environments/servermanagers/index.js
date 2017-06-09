@@ -18,13 +18,14 @@ class Manager extends EventEmitter {
         super()
 
         this.project = project
+        this.extractorMode = false
     }
 
     async start () {
         throw new Error('Implement start() in a child server manager class')
     }
 
-    stop () {
+    async stop () {
         throw new Error('Implement start() in a child server manager class')
     }
 
@@ -40,19 +41,38 @@ class Manager extends EventEmitter {
         throw new Error('Implement getServerStartTimeout() in a child server manager class')
     }
 
+    getServerStopTimeout () {
+        throw new Error('Implement getServerStopTimeout() in a child server manager class')
+    }
+
+    setExtractorModeOn() {
+        this.extractorMode = true
+    }
+
+    setExtractorModeOff() {
+        this.extractorMode = false
+    }
+
     async waitWebServerStarted () {
-        return this._makeTestRequest(this.getServerStartTimeout())
+        return this._makeTestRequest(this.getServerStartTimeout(), true)
+    }
+
+    async waitWebServerStopped () {
+        return this._makeTestRequest(this.getServerStopTimeout(), false)
     }
 
     //
     // Private methods
     //
 
-    async _makeTestRequest (timeout) {
+    async _makeTestRequest (timeout, waitForStart) {
         const currentTime = new Date().getTime()
         const endTime = currentTime + timeout
         const connectioTimeout = 200
         const retryInterval = 300
+
+        // TODO: check if the error 500 is considered
+        // as a running state (it must be so)
 
         return new Promise((resolve, reject) => {
             var doRequest = () => {
@@ -62,23 +82,39 @@ class Manager extends EventEmitter {
                     .get(this.getLocalUrl(), {'timeout': connectioTimeout})
                     .on('response', response => {
                         console.log('Server response received')
-                        resolve()
+
+                        if (waitForStart) {
+                            resolve()
+                        }
+                        else {
+                            nextOrReject()
+                        }
                     })
                     .on('error', err => {
                         console.log('Error received', err)
 
-                        if (new Date().getTime() < endTime) {
-                            setTimeout(doRequest, retryInterval)
-
-                            return
+                        if (waitForStart) {
+                            nextOrReject()
                         }
                         else {
-                            reject()
+                            resolve()
                         }
+
                         // if (err.code === 'ETIMEDOUT') {
                         //     // Wait more...
                         // }
                     })
+            }
+
+            var nextOrReject = () => {
+                if (new Date().getTime() < endTime) {
+                    setTimeout(doRequest, retryInterval)
+
+                    return
+                }
+                else {
+                    reject()
+                }
             }
 
             doRequest()

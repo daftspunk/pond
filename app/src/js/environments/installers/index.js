@@ -12,20 +12,29 @@ class Installer {
         this.project = project
     }
 
-    async run () {
-        // Installation steps:
-        //
-        // 1. Install Extractor Pond Agent 
-        // 2. Run Extractor
-        // 3. Remove Extractor Agent | Call agent's cleanup here!
-        // 4. Install Configurator Pond Agent
-        // 5. Run Configurator
-        // 6. Remove Agent | Call agent's cleanup here!
+    // Installation steps:
+    //
+    // 1. Install Extractor Pond Agent 
+    // 2. Run Extractor
+    // 3. Remove Extractor Agent | Call agent's cleanup here!
+    // 4. If the server extractor to normal switch more requires 
+    //    a restart - restart the server (only for Pond)
+    // 5. Install Configurator Pond Agent
+    // 6. Run Configurator
+    // 7. Remove Agent | Call agent's cleanup here!
 
-        const extractorAgent = agentFactory.makeAgent(agentFactory.ECTRACTOR)
+    async runExtractor (localUrl) {
+        const extractorAgent = agentFactory.makeAgent(this.project, localUrl, agentFactory.EXTRACTOR)
 
         await extractorAgent.install()
 
+        try {
+            await extractorAgent.run()
+        }
+        finally {
+            await extractorAgent.uninstall()
+            extractorAgent.cleanup()
+        }
     }
 }
 

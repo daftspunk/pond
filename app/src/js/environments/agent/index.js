@@ -13,13 +13,13 @@ const ExtractorAgent = require('./extractor')
 const EXTRACTOR = 'extractor'
 const CONFIGURATOR = 'configurator'
 
-function makeAgent(project, type) {
+function makeAgent(project, localUrl, type) {
     if (type != EXTRACTOR && type != CONFIGURATOR) {
         throw new Error(`Unknown Pond Agent type: ${this.type}`)
     }
 
-    if (this.type == EXTRACTOR) {
-        return new ExtractorAgent(project)
+    if (type == EXTRACTOR) {
+        return new ExtractorAgent(project, localUrl)
     }
 }
 
