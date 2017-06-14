@@ -16,7 +16,8 @@ class Agent {
         throw new Error('Implement uninstall() in a child Pond Agent class')
     }
 
-    cleanup () {
+    async cleanup () {
+        await this.uninstall()
         this.project = null
     }
 }

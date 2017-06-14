@@ -1,4 +1,5 @@
 const ExtractorAgent = require('./extractor')
+const ConfiguratorAgent = require('./configurator')
 
 /**
  * Pond Agent performs operations in October installations on behalf of Pond.
@@ -20,6 +21,10 @@ function makeAgent(project, localUrl, type) {
 
     if (type == EXTRACTOR) {
         return new ExtractorAgent(project, localUrl)
+    }
+
+    if (type == CONFIGURATOR) {
+        return new ConfiguratorAgent(project, localUrl)
     }
 }
 

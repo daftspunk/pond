@@ -1,3 +1,5 @@
+const fileSystem = require('../filesystem')
+
 function toSafeString(value) {
     if (value === undefined || value === null) {
         return ''
@@ -15,24 +17,11 @@ function isInteger(value) {
 }
 
 function isDirectory(path) {
-    const fs = nw.require('fs')
-
-    try {
-        const stat = fs.statSync(path)
-
-        return (stat.isDirectory())
-    } catch (err) {
-        return false
-    }
+    return fileSystem.isDirectory(path)
 }
 
 function isDirectoryEmpty(path) {
-    const fs = nw.require('fs')
-    const contents = fs.readdirSync(path)
-
-    return !contents.some(fileName => {
-        return fileName.charAt(0) !== '.'
-    })
+    return fileSystem.isDirectoryEmpty(path)
 }
 
 module.exports = {

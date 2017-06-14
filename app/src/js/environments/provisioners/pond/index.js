@@ -2,12 +2,16 @@ const BaseProvisioner = require('../')
 const PortFinder = require('../../port-finder')
 const ValidationUtils = require('../../../validation/utils')
 const EnvironmentStatus = require('../../status')
+const fileSystem = require('../../../filesystem')
+const assets = require('../../../assets')
 
 /**
  * Environment provisioner: 
  *
  *  - Pond built-in environment
  */
+
+const scriptName = 'server.php'
 
 class Provisioner extends BaseProvisioner {
     async validateConfiguration(errorBag, projects) {
@@ -47,7 +51,16 @@ class Provisioner extends BaseProvisioner {
         await super.run(installerTmpPath, textLog)
 
         // In Pond environment we don't need to provision anything.
-        // Just put the archive to the project's directory.
+        // Just put the archive and server.php to the project's
+        // directory.
+
+        const asssetsDir = assets.getAssetsDir()
+
+        fileSystem.copy(asssetsDir + '/pond/' + scriptName, this.project.location + '/' + scriptName)
+    }
+
+    async errorCleanup() {
+        return fileSystem.unlink(this.project.location + '/' + scriptName)
     }
 }
 

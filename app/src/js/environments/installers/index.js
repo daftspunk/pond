@@ -30,10 +30,19 @@ class Installer {
 
         try {
             await extractorAgent.run()
+
+            const configuratorAgent = agentFactory.makeAgent(this.project, localUrl, agentFactory.CONFIGURATOR)
+            await configuratorAgent.install()
+
+            try {
+
+            }
+            finally {
+                await configuratorAgent.cleanup()
+            }
         }
         finally {
-            await extractorAgent.uninstall()
-            extractorAgent.cleanup()
+            await extractorAgent.cleanup()
         }
     }
 }

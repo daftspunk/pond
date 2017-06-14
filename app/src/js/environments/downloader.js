@@ -4,7 +4,6 @@ const config = require('../config')
 const fileSystem = require('../filesystem')
 
 // TODO: downloads should be tracked with Google Analytics.
-// TODO: edge installations should be possible too (see advanced options in the TODO list).
 
 class Downloader {
     constructor (textLog) {
@@ -13,6 +12,7 @@ class Downloader {
 
     async run () {
         const fs = nw.require('fs')
+        const client = nw.require('https')
         const temp = nw.require('temp')
 
         // This will remove the temporary file on application exit
@@ -20,56 +20,59 @@ class Downloader {
 
         const fileInfo = temp.openSync('october-installer-archive')
 
-        this.textLog.addLine('Downloading the installer...')
+        this.textLog.addLine('Downloading the installer')
 
         // TODO: this is temporary
         // DEBUG
         if ( nw.require('process').env.X_LOCAL_DEBUG == 1 ) {
             return fileSystem
-                .copy('/Users/alexeybobkov/tmp/october-installer.qs6hcl', fileInfo.path)
+                .copy('/Users/alexeybobkov/tmp/installer.pak', fileInfo.path)
                 .then(path => {
-                    this.textLog.addLine('Download complete')
                     return path
                 })
         }
 
+        // TODO: edge installations should be possible too (see advanced options in the TODO list).
+        const options = config.installerDownloadOptions.stable
+
         return new Promise((resolve, reject) => {
-            var req = new XMLHttpRequest()
+            const file = fs.createWriteStream(fileInfo.path)
 
-            // TODO: should allow edge installs, see notes
-            req.open('GET', config.installerDownloadUrl.stable)
+            const request = client.get(options)
 
-            req.onload = () => {
-                if (req.status == 200) {
-                    const bytes = req.getResponseHeader('Content-Length')
-                    this.textLog.addLine('Download complete')
+            file.on('error', (err) => {
+                reject('Unable to save downloaded file')
+            })
 
-                    try {
-                        fs.writeSync(fileInfo.fd, req.response)
-                    }
-                    catch (err) {
-                        reject('Unable to save downloaded file')
-                        fs.close(fileInfo.fd)
-                        return
-                    }
+            request.on('error', (err) => {
+                reject('Unable to download the installer: there was a network error. Please check your Internet connection.')
+            })
 
+            request.on('response', (response) => {
+                if (response.statusCode !== 200) {
+                    reject(this.textLog.addLine(`There was a download error. Status code: ${response.statusCode}. ${response.statusMessage}`))
+                    return
+                }
+
+                response.on('data', (data) => {
+                    file.write(data)
+                })
+
+                response.on('end', _ => {
+                    file.end()
                     resolve(fileInfo.path)
-                }
-                else {
-                    reject(this.textLog.addLine(`There was a download error. Status code: ${req.status}. ${req.responseText}`))
-                }
-            }
+                })
 
-            req.onerror = () => {
-                reject(this.textLog.addLine('Unable to download the installer: there was a network error. Please check your Internet connection.'))
-            }
-
-            req.send()
+                response.on('error', (err) => {
+                    reject('Unable to save downloaded file')
+                })
+            })
         })
     }
 
     cleanup () {
-
+        this.textLog = null
+        console.log('Cleaning up the downloader')
     }
 }
 

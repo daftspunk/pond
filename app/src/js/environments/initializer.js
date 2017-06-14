@@ -31,19 +31,29 @@ class Initializer {
             this.project.initState.step = InitializationState.PROVISIONING
             await this.provisioner.run(installerPath)
 
-            this.serverManager.setExtractorModeOn()
-            await this.serverManager.start()
-            this.serverManager.setExtractorModeOff()
+            try {
+                this.serverManager.setExtractorModeOn()
+                await this.serverManager.start()
+                this.serverManager.setExtractorModeOff()
 
-            this.project.initState.step = InitializationState.INSTALLING
-            await this.installer.runExtractor(
-                this.serverManager.getLocalUrl()
-            )
+                this.project.initState.step = InitializationState.INSTALLING
+                await this.installer.runExtractor(
+                    this.serverManager.getLocalUrl()
+                )
+            }
+            catch (err) {
+                this.provisioner.errorCleanup()
+                throw err
+            }
+            finally {
+                this.provisioner.cleanup()
+            }
 
-            // TODO: if the server extractor to normal switch more requires 
-            // a restart - restart the server (only for Pond). Add a method
-            // to the server manager class to determine whether restart is
-            // required.
+            // TODO: if switching the server from extractor to the normal mode 
+            // requires a restart - restart the server. This is required for Pond,
+            // because it runs PHP with server.php in the normal mode and without
+            // any PHP file for the extractor mode. Add a method to the server
+            // manager class to determine whether restart is required.
 
             // await this.installer.runConfigurator(
             //     this.serverManager.getLocalUrl()

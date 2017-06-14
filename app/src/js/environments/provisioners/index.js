@@ -34,6 +34,16 @@ class Provisioner {
 
         await this.moveInstaller(installerTmpPath)
     }
+
+    async cleanup () {
+        nw.require('fs').unlinkSync(this.getInstallerPackagePath())
+        this.project = null
+        console.log('Cleaning up the provisioner')
+    }
+
+    async errorCleanup() {
+        // Implement in child classes if needed
+    }
 }
 
 module.exports = Provisioner
