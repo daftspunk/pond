@@ -6,8 +6,6 @@ use Response;
 
 /**
  * This plugin must only be used in development environments.
- *
- * It's installed and removed automatically by October Pond.
  */
 
 class Plugin extends PluginBase
@@ -24,8 +22,8 @@ class Plugin extends PluginBase
 
     public function boot()
     {
-        if (!(Request::is('pond/configurator/update') && Request::isMethod('post'))) {
-            Response::make('Pond Configurator plugin detected. This plugin could have been left installed because of a runtime error. Please remove it to continue: plugins/octoberpond/configurator.', 500)->send();
+        if (!(Request::is('pond/configure') && Request::isMethod('post'))) {
+            Response::make('Pond Configurator plugin detected. This plugin could have been left installed because of a fatal error. Please remove it to continue: plugins/octoberpond/configurator.', 500)->send();
             die();
         }
     }

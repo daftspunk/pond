@@ -9,7 +9,23 @@ const request = require('request')
  * plugins
  *   octoberpond
  *     configurator
- *        plugin.php
+ *        Plugin.php
+ *        routes.php
+ *
+ * Payload expected by the PHP side:
+ * {
+ *    database: {
+ *        default: "sqlite",
+ *
+ *        # Omitted for sqlite:
+ *        connection: { 
+ *            database: "",
+ *            username: "",
+ *            password: "",
+ *            port: ""
+ *        }
+ *    }
+ * }
  */
 
 const srcScriptName = 'pond-configurator.php'
