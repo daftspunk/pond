@@ -22,6 +22,16 @@ class Initializer {
      * Downloads, provisions and installs October
      */
     async initProject() {
+        // TODO - this should be default for Pond and
+        // come from the environment-specific provisioner.
+        // It should be set in the new project state
+        // from the default and loaded here from the project.
+        const configuration = {
+            database: {
+                default: 'sqlite'
+            }
+        }
+
         try {
             const downloader = new Downloader(this.project.initState.textLog)
 
@@ -34,11 +44,11 @@ class Initializer {
             try {
                 this.serverManager.setExtractorModeOn()
                 await this.serverManager.start()
-                this.serverManager.setExtractorModeOff()
 
                 this.project.initState.step = InitializationState.INSTALLING
-                await this.installer.runExtractor(
-                    this.serverManager.getLocalUrl()
+                await this.installer.run(
+                    this.serverManager,
+                    configuration
                 )
             }
             catch (err) {
@@ -48,16 +58,6 @@ class Initializer {
             finally {
                 this.provisioner.cleanup()
             }
-
-            // TODO: if switching the server from extractor to the normal mode 
-            // requires a restart - restart the server. This is required for Pond,
-            // because it runs PHP with server.php in the normal mode and without
-            // any PHP file for the extractor mode. Add a method to the server
-            // manager class to determine whether restart is required.
-
-            // await this.installer.runConfigurator(
-            //     this.serverManager.getLocalUrl()
-            // )
 
             this.project.initState.step = InitializationState.DONE
         }

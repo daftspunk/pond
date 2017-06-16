@@ -24,12 +24,12 @@ const request = require('request')
  *            password: "",
  *            port: ""
  *        }
- *    }
+ *    },
+ *    
+ *    # Optional 
+ *    encryptionKey: ""
  * }
  */
-
-const srcScriptName = 'pond-configurator.php'
-const destScriptName = 'Plugin.php'
 
 class Agent extends BaseAgent {
     async install () {
@@ -39,8 +39,8 @@ class Agent extends BaseAgent {
         fs.mkdirSync(this.project.location + '/plugins/octoberpond')
         fs.mkdirSync(this.project.location + '/plugins/octoberpond/configurator')
 
-        return fileSystem
-            .copy(asssetsDir + '/agent/' + srcScriptName, this.project.location + '/plugins/octoberpond/configurator/' + destScriptName)
+        await fileSystem.copy(asssetsDir + '/agent/configurator/Plugin.php', this.project.location + '/plugins/octoberpond/configurator/Plugin.php')
+        await fileSystem.copy(asssetsDir + '/agent/configurator/routes.php', this.project.location + '/plugins/octoberpond/configurator/routes.php')
     }
 
     async uninstall () {
@@ -48,7 +48,9 @@ class Agent extends BaseAgent {
 
         console.log('Cleaning up the configurator')
 
-        await fileSystem.unlink(this.project.location + '/plugins/octoberpond/configurator/' + destScriptName)
+        await fileSystem.unlink(this.project.location + '/plugins/octoberpond/configurator/Plugin.php')
+        await fileSystem.unlink(this.project.location + '/plugins/octoberpond/configurator/routes.php')
+
         fs.rmdirSync(this.project.location + '/plugins/octoberpond/configurator')
 
         const octoberPluginsPath = this.project.location + '/plugins/octoberpond'
@@ -60,8 +62,13 @@ class Agent extends BaseAgent {
     async run (configuration) {
         this.project.initState.textLog.addLine('Configuring the installation')
 
+        const fields = {
+            payload: JSON.stringify(configuration)
+        }
+console.log(configuration)
         return new Promise((resolve, reject) => {
-            request.post({url: this.localUrl + '/' + scriptName}, function callback(err, httpResponse, body) {
+            request.post({url: this.localUrl + '/pond/configure', form: fields}, function callback(err, httpResponse, body) {
+console.log(body)
                 if (err) {
                     reject(err)
                 }

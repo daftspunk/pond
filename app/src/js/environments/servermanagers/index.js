@@ -29,6 +29,11 @@ class Manager extends EventEmitter {
         throw new Error('Implement start() in a child server manager class')
     }
 
+    async restart() {
+        await this.stop()
+        await this.start()
+    }
+
     getLocalUrl () {
         throw new Error('Implement getLocalUrl() in a child server manager class')
     }
@@ -43,6 +48,10 @@ class Manager extends EventEmitter {
 
     getServerStopTimeout () {
         throw new Error('Implement getServerStopTimeout() in a child server manager class')
+    }
+
+    getSwitchFromExtractorRequiresRestart () {
+        return false
     }
 
     setExtractorModeOn() {

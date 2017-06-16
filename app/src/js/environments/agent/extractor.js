@@ -14,7 +14,7 @@ class Agent extends BaseAgent {
         const asssetsDir = assets.getAssetsDir()
 
         return fileSystem
-            .copy(asssetsDir + '/agent/' + scriptName, this.project.location + '/' + scriptName)
+            .copy(asssetsDir + '/agent/extractor/' + scriptName, this.project.location + '/' + scriptName)
     }
 
     async uninstall () {

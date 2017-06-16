@@ -69,6 +69,10 @@ class Manager extends BaseManager {
         return 1000
     }
 
+    getSwitchFromExtractorRequiresRestart () {
+        return true
+    }
+
     async createChildProcess () {
         if (this.serverProcess !== null) {
             throw new Error('Server child process is already running')
@@ -77,6 +81,9 @@ class Manager extends BaseManager {
         console.log('Spawning the server child process')
 
         const spawn = nw.require('child_process').spawn
+
+        console.log('Spawn ', this.getChildProcessCommand(), this.getChildProcessArguments(), this.getChildProcessOptions())
+
         this.serverProcess = spawn(
                 this.getChildProcessCommand(),
                 this.getChildProcessArguments(),
