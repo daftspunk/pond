@@ -176,7 +176,6 @@ Route::group(['prefix' => 'pond'], function() {
     Route::post('configure', function() {
         try {
             $payload = json_decode(Request::input('payload'), true);
-print_r($payload);
             if ($payload === null) {
                 throw new Exception("Invalid payload");
             }

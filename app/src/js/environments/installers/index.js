@@ -34,20 +34,15 @@ class Installer {
             await extractorAgent.run()
 
             const configuratorAgent = agentFactory.makeAgent(this.project, localUrl, agentFactory.CONFIGURATOR)
-console.log('Installing...')
             await configuratorAgent.install()
-console.log('Installing done')
+
             serverManager.setExtractorModeOff()
             if (serverManager.getSwitchFromExtractorRequiresRestart()) {
-console.log('Restarting')
                 await serverManager.restart()
-console.log('Restarting done')
             }
 
             try {
-console.log('Configuring')
-                configuratorAgent.run(configuration)
-console.log('Configuring done')
+                await configuratorAgent.run(configuration)
             }
             finally {
                 await configuratorAgent.cleanup()

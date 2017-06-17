@@ -45,7 +45,6 @@ class Agent extends BaseAgent {
 
     async uninstall () {
         const fs = nw.require('fs')
-
         console.log('Cleaning up the configurator')
 
         await fileSystem.unlink(this.project.location + '/plugins/octoberpond/configurator/Plugin.php')
@@ -65,19 +64,16 @@ class Agent extends BaseAgent {
         const fields = {
             payload: JSON.stringify(configuration)
         }
-console.log(configuration)
+
         return new Promise((resolve, reject) => {
-            request.post({url: this.localUrl + '/pond/configure', form: fields}, function callback(err, httpResponse, body) {
-console.log(body)
+            request.post(this.localUrl + '/pond/configure', function callback(err, httpResponse, body) {
                 if (err) {
                     reject(err)
+                    return
                 }
 
                 if (httpResponse.statusCode != 200) {
-                    if (!responseJson) {
-                        reject('Configuration error. ' + body)
-                    }
-
+                    reject('Configuration error. ' + body)
                     return
                 }
 
@@ -87,7 +83,7 @@ console.log(body)
                 }
 
                 resolve()
-            })
+            }).form(fields)
         })
     }
 }
