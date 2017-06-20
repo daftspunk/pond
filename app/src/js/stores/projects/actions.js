@@ -1,13 +1,12 @@
-const Environments = require('../../environments')
-const EnvironmentStatus = require('../../environments/status')
-
-const Projects = require('../../database/projects')
+const environments = require('../../environments')
+const environmentStatus = require('../../environments/status')
+const projects = require('../../database/projects')
 
 module.exports = {
     loadState (context, payload) {
-        return Projects.getManager().list().then((projects) => {
+        return projects.getManager().list().then((loadedProjects) => {
             context.commit('SET_PROJECTS', {
-                projects
+                projects: loadedProjects
             })
         })
     },
@@ -23,23 +22,26 @@ module.exports = {
     startServer (context, project) {
         context.commit('SET_PROJECT_STATUS', {
             projectId: project.id,
-            status: EnvironmentStatus.STARTING
+            status: environmentStatus.STARTING
         })
 
-        Environments.get(project).start()
+        environments.get(project).start()
     },
     stopServer (context, project) {
         context.commit('SET_PROJECT_STATUS', {
             projectId: project.id,
-            status: EnvironmentStatus.STARTING
+            status: environmentStatus.STARTING
         })
 
-        Environments.get(project).stop()
+        environments.get(project).stop()
     },
     setProjectStatus (context, payload) {
         context.commit('SET_PROJECT_STATUS', payload)
     },
     logServerEvent (context, payload) {
         context.commit('LOG_SERVER_EVENT', payload)
+    },
+    addProject (context, payload) {
+        context.commit('ADD_PROJECT', payload)
     }
 }

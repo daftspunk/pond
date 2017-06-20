@@ -2,19 +2,35 @@ const Database = require('./')
 const TYPE = 'project'
 
 class ProjectManager {
-    list () {
-        return Database.get()
-            .then(db => db.find({
-                    selector: {
-                        documentType: TYPE,
-                        name: {
-                            $gt: null
-                        }
-                    },
-                    sort: ['name']
-                })
-            )
-            .then(result => result.docs)
+    async list () {
+        const db = await Database.get()
+
+        const result = await db.find({
+            selector: {
+                documentType: TYPE,
+                name: {
+                    $gt: null
+                }
+            },
+            sort: ['name']
+        })
+
+        return result.docs
+    }
+
+    async create (project) {
+        const db = await Database.get()
+
+        var projectClone = Object.assign({}, project)
+        projectClone.documentType = TYPE
+        delete projectClone.initState
+        
+        const putResult = await db.post(projectClone)
+
+        projectClone.id = putResult.id
+        projectClone.rev = putResult.rev
+        
+        return projectClone
     }
 }
 

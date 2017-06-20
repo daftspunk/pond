@@ -1,6 +1,6 @@
 const EnvironmentTypes = require('./types')
 const Store = require('../stores')
-const EnvironmentStatus = require('./status')
+const environmentStatus = require('./status')
 
 class Environment {
     constructor (project, serverManager) {
@@ -59,7 +59,7 @@ class Environment {
     _serverStarted () {
         Store.getStore().dispatch('setProjectStatus', {
             projectId: this.project.id,
-            status: EnvironmentStatus.ONLINE
+            status: environmentStatus.ONLINE
         })
     }
 
@@ -72,7 +72,7 @@ class Environment {
 
         Store.getStore().dispatch('setProjectStatus', {
             projectId: this.project.id,
-            status: EnvironmentStatus.OFFLINE
+            status: environmentStatus.OFFLINE
         })
     }
 

@@ -1,5 +1,7 @@
 const Downloader = require('./downloader')
-const InitializationState = require('./initialization-state')
+const initializationState = require('./initialization-state')
+const projectsDb = require('../database/projects')
+const store = require('../stores')
 
 /**
  * This class orchestrates initialization of new projects:
@@ -35,21 +37,27 @@ class Initializer {
         try {
             const downloader = new Downloader(this.project.initState.textLog)
 
-            this.project.initState.step = InitializationState.DOWNLOADING
+            this.project.initState.step = initializationState.DOWNLOADING
             const installerPath = await downloader.run()
 
-            this.project.initState.step = InitializationState.PROVISIONING
+            this.project.initState.step = initializationState.PROVISIONING
             await this.provisioner.run(installerPath)
 
             try {
                 this.serverManager.setExtractorModeOn()
                 await this.serverManager.start()
 
-                this.project.initState.step = InitializationState.INSTALLING
+                this.project.initState.step = initializationState.INSTALLING
                 await this.installer.run(
                     this.serverManager,
                     configuration
                 )
+
+                var newProject = await projectsDb.getManager().create(this.project)
+
+                store.getStore().dispatch('addProject', {
+                    project: newProject
+                })
             }
             catch (err) {
                 this.provisioner.errorCleanup()
@@ -59,7 +67,7 @@ class Initializer {
                 this.provisioner.cleanup()
             }
 
-            this.project.initState.step = InitializationState.DONE
+            this.project.initState.step = initializationState.DONE
         }
         catch (err) {
             await this.cleanup()

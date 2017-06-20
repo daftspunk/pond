@@ -61,7 +61,10 @@ module.exports = {
             installing: 'Installing',
             done: 'Done',
             error: 'Error',
-            location_placeholder: 'Click to select location'
+            location_placeholder: 'Click to select location',
+            go_to_project: 'Go to the project',
+            done_notice: 'The project has been successfully built. You can now start the project\'s environment and begin working with October CMS.',
+            project_ready: 'Your project is ready!'
         }
     },
     settings: {

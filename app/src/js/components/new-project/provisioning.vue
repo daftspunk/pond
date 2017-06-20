@@ -88,7 +88,7 @@ export default {
         this.project.initState.textLog.clear()
 
         initializer.initProject().then(() => {
-            // Go to the next step
+            this.$emit('show-done-step')
         }).catch((err) => {
             var errorStr = errorHandlingUtils.getErrorString(err)
 

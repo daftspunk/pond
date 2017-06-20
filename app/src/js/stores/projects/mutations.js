@@ -1,3 +1,6 @@
+const LogState = require('../../projects/log-state')
+const environmentStatus = require('../../environments/status')
+
 function findProjectById(state, id) {
     return state.list.find(project => project.id == id)
 }
@@ -11,7 +14,7 @@ module.exports = {
 
     SET_PROJECTS (state, payload) {
         state.loading = false
-        // state.list = payload.projects
+        state.list = payload.projects
     },
     SET_SELECTED_PROJECT (state, payload) {
         state.selectedProject = payload.project
@@ -34,5 +37,20 @@ module.exports = {
         if (project) {
             project.runtime.serverLog.addLine(payload.message)
         }
+    },
+    ADD_PROJECT (state, payload)
+    {
+        var project = payload.project
+
+        Object.assign(project, {
+            runtime: {
+                status: environmentStatus.OFFLINE,
+                serverLog: new LogState(),
+                applicationLog: new LogState(),
+                phpErrorLog: new LogState()
+            }
+        })
+
+        state.list.push(project)
     }
 }

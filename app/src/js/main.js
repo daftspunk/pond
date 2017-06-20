@@ -31,7 +31,8 @@ new Vue({
 Vue.config.errorHandler = function (error, vm, info) {
     alert(error)
 
-    // throw error
+    // Don't throw in the production mode
+    throw error
 }
 
 window.onerror = function(error) {

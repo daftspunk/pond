@@ -1,0 +1,55 @@
+<template>
+    <div class="layout-full-size layout-flex-rows-container">
+        <div class="layout-flex-row screen-header">
+            <h3>{{ $t('projects.create_project.title') }}</h3>
+            <h4>{{ $t('projects.create_project.done') }}</h4>
+
+            <span class="header-icon close-screen-router-link">
+                <router-link tag="span" to="/">
+                    <a class="close-screen-link">{{ $t('common.close') }}</a>
+                </router-link>
+            </span>
+        </div>
+
+        <div class="layout-flex-row layout-stretch layout-relative">
+            <div class="layout-full-size scrollable">
+                <div class="standard-panel-paddings standard-padding-bottom standard-padding-top">
+                    <div class="row">
+                        <div class="col-sm-10 col-sm-offset-1">
+                            <h3 class="text-center double-padding-top new-project-done-badge">{{ $t('projects.create_project.project_ready') }}</h3>
+
+                            <p class="text-center double-padding-top">
+                                {{ $t('projects.create_project.done_notice') }}
+                            </p>
+
+                            <p class="text-center double-padding-top">
+                                <a class="btn btn-primary">{{ $t('projects.create_project.go_to_project') }}</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import Vue from 'vue'
+
+export default {
+    data () {
+        return {
+        }
+    },
+    computed: {
+        project () {
+            return this.$store.state.projects.newProject
+        }
+    },
+    methods: {
+    },
+    mounted () {
+
+    }
+}
+</script>

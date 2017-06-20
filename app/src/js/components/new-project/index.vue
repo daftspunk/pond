@@ -14,7 +14,12 @@
         <provisioning
             v-if="stepCode == 'provisioning'"
             @show-env-config-step="showEnvironmentConfigurationStep"
+            @show-done-step="showDoneStep"
         ></provisioning>
+
+        <done
+            v-if="stepCode == 'done'"
+        ></done>
     </div>
 </template>
 
@@ -22,6 +27,7 @@
 import GeneralInformation from './general.vue'
 import PondConfiguration from './pond-configuration.vue'
 import Provisioning from './provisioning.vue'
+import Done from './done.vue'
 
 export default {
     data () {
@@ -37,7 +43,8 @@ export default {
     components: {
         GeneralInformation,
         PondConfiguration,
-        Provisioning
+        Provisioning,
+        Done
     },
     methods: {
         showEnvironmentConfigurationStep () {
@@ -48,6 +55,9 @@ export default {
         },
         showProvisioningStep () {
             this.stepCode = 'provisioning'
+        },
+        showDoneStep () {
+            this.stepCode = 'done'
         }
     },
     mounted () {
