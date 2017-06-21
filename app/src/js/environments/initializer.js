@@ -58,6 +58,10 @@ class Initializer {
                 store.getStore().dispatch('addProject', {
                     project: newProject
                 })
+
+                store.getStore().dispatch('setSelectedProject', {
+                    project: newProject
+                })
             }
             catch (err) {
                 this.provisioner.errorCleanup()

@@ -41,7 +41,7 @@ Also, assets can be copied manually by running `npm run copy-assets`.
 
 ## Coding standards
 
-Coding standards are usual (no semicolons), except that we enforce an explicit rule for imports. Imports should be done with `const`. If the imported object is a class (can be used with `new`), the constant name should have a capital first letter. Otherwise it should be lower-case.
+Coding standards are usual (no semicolons), except that we enforce an explicit rule for imports. Imports should be done with `const`. If the imported object is a class (can be used with `new`), the constant name should have a capital first letter. Otherwise it should be lower-case. **TODO:** update the code to use this rule everywhere.
 
 
 ```

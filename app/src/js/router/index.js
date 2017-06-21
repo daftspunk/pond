@@ -16,4 +16,4 @@ function makeRouter() {
 module.exports = {
     getVueRouter: () => VueRouter,
     makeRouter
-} 
+}

@@ -5,6 +5,17 @@ function findProjectById(state, id) {
     return state.list.find(project => project.id == id)
 }
 
+function createProjectRuntimeState(project) {
+    Object.assign(project, {
+        runtime: {
+            status: environmentStatus.OFFLINE,
+            serverLog: null,
+            applicationLog: null,
+            phpErrorLog: null
+        }
+    })
+}
+
 module.exports = {
     // Important TODO: the project deletion mutation
     // must trigger deletion of the environment object,
@@ -14,9 +25,20 @@ module.exports = {
 
     SET_PROJECTS (state, payload) {
         state.loading = false
+
+        payload.projects.forEach(project => 
+            createProjectRuntimeState(project)
+        )
+
         state.list = payload.projects
     },
     SET_SELECTED_PROJECT (state, payload) {
+        if (!payload.project.runtime.serverLog) {
+            payload.project.runtime.serverLog = new LogState()
+            payload.project.runtime.applicationLog = new LogState()
+            payload.project.runtime.phpErrorLog = new LogState()
+        }
+
         state.selectedProject = payload.project
     },
     SET_STARRED (state, payload) {
@@ -42,15 +64,7 @@ module.exports = {
     {
         var project = payload.project
 
-        Object.assign(project, {
-            runtime: {
-                status: environmentStatus.OFFLINE,
-                serverLog: new LogState(),
-                applicationLog: new LogState(),
-                phpErrorLog: new LogState()
-            }
-        })
-
+        createProjectRuntimeState(project)
         state.list.push(project)
     }
 }

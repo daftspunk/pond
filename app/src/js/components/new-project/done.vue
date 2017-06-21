@@ -23,7 +23,7 @@
                             </p>
 
                             <p class="text-center double-padding-top">
-                                <a class="btn btn-primary">{{ $t('projects.create_project.go_to_project') }}</a>
+                                <a class="btn btn-primary" @click.stop.prevent="goToProject">{{ $t('projects.create_project.go_to_project') }}</a>
                             </p>
                         </div>
                     </div>
@@ -34,8 +34,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
-
 export default {
     data () {
         return {
@@ -47,6 +45,9 @@ export default {
         }
     },
     methods: {
+        goToProject () {
+            this.$router.push('/')
+        }
     },
     mounted () {
 
