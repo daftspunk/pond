@@ -41,7 +41,11 @@ Also, assets can be copied manually by running `npm run copy-assets`.
 
 ## Coding standards
 
-Coding standards are usual (no semicolons), except that we enforce an explicit rule for imports. Imports should be done with `const`. If the imported object is a class (can be used with `new`), the constant name should have a capital first letter. Otherwise it should be lower-case. **TODO:** update the code to use this rule everywhere.
+Coding standards are usual (no semicolons) with some additions.
+
+### Imports for scripts
+
+Imports should be done with `const`. If the imported object is a class (can be used with `new`), the constant name should have a capital first letter. Otherwise it should be lower-case. **TODO:** update the code to use this rule everywhere.
 
 
 ```
@@ -50,6 +54,14 @@ const fileSystem = require('../filesystem')
 
 const agent = new BaseAgent()
 fileSystem.copy()
+```
+
+### Imports for Vue components
+
+Components considered to be classes, so the first letter is capital:
+
+```
+import Welcome from './welcome.vue'
 ```
 
 ## TODO

@@ -15,31 +15,37 @@
             <div class="layout-full-size scrollable">
                 <div class="standard-panel-paddings standard-padding-bottom standard-padding-top">
                     <div class="row">
-                        <div class="col-sm-12">
-                            <div class="input-field">
-                                <input
-                                    id="project-local-port"
-                                    type="text"
-                                    v-model="project.localPort"
-                                    class="validation"
-                                    ref="localPortInput"
-                                    v-bind:disabled="waiting"
-                                    v-bind:class="{ invalid: errorBag.has('localPort') }">
-                                <label class="active" ref="localPortLabel" for="project-local-port">{{ $t('projects.create_project.local_port') }}</label>
+                        <div class="col-sm-9">
+                            <div class="form-group required">
+                                <div class="field-prefixed" v-bind:class="{ invalid: errorBag.has('localPort') }">
+                                    <div class="prefix">
+                                        http://localhost:
+                                    </div>
+                                    <div class="field">
+                                        <label ref="localPortLabel" for="project-local-port">{{ $t('projects.create_project.local_port') }}</label>
+                                        <input
+                                            id="project-local-port"
+                                            type="text"
+                                            v-model="project.localPort"
+                                            class="form-control"
+                                            ref="localPortInput"
+                                            name="localPort"
+                                            v-bind:disabled="waiting"
+                                            v-bind:class="{ invalid: errorBag.has('localPort') }">
+                                        <span class="field-prefixed-marker"></span>
+                                    </div>
+                                </div>
                                 <span class="validation-error">{{ $t(errorBag.get('localPort')) }}</span>
                             </div>
 
                             <p
-                                class="standard-padding-top standard-padding-bottom"
+                                class="standard-padding-bottom"
                                 data-open-links-in-browser
                                 v-html="$t('projects.create_project.local_port_description')"></p>
+                        </div>
 
-                            <table class="table attribute-table" data-open-links-in-browser>
-                                <tr>
-                                    <th class="min-width">{{ $t('projects.create_project.new_url_label') }}</th>
-                                    <td>http://localhost:{{ project.localPort }}/</td>
-                                </tr>
-                            </table>
+                        <div class="col-sm-3">
+                            <div class="decoration-image pond-server-graphics align-to-form-label"></div>
                         </div>
                     </div>
 
@@ -58,6 +64,7 @@
 
 <script>
 import ErrorBag from '../../validation/error-bag'
+import validationHelpers from '../../validation/helpers'
 import PortFinder from '../../environments/port-finder'
 import InitializerFactory from '../../environments/initializer-factory'
 import Vue from 'vue'
@@ -86,6 +93,7 @@ export default {
                         this.$emit('show-provisioning-step')
                     }
                     else {
+                        validationHelpers.focusFirstField(this.errorBag)
                         this.$forceUpdate()
                     }
                 })

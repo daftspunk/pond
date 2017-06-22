@@ -23,7 +23,7 @@ module.exports = {
             pond: 'Built-in Pond server',
             vagrant: 'Vagrant',
             docker: 'Docker',
-            lamp: 'Bring your own LAMP'
+            lamp: 'Your own LAMP'
         },
         platform_type: {
             win32: 'Windows',
@@ -34,6 +34,7 @@ module.exports = {
             project_name: 'Project name',
             client_name: 'Client',
             description: 'Description',
+            description_placeholder: 'You can use Markdown in this field',
             environment_type: 'Environment type',
             pond_env_description: 'Uses <a href="http://php.net/manual/en/features.commandline.webserver.php">PHP built-in web server</a> and <a href="https://www.sqlite.org/">SQLite database engine</a>. This environment has many limitations, but it\'s perfect for simple projects and exploring October CMS.',
             lamp_env_description: 'Runs October with a web server and MySQL server that you provide. You can use <a href="https://www.mamp.info/en/">MAMP</a>, <a href="https://sourceforge.net/projects/xampp/">XAMPP</a> or similar applications to mantain your servers on macOS and Windows.',

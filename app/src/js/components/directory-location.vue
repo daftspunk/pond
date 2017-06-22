@@ -1,5 +1,5 @@
 <template>
-    <div class="directory-location">
+    <div class="directory-location form-control">
         <ul v-if="segments.length > 0">
             <li v-for="segment in segments">{{ segment }}</li>
         </ul>

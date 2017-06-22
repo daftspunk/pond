@@ -15,6 +15,14 @@ class ErrorBag {
         return this.errors[fieldName]
     }
 
+    getFirstErrorField () {
+        if (!this.hasErrors()) {
+            return null
+        }
+
+        return Object.keys(this.errors)[0]
+    }
+
     hasErrors () {
         for (var property in this.errors) {
             if (this.errors.hasOwnProperty(property)) {

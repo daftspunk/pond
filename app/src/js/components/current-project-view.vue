@@ -65,7 +65,7 @@
                     <ul class="tabs layout-flex-row">
                         <li class="active"><a href="#tab-application-log" data-toggle="tab">{{ $t('projects.application_log') }}</a></li>
                         <li><a href="#tab-server-log" data-toggle="tab">{{ $t('projects.server_log') }}</a></li>
-                        <li><a href="#tab-php-error-log" data-toggle="tab">{{ $t('projects.php_error_log') }} <span class="badge badge-error">4</span></a></li>
+                        <li><a href="#tab-php-error-log" data-toggle="tab">{{ $t('projects.php_error_log') }} <!-- <span class="badge badge-error">4</span> --></a></li>
                     </ul>
 
                     <div class="tab-content layout-flex-row layout-stretch layout-flex-rows-container layout-relative">
