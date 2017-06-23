@@ -18,6 +18,10 @@ module.exports = {
         php_error_log: 'PHP error log',
         refresh: 'Refresh',
         clear: 'Clear',
+        welcome: 'Welcome to the Pond!',
+        create_first_project: 'Create your first project',
+        no_projects: 'You don\'t have any projects yet. Create your first project and enjoy October CMS!',
+        loading: 'Loading projects...',
         environment_type: {
             unknown: 'Unknown',
             pond: 'Built-in Pond server',

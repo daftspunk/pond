@@ -19,4 +19,21 @@ div.project-view-container {
             flex: 1 0 auto;
         }
     }
+
+    .loading-projects {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+
+        > div {
+            &:before {
+                .icons-sprite-pseudo(158px, 86px, 220px, 100px);
+                display: inline-block;
+                margin-bottom: 30px;
+            }
+        }
+    }
 }

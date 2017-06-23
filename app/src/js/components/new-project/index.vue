@@ -61,9 +61,12 @@ export default {
         }
     },
     mounted () {
-        // TODO - commit a mutation for setting the newProject state property.
-        // If it's a first project - prepopulate with demo data,
-        // see #6
+        if (!this.$store.state.projects.list.length) {
+            this.$store.dispatch('initNewProjectState', {isDemo: true})
+        }
+        else {
+            this.$store.dispatch('initNewProjectState')
+        }
     }
 }
 </script>

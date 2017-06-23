@@ -2,13 +2,17 @@ div.project-view-container {
     > div.flex-item {
         &.welcome-to-pond {
             flex: 1 1 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
 
-            .welcome-graphics {
-                display: inline-block;
-                margin: @standard-padding*2 auto;
-                width: 445px;
-                height: 244px;
-                .icons-sprite(521px, 1px);
+            > div {
+                &:before {
+                    .icons-sprite-pseudo(445px, 244px, 521px, 1px);
+                    display: inline-block;
+                    margin-bottom: 60px;
+                }
             }
         }
     }

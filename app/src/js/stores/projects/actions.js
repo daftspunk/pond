@@ -43,5 +43,8 @@ module.exports = {
     },
     addProject (context, payload) {
         context.commit('ADD_PROJECT', payload)
+    },
+    initNewProjectState (context, payload) {
+        context.commit('INIT_NEW_PROJECT_STATE', payload)
     }
 }
