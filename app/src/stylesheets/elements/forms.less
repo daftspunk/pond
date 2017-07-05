@@ -1,4 +1,6 @@
-// Bootstrap forms
+form {
+    margin-bottom: 0;
+}
 
 .form-control {
     box-shadow: none;
@@ -38,6 +40,17 @@ textarea.form-control {
         &:focus {
             border-bottom-color: @color-form-input-border-active;
         }
+    }
+
+    span.description {
+        display: block;
+        margin-top: 5px;
+        color: @color-form-description;
+    }
+
+    label + span.description  {
+        margin-top: 0;
+        margin-bottom: 5px;
     }
 }
 
@@ -92,14 +105,14 @@ textarea.form-control {
     }
 }
 
+//
+// Custom form elements
+//
+
 .radio {
     label {
         position: relative;
-
-        .description {
-            display: block;
-            margin-top: 5px;
-        }
+        user-select: none;
 
         input {
             display: none;
@@ -123,6 +136,40 @@ textarea.form-control {
     + .radio {
         margin-top: 15px;
     }
+}
+
+.toggle {
+    label {
+        position: relative;
+        padding-left: 40px;
+        margin: 10px 0;
+        display: block;
+        user-select: none;
+        cursor: pointer;
+
+        input {
+            display: none;
+
+            + span.toggle-label {
+                &:before {
+                    .icons-sprite-pseudo(31px, 19px, 0, 201px);
+                    position: absolute;
+
+                    top: 1px;
+                    left: 0;
+                    cursor: pointer;
+                }
+            }
+
+            &:checked + span.toggle-label:before {
+                .icons-sprite-pseudo(31px, 19px, 40px, 201px);
+            }
+        }
+    }
+}
+
+div.toggle-control-group {
+    padding-left: 40px;
 }
 
 label {
@@ -179,8 +226,6 @@ label {
     }
 }
 
-// Custom form elements
-
 .validation-error {
     display: none;
     color: @color-danger;
@@ -193,144 +238,7 @@ h4.invalid {
 
     + .validation-error {
         display: block;
-        margin-top: -25px;
+        margin-top: -15px;
         margin-bottom: @standard-padding;
     }
 }
-
-// Materialize forms
-
-/*
-
-label {
-    font-size: @font-size-base;
-    font-weight: normal;
-
-    span.description {
-        display: block;
-        color: @color-form-label;
-    }
-}
-
-.input-field {
-    margin-top: 25px;
-
-    input:not([type]),
-    input[type=text],
-    input[type=password],
-    input[type=email],
-    input[type=url],
-    input[type=time],
-    input[type=date],
-    input[type=datetime],
-    input[type=datetime-local],
-    input[type=tel],
-    input[type=number],
-    input[type=file],
-    input[type=search],
-    textarea.materialize-textarea {
-        box-shadow: none!important;
-        font-size: @font-size-base;
-        color: @text-color;
-
-        &:focus {
-            border-bottom: 1px solid @color-form-input-border-active;
-        }
-
-        // We don't use Materialize default validation
-        // styles. See new-project-general.vue for usage
-        // examples.
-
-        &.invalid {
-            border-bottom: 1px solid @color-danger!important;
-
-            + label {
-                + span.validation-error {
-                    display: block;
-                    margin-top: -15px;
-                }
-            }
-        }
-    }
-
-    label {
-        font-weight: normal;
-        color: @color-form-label-inactive!important;
-        font-size: @font-size-base;
-        width: 100%;
-
-        &:not(.label-icon).active {
-            font-size: 13px;
-            color: @color-form-label-active!important;
-        }
-    }
-
-    &.directory-selector {
-        margin-bottom: @standard-padding;
-        cursor: pointer;
-
-        label {
-            margin-bottom: 5px;
-        }
-
-        input[type="file"] {
-            display: none;
-
-            &.invalid {
-                + div.directory-location {
-                    border-bottom: 1px solid @color-danger!important;
-
-                    + label {
-                        + span.validation-error {
-                            display: block;
-                            margin-top: 5px;
-                        }
-                    }
-                }
-            }
-        }
-
-        div.directory-location {
-            padding-right: 30px;
-            position: relative;
-            border-bottom: 1px solid @color-form-input-border-inactive;
-
-            &:after {
-                position: absolute;
-                right: 0;
-                top: 14px;
-                .icons-sprite-pseudo(16px, 4px, 142px, 129px);
-            }
-
-            &:hover:after {
-                .icons-sprite-pseudo(16px, 4px, 163px, 129px);
-            }
-        }
-    }
-}
-
-[type="radio"]:not(:checked), 
-[type="radio"]:checked {
-    + label {
-        font-size: @font-size-base;
-        color: @text-color;
-        padding-left: 25px;
-        margin-bottom: 15px;
-        height: auto;
-
-        &:before,
-        &:after {
-            margin-left: 0!important;
-            margin-right: 8px!important;
-        }
-    }
-}
-
-[type="radio"]:checked {
-    + label:after {
-        background-color: @brand-primary;
-        border-color: @brand-primary;
-    }
-}
-
-*/

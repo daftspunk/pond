@@ -17,6 +17,17 @@ function createProjectRuntimeState(project) {
     })
 }
 
+function generateEncryptionKey() {
+    var result = ''
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+
+    for (var i = 1; i <= 32; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+
+    return result
+}
+
 module.exports = {
     // Important TODO: the project deletion mutation
     // must trigger deletion of the environment object,
@@ -73,8 +84,19 @@ module.exports = {
             client: '',
             description: '',
             localPort: null,
-            initState: new initializationState.Tracker()
+            initState: new initializationState.Tracker(),
+            useAdvancedOptions: false,
+            adminFirstName: 'Admin',
+            adminLastName: 'Person',
+            adminLogin: 'admin',
+            adminPassword: 'admin',
+            adminEmail: 'user@example.com',
+            encryptionKey: null,
+            edgeUpdates: false,
+            debugMode: false
         }
+
+        state.newProject.encryptionKey = generateEncryptionKey()
 
         if (payload && payload.isDemo) {
             state.newProject.name = 'October CMS Demo'

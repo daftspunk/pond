@@ -64,6 +64,16 @@ Components considered to be classes, so the first letter is capital:
 import Welcome from './welcome.vue'
 ```
 
+## Application design notes
+
+Pond is created to be as simple as possible. In order to achieve this some features must be hidden or limited, even although they could be wanted by advanced users. It's not impossible to fine-tune October installation by editing configuration files, so those users have options. In particular:
+
+* File and folder permission modes are not presented in the installer Advanced Options, because Pond is a local installation manager. Files and folders are created with 777 mode, making its possible for user to edit and remove files if needed.
+
+## UX notes
+
+* Do not use animation without purpose (for decoration).
+
 ## TODO
 
 * NW.js production building script for Mac and Windows

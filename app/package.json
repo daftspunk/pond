@@ -7,7 +7,7 @@
   "user-agent": "OctoberCMS Installer; Pond",
   "window": {
     "min_width": 800,
-    "min_height": 500,
+    "min_height": 715,
     "title": "October CMS Pond",
     "icon": "assets/icon.png"
   },
