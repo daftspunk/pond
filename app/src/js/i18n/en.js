@@ -94,7 +94,8 @@ module.exports = {
             development: 'Development',
             security: 'Security',
             other_settings: 'Other settings',
-            other_settings_description: 'You can fine-tune the platform using the <a href="https://octobercms.com/docs/setup/configuration">configuration files</a> after the installation process is finished.'
+            other_settings_description: 'You can fine-tune the platform using the <a href="https://octobercms.com/docs/setup/configuration">configuration files</a> after the installation process is finished.',
+            default_admin_credentials: 'The default back-end administrator login name and password are admin / admin.',
         }
     },
     settings: {

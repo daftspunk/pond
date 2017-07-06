@@ -2,6 +2,7 @@ const BaseAgent = require('./base')
 const fileSystem = require('../../filesystem')
 const assets = require('../../assets')
 const request = require('request')
+const projectDefaults = require('../../stores/projects/defaults')
 
 /**
  * Configurator Pond Agent
@@ -59,10 +60,16 @@ class Agent extends BaseAgent {
     }
 
     async run (configuration) {
-        this.project.initState.textLog.addLine('Configuring the installation')
+        this.project.runtime.initState.textLog.addLine('Configuring the installation')
+
+        var filteredConfiguration = Object.assign({}, configuration)
+
+        if (!filteredConfiguration.useAdvancedOptions) {
+            Object.assign(filteredConfiguration, projectDefaults.advancedOptions)
+        }
 
         const fields = {
-            payload: JSON.stringify(configuration)
+            payload: JSON.stringify(filteredConfiguration)
         }
 
         return new Promise((resolve, reject) => {

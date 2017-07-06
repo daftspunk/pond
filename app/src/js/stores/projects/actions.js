@@ -21,7 +21,7 @@ module.exports = {
     },
     startServer (context, project) {
         context.commit('SET_PROJECT_STATUS', {
-            projectId: project.id,
+            projectId: project._id,
             status: environmentStatus.STARTING
         })
 
@@ -29,7 +29,7 @@ module.exports = {
     },
     stopServer (context, project) {
         context.commit('SET_PROJECT_STATUS', {
-            projectId: project.id,
+            projectId: project._id,
             status: environmentStatus.STARTING
         })
 

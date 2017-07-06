@@ -16,13 +16,19 @@
                 <div class="standard-panel-paddings standard-padding-bottom standard-padding-top">
                     <div class="row">
                         <div class="col-sm-10 col-sm-offset-1">
-                            <h3 class="text-center double-padding-top new-project-done-badge">{{ $t('projects.create_project.project_ready') }}</h3>
+                            <h3 class="double-padding-top new-project-done-badge">{{ $t('projects.create_project.project_ready') }}</h3>
 
-                            <p class="text-center double-padding-top">
+                            <p class="double-padding-top">
                                 {{ $t('projects.create_project.done_notice') }}
                             </p>
 
-                            <p class="text-center double-padding-top">
+                            <div class="notice info" v-if="!project.useAdvancedOptions">
+                                <p>
+                                    {{ $t('projects.create_project.default_admin_credentials') }}
+                                </p>
+                            </div>
+
+                            <p>
                                 <a class="btn btn-primary" @click.stop.prevent="goToProject">{{ $t('projects.create_project.go_to_project') }}</a>
                             </p>
                         </div>

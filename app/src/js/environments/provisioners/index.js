@@ -22,7 +22,7 @@ class Provisioner {
     }
 
     async moveInstaller(installerTmpPath) {
-        this.project.initState.textLog.addLine('Copying the installer')
+        this.project.runtime.initState.textLog.addLine('Copying the installer')
         await fileSystem.copy(installerTmpPath, this.getInstallerPackagePath())
 
         nw.require('fs').unlinkSync(installerTmpPath)

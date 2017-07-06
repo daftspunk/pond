@@ -1,9 +1,10 @@
 const BaseProvisioner = require('../')
 const PortFinder = require('../../port-finder')
-const ValidationUtils = require('../../../validation/utils')
+const validationUtils = require('../../../validation/utils')
 const EnvironmentStatus = require('../../status')
 const fileSystem = require('../../../filesystem')
 const assets = require('../../../assets')
+const validator = require('validator')
 
 /**
  * Environment provisioner: 
@@ -15,12 +16,12 @@ const scriptName = 'server.php'
 
 class Provisioner extends BaseProvisioner {
     async validateConfiguration(errorBag, projects) {
-        if (ValidationUtils.isEmptyString(this.project.localPort)) {
+        if (validator.isEmpty(validationUtils.toSafeString(this.project.localPort))) {
             errorBag.add('localPort', 'projects.create_project.error_local_port_empty')
             return
         }
 
-        if (!ValidationUtils.isInteger(this.project.localPort)) {
+        if (!validator.isInt(validationUtils.toSafeString(this.project.localPort))) {
             errorBag.add('localPort', 'projects.create_project.error_local_port_not_integer')
             return
         }

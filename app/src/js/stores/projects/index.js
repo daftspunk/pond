@@ -8,7 +8,8 @@ module.exports = {
         list: [
             // Keep this for reference
             // {
-            //     id: 1,
+            //     _id: 1,
+            //     _rev: '1-A6157A5EA545C99B00FF904EEF05FD9F',
             //     name: 'Amazon Store',
             //     starred: true,
             //     environmentType: 'pond',

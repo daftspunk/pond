@@ -1,9 +1,14 @@
-const ValidationUtils = require('../validation/utils')
+const validationUtils = require('../validation/utils')
+const validator = require('validator')
 
 /**
  * Validates data on the first step of the Create Project 
  * form before it's passed to the environment object
  * for further validation and provisioning.
+ *
+ * It would be nice to have a validation library,
+ * but it should be really simple and working with custom rules.
+ *
  */
 
 class ProjectPrevalidator {
@@ -16,24 +21,25 @@ class ProjectPrevalidator {
         // General options
         //
 
-        if (ValidationUtils.isEmptyString(project.name)) {
+        if (validator.isEmpty(validationUtils.toSafeString(project.name))) {
             errorBag.add('name', 'projects.create_project.error_project_name_empty')
         }
 
-        if (ValidationUtils.isEmptyString(project.client)) {
+        if (validator.isEmpty(validationUtils.toSafeString(project.client))) {
             errorBag.add('client', 'projects.create_project.error_client_name_empty')
         }
 
-        if (ValidationUtils.isEmptyString(project.environmentType)) {
+        if (validator.isEmpty(validationUtils.toSafeString(project.environmentType))) {
             errorBag.add('environmentType', 'projects.create_project.error_environment_type_empty')
         }
 
-        if (ValidationUtils.isEmptyString(project.location)) {
+        if (validator.isEmpty(validationUtils.toSafeString(project.location))) {
             errorBag.add('location', 'projects.create_project.error_location_empty')
         } 
-        else if (!ValidationUtils.isDirectory(project.location)) {
+        else if (!validationUtils.isDirectory(project.location)) {
             errorBag.add('location', 'projects.create_project.error_location_not_directory')
-        } else if (!ValidationUtils.isDirectoryEmpty(project.location)) {
+        }
+        else if (!validationUtils.isDirectoryEmpty(project.location)) {
             errorBag.add('location', 'projects.create_project.error_location_not_empty')
         }
 
@@ -45,35 +51,33 @@ class ProjectPrevalidator {
             return
         }
 
-        if (ValidationUtils.isEmptyString(project.adminFirstName)) {
+        if (validator.isEmpty(validationUtils.toSafeString(project.adminFirstName))) {
             errorBag.add('adminFirstName', 'projects.create_project.error_first_name_empty')
         }
 
-        if (ValidationUtils.isEmptyString(project.adminLastName)) {
+        if (validator.isEmpty(validationUtils.toSafeString(project.adminLastName))) {
             errorBag.add('adminLastName', 'projects.create_project.error_last_name_empty')
         }
 
-        if (ValidationUtils.isEmptyString(project.adminLogin)) {
+        if (validator.isEmpty(validationUtils.toSafeString(project.adminLogin))) {
             errorBag.add('adminLogin', 'projects.create_project.error_admin_login_empty')
         }
 
-        if (ValidationUtils.isEmptyString(project.adminPassword)) {
+        if (validator.isEmpty(validationUtils.toSafeString(project.adminPassword))) {
             errorBag.add('adminPassword', 'projects.create_project.error_admin_password_empty')
         }
         
-        if (ValidationUtils.isEmptyString(project.adminEmail)) {
+        if (validator.isEmpty(validationUtils.toSafeString(project.adminEmail))) {
             errorBag.add('adminEmail', 'projects.create_project.error_admin_email_empty')
         }
-        
-        if (!ValidationUtils.isEmail(project.adminEmail)) {
+        else if (!validator.isEmail(project.adminEmail)) {
             errorBag.add('adminEmail', 'projects.create_project.error_admin_email_invalid')
         }
         
-        if (ValidationUtils.isEmptyString(project.encryptionKey)) {
+        if (validator.isEmpty(validationUtils.toSafeString(project.encryptionKey))) {
             errorBag.add('encryptionKey', 'projects.create_project.error_encryption_key_empty')
         }
-
-        if (!ValidationUtils.isValidEncryptionKey(project.encryptionKey)) {
+        else if (!validator.isLength(validationUtils.toSafeString(project.encryptionKey), {min: 32, max: 32})) {
             errorBag.add('encryptionKey', 'projects.create_project.error_encryption_key_invalid')
         }
     }

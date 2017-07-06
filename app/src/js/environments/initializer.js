@@ -26,28 +26,31 @@ class Initializer {
     async initProject() {
         // TODO - this should be default for Pond and
         // come from the environment-specific provisioner.
-        // It should be set in the new project state
-        // from the default and loaded here from the project.
-        const configuration = {
+
+        var configuration = {
             database: {
                 default: 'sqlite'
             }
         }
 
-        try {
-            const downloader = new Downloader(this.project.initState.textLog)
+        Object.assign(configuration, this.project)
+        delete configuration.runtime
 
-            this.project.initState.step = initializationState.DOWNLOADING
+        try {
+            const edgeUpdates = configuration.useAdvancedOptions && configuration.edgeUpdates
+            const downloader = new Downloader(this.project.runtime.initState.textLog, edgeUpdates)
+
+            this.project.runtime.initState.step = initializationState.DOWNLOADING
             const installerPath = await downloader.run()
 
-            this.project.initState.step = initializationState.PROVISIONING
+            this.project.runtime.initState.step = initializationState.PROVISIONING
             await this.provisioner.run(installerPath)
 
             try {
                 this.serverManager.setExtractorModeOn()
                 await this.serverManager.start()
 
-                this.project.initState.step = initializationState.INSTALLING
+                this.project.runtime.initState.step = initializationState.INSTALLING
                 await this.installer.run(
                     this.serverManager,
                     configuration
@@ -71,7 +74,7 @@ class Initializer {
                 this.provisioner.cleanup()
             }
 
-            this.project.initState.step = initializationState.DONE
+            this.project.runtime.initState.step = initializationState.DONE
         }
         catch (err) {
             await this.cleanup()
@@ -86,14 +89,14 @@ class Initializer {
     }
 
     async cleanup (isSuccess) {
-        this.project.initState.textLog.addLine('Stopping the environment...')
+        this.project.runtime.initState.textLog.addLine('Stopping the environment...')
         await this.serverManager.stop()
-        this.project.initState.textLog.addLine('Server stopped')
+        this.project.runtime.initState.textLog.addLine('Server stopped')
 
         console.log('Cleaning up the initializer for project '+this.project.name)
 
         if (isSuccess) {
-            this.project.initState.textLog.addLine('Done')
+            this.project.runtime.initState.textLog.addLine('Done')
         }
 
         this.serverManager = null

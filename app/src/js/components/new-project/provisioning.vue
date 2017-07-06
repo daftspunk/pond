@@ -20,7 +20,7 @@
                         <div class="double-padding-top">
                             <steps-progress-indicator
                                 v-bind:steps="progressSteps"
-                                v-bind:current-step-index="project.initState.step"
+                                v-bind:current-step-index="project.runtime.initState.step"
                             ></steps-progress-indicator>
                         </div>
                     </div>
@@ -42,7 +42,7 @@
 
         <div class="layout-flex-row layout-stretch layout-flex-rows-container layout-relative">
             <div class="layout-full-size">
-                <log-panel v-bind:log="project.initState.textLog" no-toolbar-controls="1"></log-panel>
+                <log-panel v-bind:log="project.runtime.initState.textLog" no-toolbar-controls="1"></log-panel>
             </div>
         </div>
     </div>
@@ -85,14 +85,14 @@ export default {
     },
     mounted () {
         const initializer = InitializerFactory.createInitializer(this.project)
-        this.project.initState.textLog.clear()
+        this.project.runtime.initState.textLog.clear()
 
         initializer.initProject().then(() => {
             this.$emit('show-done-step')
         }).catch((err) => {
             var errorStr = errorHandlingUtils.getErrorString(err)
 
-            this.project.initState.textLog.addLine('ERROR. ' + errorStr)
+            this.project.runtime.initState.textLog.addLine('ERROR. ' + errorStr)
 
             this.isError = true
             this.errorMessage = errorStr

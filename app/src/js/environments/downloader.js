@@ -6,8 +6,9 @@ const fileSystem = require('../filesystem')
 // TODO: downloads should be tracked with Google Analytics.
 
 class Downloader {
-    constructor (textLog) {
+    constructor (textLog, edgeUpdates) {
         this.textLog = textLog
+        this.edgeUpdates = edgeUpdates
     }
 
     async run () {
@@ -32,8 +33,7 @@ class Downloader {
                 })
         }
 
-        // TODO: edge installations should be possible too (see advanced options in the TODO list).
-        const options = config.installerDownloadOptions.stable
+        var options = this.edgeUpdates ? config.installerDownloadOptions.edge : config.installerDownloadOptions.stable
 
         return new Promise((resolve, reject) => {
             const file = fs.createWriteStream(fileInfo.path)

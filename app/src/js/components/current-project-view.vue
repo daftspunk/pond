@@ -50,7 +50,10 @@
                         </tr>
                         <tr>
                             <th>{{ $t('projects.local') }}</th>
-                            <td><a v-bind:href="localUrl" v-bind:class="{ 'text-muted': status != 'online' }">{{ localUrl }}</a></td>
+                            <td>
+                                <a v-bind:href="localUrl" v-bind:class="{ 'text-muted': status != 'online' }">{{ localUrl }}</a>,
+                                <a v-bind:href="localBackendUrl" v-bind:class="{ 'text-muted': status != 'online' }">{{ localBackendUrl }}</a>
+                            </td>
                         </tr>
                         <tr>
                             <th>{{ $t('projects.production') }}</th>
@@ -122,6 +125,9 @@ export default {
         },
         localUrl () {
             return Environments.get(this.selectedProject).getLocalUrl()
+        },
+        localBackendUrl () {
+            return this.localUrl + '/backend/'
         },
         productionUrl () {
             return 'http://landing.acme.com'

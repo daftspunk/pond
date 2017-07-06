@@ -25,7 +25,7 @@ class Agent extends BaseAgent {
     }
 
     async run () {
-        this.project.initState.textLog.addLine('Extracting the archive')
+        this.project.runtime.initState.textLog.addLine('Extracting the archive')
 
         return new Promise((resolve, reject) => {
             request.post({url: this.localUrl + '/' + scriptName}, function callback(err, httpResponse, body) {

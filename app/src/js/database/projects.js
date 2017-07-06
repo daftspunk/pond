@@ -23,12 +23,12 @@ class ProjectManager {
 
         var projectClone = Object.assign({}, project)
         projectClone.documentType = TYPE
-        delete projectClone.initState
+        delete projectClone.runtime
         
         const putResult = await db.post(projectClone)
 
-        projectClone.id = putResult.id
-        projectClone.rev = putResult.rev
+        projectClone._id = putResult.id
+        projectClone._rev = putResult.rev
         
         return projectClone
     }

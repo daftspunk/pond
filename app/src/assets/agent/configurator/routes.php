@@ -12,6 +12,7 @@ use Str;
 use October\Rain\Config\ConfigWriter;
 use Illuminate\Encryption\Encrypter;
 use System\Classes\UpdateManager;
+use Backend\Database\Seeds\SeedSetupAdmin;
 
 class Configurator
 {
@@ -33,6 +34,8 @@ class Configurator
         $this->configureDatabase();
         $this->configureEncryptionKey();
         $this->setupAdminUser();
+        $this->setupDebugMode();
+        $this->setupEdgeUpdates();
 
         $this->writeConfig();
         $this->runMigrations();
@@ -122,7 +125,37 @@ class Configurator
 
     private function setupAdminUser()
     {
-        // TODO
+        if (!isset($this->payload['adminFirstName'])) {
+            return;
+        }
+
+        SeedSetupAdmin::$firstName = $this->payload['adminFirstName'];
+        SeedSetupAdmin::$lastName = $this->payload['adminLastName'];
+        SeedSetupAdmin::$email = $this->payload['adminEmail'];
+        SeedSetupAdmin::$login = $this->payload['adminLogin'];
+        SeedSetupAdmin::$password = $this->payload['adminPassword'];
+    }
+
+    private function setupDebugMode()
+    {
+        if (!isset($this->payload['debugMode'])) {
+            return;
+        }
+
+        $debugMode = (bool)$this->payload['debugMode'];
+
+        $this->setConfig('app', ['debug'=>$debugMode]);
+    }
+
+    private function setupEdgeUpdates()
+    {
+        if (!isset($this->payload['edgeUpdates'])) {
+            return;
+        }
+
+        $edgeUpdates = (bool)$this->payload['edgeUpdates'];
+
+        $this->setConfig('cms', ['edgeUpdates'=>$edgeUpdates]);
     }
 
     private function setConfig($file, $parameters)

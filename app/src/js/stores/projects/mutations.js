@@ -1,9 +1,10 @@
 const LogState = require('../../projects/log-state')
 const environmentStatus = require('../../environments/status')
 const initializationState = require('../../environments/initialization-state')
+const projectDefaults = require('./defaults')
 
 function findProjectById(state, id) {
-    return state.list.find(project => project.id == id)
+    return state.list.find(project => project._id == id)
 }
 
 function createProjectRuntimeState(project) {
@@ -77,6 +78,11 @@ module.exports = {
     },
     INIT_NEW_PROJECT_STATE (state, payload)
     {
+        // All non-configuration parameters should be
+        // defined in the `runtime` property. All parameters
+        // except `runtime` are used as the project coniguration
+        // and passed directly to the Configuration Agent.
+        //
         state.newProject =  {
             name: '',
             environmentType: '',
@@ -84,17 +90,13 @@ module.exports = {
             client: '',
             description: '',
             localPort: null,
-            initState: new initializationState.Tracker(),
             useAdvancedOptions: false,
-            adminFirstName: 'Admin',
-            adminLastName: 'Person',
-            adminLogin: 'admin',
-            adminPassword: 'admin',
-            adminEmail: 'user@example.com',
-            encryptionKey: null,
-            edgeUpdates: false,
-            debugMode: false
+            runtime: {
+                initState: new initializationState.Tracker(),
+            }
         }
+
+        Object.assign(state.newProject, projectDefaults.advancedOptions)
 
         state.newProject.encryptionKey = generateEncryptionKey()
 

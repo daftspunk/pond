@@ -5,15 +5,7 @@ function toSafeString(value) {
         return ''
     }
 
-    return String(value).trim()
-}
-
-function isEmptyString(value) {
-    return toSafeString(value).length == 0
-}
-
-function isInteger(value) {
-    return /^[0-9]+$/.test(toSafeString(value))
+    return (value + '').trim()
 }
 
 function isDirectory(path) {
@@ -26,8 +18,6 @@ function isDirectoryEmpty(path) {
 
 module.exports = {
     toSafeString,
-    isEmptyString,
-    isInteger,
     isDirectory,
     isDirectoryEmpty
 }

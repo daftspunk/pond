@@ -58,7 +58,7 @@ class Environment {
 
     _serverStarted () {
         Store.getStore().dispatch('setProjectStatus', {
-            projectId: this.project.id,
+            projectId: this.project._id,
             status: environmentStatus.ONLINE
         })
     }
@@ -71,7 +71,7 @@ class Environment {
         }
 
         Store.getStore().dispatch('setProjectStatus', {
-            projectId: this.project.id,
+            projectId: this.project._id,
             status: environmentStatus.OFFLINE
         })
     }
@@ -84,7 +84,7 @@ class Environment {
         }
 
         Store.getStore().dispatch('logServerEvent', {
-            projectId: this.project.id,
+            projectId: this.project._id,
             message: message
         })
     }
