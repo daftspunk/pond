@@ -12,35 +12,46 @@
         </div>
 
         <div class="layout-flex-row layout-relative standard-padding-bottom">
-            <div class="standard-panel-paddings standard-padding-bottom standard-padding-top">
+            <div class="standard-panel-paddings standard-padding-top">
                 <div class="row">
                     <div class="col-sm-12 double-padding-top text-center standard-padding-bottom" v-if="!isError">
-                        <h3 class="standard-padding-top standard-padding-bottom">{{ $t('projects.create_project.pond_building_project') }}</h3>
+                        <h3 class="standard-padding-bottom">{{ $t('projects.create_project.pond_building_project') }}</h3>
 
-                        <div class="double-padding-top">
-                            <steps-progress-indicator
-                                v-bind:steps="progressSteps"
-                                v-bind:current-step-index="project.runtime.initState.step"
-                            ></steps-progress-indicator>
-                        </div>
+                        <steps-progress-indicator
+                            v-bind:steps="progressSteps"
+                            v-bind:current-step-index="project.runtime.initState.step"
+                        ></steps-progress-indicator>
                     </div>
 
                     <div class="col-sm-12" v-if="isError">
-                        <h3 class="standard-padding-bottom">{{ $t('projects.create_project.error') }}</h3>
+                        <template v-if="!errors">
+                            <h3 class="standard-padding-bottom">{{ $t('projects.create_project.error') }}</h3>
 
-                        <div class="standard-padding-bottom">
-                            <div class="error-message"><p>{{ errorMessage }}</p></div>
-                        </div>
+                            <div class="standard-padding-bottom">
+                                <div class="error-message"><p>{{ $t(errorMessage) }}</p></div>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <h3 class="standard-padding-bottom">{{ $t(errorMessage) }}</h3>
 
-                        <div class="standard-padding-top">
-                            <input type="submit" class="btn btn-primary" @click="goPrevStep()" v-bind:value="$t('common.go_back_button')">
-                        </div>
+                            <table class="numbered-message-list">
+                                <tr v-for="(error, errorKey, errorIndex) in errors">
+                                    <th>
+                                        <div class="error">{{errorIndex+1}}</div>
+                                    </th>
+                                    <td class="styled-text-document" v-html="errorToHtml(error)">
+                                    </td>
+                                </tr>
+                            </table>
+                        </template>
+
+                        <input type="submit" class="btn btn-primary" @click="goPrevStep()" v-bind:value="$t('common.go_back_button')">
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="layout-flex-row layout-stretch layout-flex-rows-container layout-relative">
+        <div class="layout-flex-row layout-stretch layout-flex-rows-container layout-relative min-height-200">
             <div class="layout-full-size">
                 <log-panel v-bind:log="project.runtime.initState.textLog" no-toolbar-controls="1"></log-panel>
             </div>
@@ -55,12 +66,14 @@ import StepsProgressIndicator from './steps-progress-indicator.vue'
 import LogPanel from '../log-panel.vue'
 import Vue from 'vue'
 import errorHandlingUtils from '../../error-handling/utils'
+import marked from 'marked'
 
 export default {
     data () {
         return {
             isError: false,
             errorMessage: '',
+            errors: [],
             progressSteps: [
                 {name: 'projects.create_project.downloading'},
                 {name: 'projects.create_project.initializing'},
@@ -81,6 +94,9 @@ export default {
     methods: {
         goPrevStep () {
             this.$emit('show-env-config-step')
+        },
+        errorToHtml(text) {
+            return marked(text)
         }
     },
     mounted () {
@@ -92,10 +108,11 @@ export default {
         }).catch((err) => {
             var errorStr = errorHandlingUtils.getErrorString(err)
 
-            this.project.runtime.initState.textLog.addLine('ERROR. ' + errorStr)
+            this.project.runtime.initState.textLog.addLine('ERROR. ' + this.$t(errorStr))
 
             this.isError = true
             this.errorMessage = errorStr
+            this.errors = err.errors
 
             console.log(err)
         })

@@ -13,53 +13,59 @@ function getPlatformIssues(&$errors, &$warnings)
 
     if (ini_get('detect_unicode')) {
         $errors['unicode'] = array(
-            'The detect_unicode setting must be disabled.',
+            'The `detect_unicode` setting must be disabled.',
             'Add the following to the end of your `php.ini`:',
-            '    detect_unicode = Off',
+            '```',
+            'detect_unicode = Off',
+            '```',
             $iniMessage
         );
     }
 
     if (!function_exists('json_decode')) {
         $errors['json'] = array(
-            'The json extension is missing.',
-            'Install it or recompile php without --disable-json'
+            'The `JSON` PHP extension is missing.',
+            'Install it or recompile php without `--disable-json`'
         );
     }
 
     if (!class_exists('ZipArchive')) {
         $errors['zip'] = array(
-            'The ZipArchive extension is missing.',
-            'Install it to continue'
+            'The `ZipArchive` PHP extension is missing. ',
+            'Install it to continue.'
         );
     }
 
     if (!extension_loaded('filter')) {
         $errors['filter'] = array(
-            'The filter extension is missing.',
-            'Install it or recompile php without --disable-filter'
+            'The `filter` PHP extension is missing. ',
+            'Install it or recompile php without `--disable-filter`.'
         );
     }
 
     if (!extension_loaded('hash')) {
         $errors['hash'] = array(
-            'The hash extension is missing.',
-            'Install it or recompile php without --disable-hash'
+            'The `hash` PHP extension is missing. ',
+            'Install it or recompile php without `--disable-hash`.'
         );
     }
 
     if (!extension_loaded('iconv') && !extension_loaded('mbstring')) {
         $errors['iconv_mbstring'] = array(
-            'The iconv OR mbstring extension is required and both are missing.',
-            'Install either of them or recompile php without --disable-iconv'
+            'The `iconv` OR `mbstring` PHP extension is required and both are missing.',
+            'Install either of them or recompile php without `--disable-iconv`.'
         );
     }
 
     if (!ini_get('allow_url_fopen')) {
         $errors['allow_url_fopen'] = array(
-            'The allow_url_fopen setting is incorrect.',
+            'The `allow_url_fopen` setting is incorrect.',
             'Add the following to the end of your `php.ini`:',
-            '    allow_url_fopen = On',
+            '',
+            '```',
+            'allow_url_fopen = On',
+            'allow_url_fopen = On',
+            '```',
             $iniMessage
         );
     }
@@ -67,9 +73,11 @@ function getPlatformIssues(&$errors, &$warnings)
     if (extension_loaded('ionCube Loader') && ioncube_loader_iversion() < 40009) {
         $ioncube = ioncube_loader_version();
         $errors['ioncube'] = array(
-            'Your ionCube Loader extension ('.$ioncube.') is incompatible with Phar files.',
+            'Your ionCube Loader PHP extension ('.$ioncube.') is incompatible with Phar files.',
             'Upgrade to ionCube 4.0.9 or higher or remove this line (path may be different) from your `php.ini` to disable it:',
-            '    zend_extension = /usr/lib/php5/20090626+lfs/ioncube_loader_lin_5.3.so',
+            '```',
+            'zend_extension = /usr/lib/php5/20090626+lfs/ioncube_loader_lin_5.3.so',
+            '```',
             $iniMessage
         );
     }
@@ -80,12 +88,12 @@ function getPlatformIssues(&$errors, &$warnings)
         );
     }
 
-    if (!extension_loaded('openssl')) {
+    // if (!extension_loaded('openssl')) {
         $warnings['openssl'] = array(
-            'The openssl extension is missing, which means that secure HTTPS transfers are impossible.',
-            'If possible you should enable it or recompile php with --with-openssl'
+            'The `openssl` extension is missing, which means that secure HTTPS transfers are impossible between your October CMS installation and other servers. This doesn\'t affect Pond security.',
+            'If possible you should enable it or recompile php with `--with-openssl`.'
         );
-    }
+    // }
 
     if (extension_loaded('openssl') && OPENSSL_VERSION_NUMBER < 0x1000100f) {
         // Attempt to parse version number out, fallback to whole string value.
@@ -101,9 +109,11 @@ function getPlatformIssues(&$errors, &$warnings)
 
     if (!defined('HHVM_VERSION') && !extension_loaded('apcu') && ini_get('apc.enable_cli')) {
         $warnings['apc_cli'] = array(
-            'The apc.enable_cli setting is incorrect.',
+            'The `apc.enable_cli` setting is incorrect.',
             'Add the following to the end of your `php.ini`:',
-            '    apc.enable_cli = Off',
+            '```',
+            'apc.enable_cli = Off',
+            '```',
             $iniMessage
         );
     }
@@ -152,8 +162,12 @@ if (getPlatformIssues($errors, $warnings)) {
 }
 
 if (installOctober()) {
-    return respond('DONE');
-}
+    $content = json_encode(array(
+        'status'=>'DONE',
+        'warnings'=>$warnings)
+    );
+
+    return respond($content);}
 
 return respond('Unable to extract the archive.', 500, 'Internal Server Error');
 ?>

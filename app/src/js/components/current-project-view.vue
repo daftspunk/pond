@@ -36,7 +36,7 @@
                     >{{ $t('projects.deploy') }}</a>
                 </div>
 
-                <div class="standard-panel-paddings" data-open-links-in-browser v-html="description"></div>
+                <div class="standard-panel-paddings styled-text-document" data-open-links-in-browser v-html="description"></div>
 
                 <div class="standard-panel-paddings standard-padding-bottom">
                     <table class="table attribute-table" data-open-links-in-browser>
@@ -63,7 +63,7 @@
                 </div>
             </div>
 
-            <div class="layout-flex-row layout-stretch layout-flex-rows-container">
+            <div class="layout-flex-row layout-stretch layout-flex-rows-container min-height-200">
                 <div class="material-tabs layout-flex-row layout-stretch layout-flex-rows-container">
                     <ul class="tabs layout-flex-row">
                         <li class="active"><a href="#tab-server-log" data-toggle="tab">{{ $t('projects.server_log') }}</a></li>
@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import {markdown} from 'markdown'
+import marked from 'marked'
 import LogPanel from './log-panel.vue'
 import Environments from '../environments'
 import EnvironmentStatus from '../environments/status'
@@ -114,7 +114,7 @@ export default {
                 return ''
             }
 
-            return this.selectedProject.description === undefined ? '' : markdown.toHTML(this.selectedProject.description)
+            return this.selectedProject.description === undefined ? '' : marked(this.selectedProject.description)
         },
         environmentType () {
             if (!this.selectedProject) {

@@ -7,7 +7,15 @@ function getErrorString(err) {
         return err.message
     }
 
-    return 'Unknown error'
+    if (err.errors !== undefined) {
+        if (Object.getOwnPropertyNames(err.errors).length > 1) {
+            return 'projects.create_project.multiple_errors'
+        }
+
+        return 'projects.create_project.single_error'
+    }
+
+    return 'common.unknown_error'
 }
 
 module.exports = {

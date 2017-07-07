@@ -66,6 +66,8 @@ module.exports = {
             installing: 'Installing',
             done: 'Done',
             error: 'Error',
+            multiple_errors: 'There were multiple installation errors',
+            single_error: 'There was an error',
             location_placeholder: 'Click to select location',
             go_to_project: 'Go to the project',
             done_notice: 'The project has been successfully built. You can now start the project\'s environment and begin working with October CMS.',
@@ -96,6 +98,9 @@ module.exports = {
             other_settings: 'Other settings',
             other_settings_description: 'You can fine-tune the platform using the <a href="https://octobercms.com/docs/setup/configuration">configuration files</a> after the installation process is finished.',
             default_admin_credentials: 'The default back-end administrator login name and password are admin / admin.',
+            warning: 'The installer returned a warning',
+            multiple_warnings: 'The installer returned some warnings',
+            warnings_description: 'Warnings are not critical and you can continue using the installation.',
         }
     },
     settings: {
@@ -107,6 +112,7 @@ module.exports = {
         continue: 'Continue',
         please_wait: 'Please wait...',
         go_back: 'go back',
-        go_back_button: 'Go back'
+        go_back_button: 'Go back',
+        unknown_error: 'Unknown error'
     }
 }

@@ -28,6 +28,23 @@
                                 </p>
                             </div>
 
+                            <template v-if="project.runtime.warnings">
+                                <h3 v-if="hasMultipleWarnings()" class="standard-padding-bottom">{{ $t('projects.create_project.multiple_warnings') }}</h3>
+                                <h3 v-else class="standard-padding-bottom">{{ $t('projects.create_project.warning') }}</h3>
+
+                                <p>{{ $t('projects.create_project.warnings_description') }}</p>
+
+                                <table class="numbered-message-list">
+                                    <tr v-for="(warning, warningKey, warningIndex) in project.runtime.warnings">
+                                        <th>
+                                            <div class="warning">{{warningIndex+1}}</div>
+                                        </th>
+                                        <td class="styled-text-document" v-html="errorToHtml(warning)">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </template>
+
                             <p>
                                 <a class="btn btn-primary" @click.stop.prevent="goToProject">{{ $t('projects.create_project.go_to_project') }}</a>
                             </p>
@@ -53,6 +70,9 @@ export default {
     methods: {
         goToProject () {
             this.$router.push('/')
+        },
+        hasMultipleWarnings () {
+            return Object.getOwnPropertyNames(this.project.runtime.warnings).length > 1
         }
     },
     mounted () {

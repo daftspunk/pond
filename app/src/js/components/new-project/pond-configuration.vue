@@ -39,7 +39,6 @@
                             </div>
 
                             <p
-                                class="standard-padding-bottom"
                                 data-open-links-in-browser
                                 v-html="$t('projects.create_project.local_port_description')"></p>
                         </div>

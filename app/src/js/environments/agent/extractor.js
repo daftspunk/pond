@@ -45,19 +45,23 @@ class Agent extends BaseAgent {
                         reject('Installation error. ' + body)
                     }
                     else {
-                        // TODO - show a formatted list of errors
-                        // and warnings here
-                        reject('Installation error.')
+                        reject(responseJson)
                         console.log(responseJson)
                     }
 
                     return
                 }
 
-                if (body !== 'DONE') {
+                console.log(responseJson)
+
+                if (!responseJson || responseJson.status != 'DONE') {
                     reject('Invalid response received from the installer')
                     return
                 }
+
+                // if (responseJson && responseJson.warnings) {
+                    // this.project.runtime.warnings = responseJson.warnings
+                // }
 
                 resolve()
             })

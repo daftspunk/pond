@@ -89,7 +89,7 @@
                             </label>
                         </div>
 
-                        <div data-open-links-in-browser class="standard-padding-bottom radio">
+                        <div data-open-links-in-browser class="radio">
                             <label for="environment-vagrant">
                                 <input name="environment-type" value="vagrant" type="radio" id="environment-vagrant" v-model="project.environmentType"/>
                                 <span class="radio-label">{{ $t('projects.environment_type.vagrant') }}</span>
@@ -239,7 +239,7 @@
                         <p data-open-links-in-browser v-html="$t('projects.create_project.other_settings_description')"></p>
                     </div>
 
-                    <div class="standard-padding-top">
+                    <div>
                         <input type="submit" class="btn btn-primary" v-bind:value="$t('common.continue')">
                     </div>
                 </div>

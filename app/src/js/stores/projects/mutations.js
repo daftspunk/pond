@@ -93,6 +93,7 @@ module.exports = {
             useAdvancedOptions: false,
             runtime: {
                 initState: new initializationState.Tracker(),
+                warnings: null
             }
         }
 
