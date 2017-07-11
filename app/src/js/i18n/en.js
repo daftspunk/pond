@@ -5,6 +5,7 @@ module.exports = {
         no_project_selected: 'Project is not selected',
         select_project_or: 'Please select a project or',
         create_new_project: 'create a new project',
+        add_project: 'Add project',
         settings_link: 'settings',
         start: 'Start',
         stop: 'Stop',

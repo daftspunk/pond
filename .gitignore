@@ -4,3 +4,4 @@ app/dist/*
 *.sublime-project
 *.sublime-workspace
 !app/dist/.gitkeep
+!app/assets-php-bin/.gitkeep

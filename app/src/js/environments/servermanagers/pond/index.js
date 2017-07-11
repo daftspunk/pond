@@ -37,7 +37,11 @@ class Manager extends BaseManager {
 
         this.serverProcess.kill()
 
-        return this.waitWebServerStopped()
+        this.emit('log', 'Stopping the server...')
+
+        await this.waitWebServerStopped()
+
+        this.emit('log', 'Server has stopped')
     }
 
     getChildProcessArguments () {

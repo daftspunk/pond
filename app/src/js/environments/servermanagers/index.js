@@ -30,8 +30,12 @@ class Manager extends EventEmitter {
     }
 
     async restart() {
+        console.log('Restarting the server...')
+        console.log('Restart: stop')
         await this.stop()
+        console.log('Restart: start')
         await this.start()
+        console.log('Restart: done')
     }
 
     getLocalUrl () {

@@ -28,7 +28,7 @@ class Agent extends BaseAgent {
         this.project.runtime.initState.textLog.addLine('Extracting the archive')
 
         return new Promise((resolve, reject) => {
-            request.post({url: this.localUrl + '/' + scriptName}, function callback(err, httpResponse, body) {
+            request.post({url: this.localUrl + '/' + scriptName}, (err, httpResponse, body) => {
                 if (err) {
                     reject(err)
                 }
@@ -59,9 +59,9 @@ class Agent extends BaseAgent {
                     return
                 }
 
-                // if (responseJson && responseJson.warnings) {
-                    // this.project.runtime.warnings = responseJson.warnings
-                // }
+                if (responseJson && responseJson.warnings && Object.getOwnPropertyNames(responseJson.warnings).length > 0) {
+                    this.project.runtime.warnings = responseJson.warnings
+                }
 
                 resolve()
             })

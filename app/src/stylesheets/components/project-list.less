@@ -74,6 +74,10 @@ div.project-list {
         }
     }
 
+    > ul:last-child {
+        margin-bottom: 0;
+    }
+
     div.projects-search {
         position: relative;
 
@@ -94,6 +98,16 @@ div.project-list {
             &, &:focus {
                 border-bottom: 1px solid @color-layout-grid-lines;
             }
+        }
+    }
+
+    div.add-project-panel {
+        padding: 15px;
+
+        a:before {
+            .icons-sprite-pseudo(11px, 14px, 125px, 64px);
+            margin-right: 7px;
+            vertical-align: text-bottom;
         }
     }
 }

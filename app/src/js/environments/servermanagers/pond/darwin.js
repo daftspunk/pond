@@ -11,7 +11,8 @@ const spawn = require('child_process').spawn
 
 class Manager extends BaseManager {
     getChildProcessCommand () {
-        return '/usr/bin/php'
+        // return '/usr/bin/php'
+        return '/Users/alexeybobkov/October/pond/php5-7.1.4-20170506-100436/bin/php'
     }
 }
 

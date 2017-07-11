@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import marked from 'marked'
 export default {
     data () {
         return {
@@ -73,6 +74,9 @@ export default {
         },
         hasMultipleWarnings () {
             return Object.getOwnPropertyNames(this.project.runtime.warnings).length > 1
+        },
+        errorToHtml(text) {
+            return marked(text)
         }
     },
     mounted () {

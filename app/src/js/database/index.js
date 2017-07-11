@@ -27,6 +27,7 @@ class DbManager {
     _initializeDatabase () {
         return new Promise((resolve, reject) => {
             Promise.all([
+                // this.database.destroy(), // Uncomment to clean up the database. Restart the app after that.
                 this.database.createIndex({
                     index: {
                         fields: ['name']

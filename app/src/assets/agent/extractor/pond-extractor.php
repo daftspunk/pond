@@ -25,7 +25,7 @@ function getPlatformIssues(&$errors, &$warnings)
     if (!function_exists('json_decode')) {
         $errors['json'] = array(
             'The `JSON` PHP extension is missing.',
-            'Install it or recompile php without `--disable-json`'
+            'Install it or recompile PHP without `--disable-json`'
         );
     }
 
@@ -39,21 +39,21 @@ function getPlatformIssues(&$errors, &$warnings)
     if (!extension_loaded('filter')) {
         $errors['filter'] = array(
             'The `filter` PHP extension is missing. ',
-            'Install it or recompile php without `--disable-filter`.'
+            'Install it or recompile PHP without `--disable-filter`.'
         );
     }
 
     if (!extension_loaded('hash')) {
         $errors['hash'] = array(
             'The `hash` PHP extension is missing. ',
-            'Install it or recompile php without `--disable-hash`.'
+            'Install it or recompile PHP without `--disable-hash`.'
         );
     }
 
     if (!extension_loaded('iconv') && !extension_loaded('mbstring')) {
         $errors['iconv_mbstring'] = array(
             'The `iconv` OR `mbstring` PHP extension is required and both are missing.',
-            'Install either of them or recompile php without `--disable-iconv`.'
+            'Install either of them or recompile PHP without `--disable-iconv`.'
         );
     }
 
@@ -88,12 +88,12 @@ function getPlatformIssues(&$errors, &$warnings)
         );
     }
 
-    // if (!extension_loaded('openssl')) {
+    if (!extension_loaded('openssl')) {
         $warnings['openssl'] = array(
             'The `openssl` extension is missing, which means that secure HTTPS transfers are impossible between your October CMS installation and other servers. This doesn\'t affect Pond security.',
-            'If possible you should enable it or recompile php with `--with-openssl`.'
+            'If possible you should enable it or recompile PHP with `--with-openssl`.'
         );
-    // }
+    }
 
     if (extension_loaded('openssl') && OPENSSL_VERSION_NUMBER < 0x1000100f) {
         // Attempt to parse version number out, fallback to whole string value.
@@ -155,7 +155,7 @@ $warnings = array();
 if (getPlatformIssues($errors, $warnings)) {
     $content = json_encode(array(
         'errors'=>$errors,
-        'warnings'=>$warnings)
+        'warnings'=>$warnings ?: null )
     );
 
     return respond($content, 500, 'Internal Server Error');
@@ -164,7 +164,7 @@ if (getPlatformIssues($errors, $warnings)) {
 if (installOctober()) {
     $content = json_encode(array(
         'status'=>'DONE',
-        'warnings'=>$warnings)
+        'warnings'=>$warnings ?: null)
     );
 
     return respond($content);}
