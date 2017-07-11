@@ -1,5 +1,7 @@
 const BaseManager = require('./')
 const spawn = require('child_process').spawn
+const assets = require('../../../assets')
+const resolve = require('path').resolve
 
 /**
  * Web server manager: 
@@ -12,7 +14,7 @@ const spawn = require('child_process').spawn
 class Manager extends BaseManager {
     getChildProcessCommand () {
         // return '/usr/bin/php'
-        return '/Users/alexeybobkov/October/pond/php5-7.1.4-20170506-100436/bin/php'
+        return resolve(assets.getPhpBinDir()) + '/darwin/bin/php'
     }
 }
 
