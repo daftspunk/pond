@@ -1,6 +1,6 @@
 const Environment = require('./environment')
 const EnvironmentTypes = require('./types')
-const Platforms = require('./platforms')
+const platforms = require('./platforms')
 
 // We must include all files statically, otherwise
 // browserify won't compile them in the build.
@@ -41,13 +41,13 @@ function getServerManagerClass(project, platform) {
 }
 
 function createEnvironment(project) {
-    const platform = Platforms.getPlatform()
+    const platform = platforms.getPlatform()
 
     if (!EnvironmentTypes.isKnownEnvironment(project.environmentType)) {
         throw new Error('Unknown environment type')
     }
 
-    if (!Platforms.isSupportedPlatform(platform)) {
+    if (!platforms.isSupportedPlatform(platform)) {
         throw new Error('Unsupported platform: '+platform)
     }
 

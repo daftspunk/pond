@@ -22,5 +22,12 @@ module.exports = {
                 'User-Agent': 'OctoberCMS Installer; Pond'
             }
         }
+    },
+    builtInServerInfo: {
+        darwin: {
+            php: {
+                version: '7.1'
+            }
+        }
     }
 }

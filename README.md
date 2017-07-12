@@ -17,6 +17,16 @@ First, download and install NodeJS and NPM. Then:
 
 * npm install
 
+### Install PHP binaries
+
+#### macOS
+
+* Download a build for the PHP version specified in src/js/config/index.js `builtInServerInfo.darwin.php.version` here: https://php-osx.liip.ch/
+* Run the installer
+* Copy the directory from /usr/local/php.xxx to app/src/assets-bin-php/darwin (so that `darwin` contains `bin`, `etc`, `lib` and so on).
+
+It's OK to upgrade the supported PHP version as long as it is compatible with the minimum target system requirements (see below). It's important to keep the version string actual in src/js/config/index.js.
+
 ### Start the development building process
 
 * `npm run watch`
@@ -76,6 +86,10 @@ Pond is created to be as simple as possible. In order to achieve this some featu
 * Do not use animation without purpose (for decoration).
 * Use Icomoon icon set.
 * Always avoid half-pixels in icons.
+
+## Target system requirements
+
+* macOS: 10.10
 
 ## TODO
 

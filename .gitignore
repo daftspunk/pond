@@ -1,8 +1,13 @@
+.DS_Store
+Thumbs.db
+*.log
 node_modules
 npm-debug.log
 app/dist/*
+releases/*
 *.sublime-project
 *.sublime-workspace
 !app/dist/.gitkeep
+!releases/.gitkeep
 app/src/assets-bin-php/*
 !app/src/assets-bin-php/.gitkeep

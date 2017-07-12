@@ -77,7 +77,7 @@
                                 <input
                                     name="environment-type" value="pond" type="radio" id="environment-pond" v-model="project.environmentType"/>
                                 <span class="radio-label">{{ $t('projects.environment_type.pond') }}</span>
-                                <span class="description" v-html="$t('projects.create_project.pond_env_description')"></span>
+                                <span class="description" v-html="$t('projects.create_project.pond_env_description', {phpVersion: phpVersion})"></span>
                             </label>
                         </div>
 
@@ -253,6 +253,8 @@ import ErrorBag from '../../validation/error-bag'
 import validationHelpers from '../../validation/helpers'
 import PreValidator from '../../environments/project-prevalidator'
 import DirectoryLocation from '../directory-location.vue'
+import platforms from '../../environments/platforms'
+import config from '../../config'
 import Vue from 'vue'
 
 export default {
@@ -269,6 +271,10 @@ export default {
     computed: {
         project () {
             return this.$store.state.projects.newProject
+        },
+        phpVersion () {
+            const platform = platforms.getPlatform()
+            return config.builtInServerInfo[platform].php.version
         }
     },
     components: {
