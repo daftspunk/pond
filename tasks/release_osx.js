@@ -27,7 +27,7 @@ var copyRuntime = function () {
 };
 
 var copyBuiltApp = function () {
-    return projectDir.copyAsync('build', finalAppDir.path('Contents/Resources/app.nw'));
+    return projectDir.copyAsync('dist', finalAppDir.path('Contents/Resources/app.nw'));
 };
 
 var prepareOsSpecificThings = function () {
