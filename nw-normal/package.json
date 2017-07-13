@@ -1,0 +1,12 @@
+{
+  "name": "Octobercmspond",
+  "version": "0.0.1",
+  "description": "October CMS Pond",
+  "devDependencies": {
+    "nw": "^0.23.6-1"
+  },
+  "author": "Alexey Bobkov <aleksey.bobkov@gmail.com>",
+  "contributors": [
+    "Samuel Georges <daftspunky@gmail.com>"
+  ]
+}

@@ -9,6 +9,7 @@ var utils = require('./utils');
 var projectDir;
 var releasesDir;
 var tmpDir;
+var finalAppName;
 var finalAppDir;
 var manifest;
 
@@ -17,17 +18,20 @@ var init = function () {
     tmpDir = projectDir.dir('./tmp', { empty: true });
     releasesDir = projectDir.dir('./releases');
     manifest = projectDir.read('app/package.json', 'json');
-    finalAppDir = tmpDir.cwd(manifest.productName + '.app');
+    finalAppName = manifest.productName + '.app',
+    finalAppDir = tmpDir.cwd(manifest.productName);
 
     return Q();
 };
 
 var copyRuntime = function () {
-    return projectDir.copyAsync('node_modules/nw/nwjs/nwjs.app', finalAppDir.path());
+    return projectDir.copyAsync('nw-normal/node_modules/nw/nwjs/nwjs.app', finalAppDir.path());
+
+    rename nwjs to October CMS Pond
 };
 
 var copyBuiltApp = function () {
-    return projectDir.copyAsync('dist', finalAppDir.path('Contents/Resources/app.nw'));
+    return utils.copyBuiltApp(finalAppDir, projectDir);
 };
 
 var prepareOsSpecificThings = function () {
@@ -57,8 +61,10 @@ var packToDmgFile = function () {
         productName: manifest.productName,
         appPath: finalAppDir.path(),
         dmgIcon: projectDir.path("resources/osx/dmg-icon.icns"),
-        dmgBackground: projectDir.path("resources/osx/dmg-background.png")
+        dmgBackground: projectDir.path("resources/osx/dmg-background.png"),
+        appName: finalAppName
     });
+
     tmpDir.write('appdmg.json', dmgManifest);
 
     // Delete DMG file with this name if already exists
@@ -83,7 +89,7 @@ var packToDmgFile = function () {
 };
 
 var cleanClutter = function () {
-    return tmpDir.removeAsync('.');
+//    return tmpDir.removeAsync('.');
 };
 
 module.exports = function () {

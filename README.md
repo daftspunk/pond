@@ -4,6 +4,8 @@ The outer directory is the NW.js building framework. The `app` directory is the 
 
 ## Environment building and running
 
+**Note:** all commands should be ran in the root directory, which contains the `app` subdirectory.
+
 ### Building environment requirements
 
 First, download and install NodeJS and NPM. Then:
@@ -15,7 +17,7 @@ First, download and install NodeJS and NPM. Then:
 
 ### Install packages:
 
-* npm install
+* `npm install`
 
 ### Install PHP binaries
 
@@ -24,6 +26,10 @@ First, download and install NodeJS and NPM. Then:
 * Download a build for the PHP version specified in src/js/config/index.js `builtInServerInfo.darwin.php.version` here: https://php-osx.liip.ch/
 * Run the installer
 * Copy the directory from /usr/local/php.xxx to app/src/assets-bin-php/darwin (so that `darwin` contains `bin`, `etc`, `lib` and so on).
+
+### Windows only - install NSIS installer
+
+As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used for building Windows releases. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables, so it is reachable to scripts in this project (path should look something like C:/Program Files (x86)/NSIS).
 
 It's OK to upgrade the supported PHP version as long as it is compatible with the minimum target system requirements (see below). It's important to keep the version string actual in src/js/config/index.js.
 
@@ -48,6 +54,15 @@ LESS is compiled automatically when `watch` command runs. If there was a compila
 Assets (images) are currently copied only once, when `watch` command starts. Restart `watch` after changing assets. This will be automated later. 
 
 Also, assets can be copied manually by running `npm run copy-assets`.
+
+## Packaging
+
+The packaging process creates distributive installers. macOS installer should be built in macOS, and Windows installer - in Windows. The outer directory hosts the SDK flavor of NW.js, which can't be used for packaging. That's why there's the `nw-normal` directory, which contains a normal NW.js flavor. 
+
+* Build the application with `npm run build`.
+* Execute `npm run release`. This will create an installer file specific to the platform in the `releases` directory.
+
+Packaging copies `index.html`, `package.json` files and `dist` directory from the `app` directory to the final archive. If other files must be copied, update `tasks/util.js`.
 
 ## Coding standards
 

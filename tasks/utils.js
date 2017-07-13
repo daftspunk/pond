@@ -26,3 +26,13 @@ module.exports.replace = function (str, patterns) {
 module.exports.getEnvName = function () {
     return argv.env || 'development';
 };
+
+module.exports.copyBuiltApp = function (finalAppDir, projectDir) {
+    return projectDir.copyAsync('app/dist', finalAppDir.path('Contents/Resources/app.nw/dist'), { overwrite: true })
+    .then(function() {
+        return projectDir.copyAsync('app/index.html', finalAppDir.path('Contents/Resources/app.nw/index.html'), { overwrite: true });
+    })
+    .then(function() {
+        return projectDir.copyAsync('app/package.json', finalAppDir.path('Contents/Resources/app.nw/package.json'), { overwrite: true });
+    });
+}
