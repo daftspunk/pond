@@ -1,0 +1,4 @@
+CFBundleDisplayName = "{{bundleDisplayName}}";
+CFBundleGetInfoString = "October CMS Pond {{version}}, Copyright 2017 Alexey Bobkov, Samuel Georges. All rights reserved.";
+CFBundleName = "{{bundleDisplayName}}";
+NSHumanReadableCopyright = "Copyright 2017 Alexey Bobkov, Samuel Georges. All rights reserved.";

@@ -18,7 +18,7 @@ var init = function () {
     tmpDir = projectDir.dir('./tmp', { empty: true });
     releasesDir = projectDir.dir('./releases');
     manifest = projectDir.read('app/package.json', 'json');
-    finalAppName = manifest.productName + '.app',
+    finalAppName = manifest.name + '.app',
     finalAppDir = tmpDir.cwd(manifest.productName);
 
     return Q();
@@ -26,8 +26,6 @@ var init = function () {
 
 var copyRuntime = function () {
     return projectDir.copyAsync('nw-normal/node_modules/nw/nwjs/nwjs.app', finalAppDir.path());
-
-    rename nwjs to October CMS Pond
 };
 
 var copyBuiltApp = function () {
@@ -39,9 +37,25 @@ var prepareOsSpecificThings = function () {
     var info = projectDir.read('resources/osx/Info.plist');
     info = utils.replace(info, {
         productName: manifest.productName,
-        version: manifest.version
+        version: manifest.version,
+        bundleName: manifest.name
     });
     finalAppDir.write('Contents/Info.plist', info);
+
+    // Localization strings
+    var strings = projectDir.read('resources/osx/InfoPlist.strings');
+    strings = utils.replace(strings, {
+        version: manifest.version,
+        bundleDisplayName: manifest.productName
+    });
+
+    var stringsFiles = finalAppDir.find('Contents/Resources', {
+        matching: 'InfoPlist.strings'
+    });
+
+    stringsFiles.forEach(function(stringsFile) {
+        finalAppDir.write(stringsFile, strings);
+    });
 
     // Icon
     projectDir.copy('resources/osx/icon.icns', finalAppDir.path('Contents/Resources/icon.icns'));
