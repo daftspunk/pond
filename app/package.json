@@ -1,5 +1,5 @@
 {
-  "name": "October CMS Pond",
+  "name": "Pond",
   "productName": "October CMS Pond",
   "version": "0.0.1",
   "description": "October CMS Pond",
@@ -37,6 +37,7 @@
     "vue-i18n": "^6.1.0",
     "vue-router": "^2.4.0",
     "vueify": "^9.4.1",
+    "vueify-extract-css": "^0.2.0",
     "vuex": "^2.3.0"
   }
 }

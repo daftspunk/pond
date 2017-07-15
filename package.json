@@ -3,12 +3,10 @@
   "version": "0.0.1",
   "description": "October CMS Pond",
   "devDependencies": {
-    "browserify": "^14.4.0",
     "fs-jetpack": "^1.1.0",
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.8",
     "nw": "^0.23.6-sdk-1",
-    "nw-builder": "^3.4.1",
     "q": "^1.5.0"
   },
   "author": "Alexey Bobkov <aleksey.bobkov@gmail.com>",
@@ -16,7 +14,7 @@
     "Samuel Georges <daftspunky@gmail.com>"
   ],
   "scripts": {
-    "postinstall": "cd ./app  &&  npm install && cd ../nw-normal && npm install",
+    "postinstall": "cd ./app  && npm install && cd ../nw-normal && npm install",
     "dev": "node ./tasks/dev",
     "watch": "./node_modules/.bin/gulp copy-assets && cd app && watchify -t vueify -p [ vueify/plugins/extract-css -o dist/main.css ] -e src/js/main.js -o dist/main.js -v",
     "copy-assets": "./node_modules/.bin/gulp copy-assets",

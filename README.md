@@ -6,7 +6,7 @@ The outer directory is the NW.js building framework. The `app` directory is the 
 
 **Note:** all commands should be ran in the root directory, which contains the `app` subdirectory.
 
-### Building environment requirements
+### Setting up required libraries
 
 First, **download and install NodeJS and NPM**. Then:
 
@@ -15,7 +15,16 @@ First, **download and install NodeJS and NPM**. Then:
 
 ### Install packages:
 
+In the root Pond directory run:
+
 * `npm install`
+
+This will take a long time. Ignore NPM warning `Invalid name: "October CMS Pond"` and do not change the value.
+
+Here is a weird part. Although `"nw": "^0.23.6-sdk-1"` is specified in package.json, running `npm run dev` throws an error on my Mac. Running these commands help:
+
+* `npm uninstall --sav-dev nw`
+* `npm install --save-dev nw@0.23.6-sdk-1`
 
 ### Install PHP binaries
 
@@ -23,8 +32,12 @@ First, **download and install NodeJS and NPM**. Then:
 
 * Download a build for the PHP version specified in src/js/config/index.js `builtInServerInfo.darwin.php.version` here: https://php-osx.liip.ch/
 * Run the installer
-* Copy the directory from /usr/local/php.xxx to app/src/assets-bin-php/darwin (so that `darwin` contains `bin`, `etc`, `lib` and so on).
+* Copy the directory from /usr/local/php.xxx to `app/src/assets-bin-php/darwin` (so that `darwin` contains `bin`, `etc`, `lib` and so on).
 * Run `npm run copy-bin-assets` in the Pond's root directory.
+
+#### Windows
+
+* TODO. Perhaps standard PHP binaries will work fine. They should be copied to `app/src/assets-bin-php/win32`.
 
 ### Windows only - install NSIS installer
 
