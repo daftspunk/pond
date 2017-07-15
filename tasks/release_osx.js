@@ -103,7 +103,7 @@ var packToDmgFile = function () {
 };
 
 var cleanClutter = function () {
-//    return tmpDir.removeAsync('.');
+   return tmpDir.removeAsync('.');
 };
 
 module.exports = function () {

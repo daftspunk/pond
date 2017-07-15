@@ -15,6 +15,8 @@ export default {
             throw error
         })
 
+        var mb = new nw.Menu({type:"menubar"});
+
         //
         // Clean up on exit
         //

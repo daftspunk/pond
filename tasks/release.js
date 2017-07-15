@@ -9,6 +9,6 @@ var releaseForOs = {
     windows: require('./release_windows'),
 };
 
-gulp.task('release', function () {
+gulp.task('release', ['copy-assets', 'copy-bin-assets'], function () {
     return releaseForOs[utils.os()]();
 });

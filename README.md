@@ -8,12 +8,10 @@ The outer directory is the NW.js building framework. The `app` directory is the 
 
 ### Building environment requirements
 
-First, download and install NodeJS and NPM. Then:
+First, **download and install NodeJS and NPM**. Then:
 
 * `sudo npm install -g browserify`
 * `sudo npm install -g watchify`
-* `sudo npm i -g nwjs` - see https://www.npmjs.com/package/nwjs. This is needed for installing the NW.js SDK flavor.
-* `nw install 0.21.6-sdk`
 
 ### Install packages:
 
@@ -26,6 +24,7 @@ First, download and install NodeJS and NPM. Then:
 * Download a build for the PHP version specified in src/js/config/index.js `builtInServerInfo.darwin.php.version` here: https://php-osx.liip.ch/
 * Run the installer
 * Copy the directory from /usr/local/php.xxx to app/src/assets-bin-php/darwin (so that `darwin` contains `bin`, `etc`, `lib` and so on).
+* Run `npm run copy-bin-assets` in the Pond's root directory.
 
 ### Windows only - install NSIS installer
 
@@ -49,20 +48,23 @@ The application still should be refreshed manually in NW.js window when needed. 
 
 LESS is compiled automatically when `watch` command runs. If there was a compilation error (file not found, missing semicolon, etc.) it might be needed to save `theme.less` or any `.vue` file to reanimate the compiler.
 
-### Copying assets
+### Copying lightweight assets
 
-Assets (images) are currently copied only once, when `watch` command starts. Restart `watch` after changing assets. This will be automated later. 
+Lightweight assets (images, Pond Agent files) are currently copied only once, when `watch` command starts. Restart `watch` after changing assets. This will be automated later. 
 
 Also, assets can be copied manually by running `npm run copy-assets`.
+
+### Copying heavy binary assets
+
+Binary assets are PHP files for the built-in Pond server. Copying them takes much time, so they are not copied when `watch` starts. Use `npm run copy-bin-assets` to copy updated binary assets.
 
 ## Packaging
 
 The packaging process creates distributive installers. macOS installer should be built in macOS, and Windows installer - in Windows. The outer directory hosts the SDK flavor of NW.js, which can't be used for packaging. That's why there's the `nw-normal` directory, which contains a normal NW.js flavor. 
 
-* Build the application with `npm run build`.
 * Execute `npm run release`. This will create an installer file specific to the platform in the `releases` directory.
 
-Packaging copies `index.html`, `package.json` files and `dist` directory from the `app` directory to the final archive. If other files must be copied, update `tasks/util.js`.
+Packaging copies `index.html`, `package.json` files and `dist` directory from the `app` directory to the final archive. If other files must be copied, update `tasks/util.js`. Before the packaging starts, the script builds the JavaScript and CSS and copies lightweight and platform-specific binary assets to `dist`.
 
 ## Coding standards
 
@@ -108,12 +110,7 @@ Pond is created to be as simple as possible. In order to achieve this some featu
 
 ## TODO
 
-* NW.js production building script for Mac and Windows
-* The NW.js production building process should copy index.htm to the temporary directory
-* The NW.js production building should generate minified versions of main.js and main.css
-* The NW.js production build should use production flavor of nw, not the SDK one
-* The NW.js production build copy assets to dist
+* NW.js production building script for Windows
 * Automate asset copying in `watch`
 * Find a suitable license. No liability, can't be modified or published by others.
 * It's possible to implement automatic reloading on change with gulp. Do that if manual reloading gets annoying.
-
