@@ -1,7 +1,29 @@
 'use strict';
 
+var Q = require('q');
 var argv = require('yargs').argv;
 var os = require('os');
+var path = require('path');
+const {exec} = require('child_process');
+
+function compileCode(srcLocation, destLocaiton) {
+    var nwjcPath = require.resolve('nw'),
+        deferred = Q.defer();
+
+    nwjcPath = path.dirname(nwjcPath) + '/nwjs/nwjc';
+
+    exec(nwjcPath + ' "' + srcLocation + '"" "' + destLocaiton + '"', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            deferred.reject();
+            return;
+        }
+
+        deferred.resolve();
+    });
+
+    return deferred.promise;
+}
 
 module.exports.os = function () {
     switch (os.platform()) {
@@ -23,16 +45,30 @@ module.exports.replace = function (str, patterns) {
     return str;
 };
 
-module.exports.getEnvName = function () {
-    return argv.env || 'development';
-};
-
 module.exports.copyBuiltApp = function (finalAppDir, projectDir) {
-    return projectDir.copyAsync('app/dist', finalAppDir.path('Contents/Resources/app.nw/dist'), { overwrite: true })
-    .then(function() {
-        return projectDir.copyAsync('app/index.html', finalAppDir.path('Contents/Resources/app.nw/index.html'), { overwrite: true });
-    })
-    .then(function() {
-        return projectDir.copyAsync('app/package.json', finalAppDir.path('Contents/Resources/app.nw/package.json'), { overwrite: true });
+    // TODO: some of this code is OSX specific
+
+    var result = projectDir.copyAsync('app/dist', finalAppDir.path('Contents/Resources/app.nw/dist'), { overwrite: true })
+        .then(function() {
+            return projectDir.copyAsync('app/package.json', finalAppDir.path('Contents/Resources/app.nw/package.json'), { overwrite: true });
+        });
+
+    var indexPath = 'app/index-production.html';
+
+    if (process.env.POND_DEV_RELEASE != 'true') {
+        // For production we replace main.js with main.bin and use another index.html
+
+        result.then(function() {
+            return compileCode(finalAppDir.path('Contents/Resources/app.nw/dist/main.js'), finalAppDir.path('Contents/Resources/app.nw/dist/main.bin'));
+        });
+    }
+    else {
+        indexPath = 'app/index.html';
+    }
+
+    result.then(function() {
+        return projectDir.copyAsync(indexPath, finalAppDir.path('Contents/Resources/app.nw/index.html'), { overwrite: true });
     });
+
+    return result;
 }

@@ -29,11 +29,18 @@ var init = function () {
 };
 
 var copyRuntime = function () {
-    return utils.copyBuiltApp(readyAppDir, projectDir);
+    var nodeSrcDir = 'nw-normal/node_modules/nw/nwjs';
+
+    if (process.env.POND_DEV_RELEASE == 'true') {
+        nodeSrcDir = 'node_modules/nw/nwjs';
+        console.log('Building DEV release. Do not use for production.');
+    }
+    
+    return projectDir.copyAsync(nodeSrcDir, readyAppDir.path(), { overwrite: true });
 };
 
 var copyBuiltApp = function () {
-    return projectDir.copyAsync('app/dist', readyAppDir.path(), { overwrite: true });
+    return utils.copyBuiltApp(readyAppDir, projectDir);
 };
 
 var prepareOsSpecificThings = function () {

@@ -79,6 +79,8 @@ The packaging process creates distributive installers. macOS installer should be
 
 Packaging copies `index.html`, `package.json` files and `dist` directory from the `app` directory to the final archive. If other files must be copied, update `tasks/util.js`. Before the packaging starts, the script builds the JavaScript and CSS and copies lightweight and platform-specific binary assets to `dist`.
 
+By default packaging uses the normal (non SDK) flavor of NW.js. For debugging needs it's possible to build a package with SDK flavor with `POND_DEV_RELEASE=true npm run release`.
+
 ## Coding standards
 
 Coding standards are usual (no semicolons) with some additions.

@@ -1,5 +1,3 @@
-require('temp') // Without this the `temp` package won't be available for later nw.require call. nw.require is not available here yet.
-
 const config = require('../config')
 const fileSystem = require('../filesystem')
 
@@ -14,12 +12,7 @@ class Downloader {
     async run () {
         const fs = nw.require('fs')
         const client = nw.require('https')
-        const temp = nw.require('temp')
-
-        // This will remove the temporary file on application exit
-        temp.track()
-
-        const fileInfo = temp.openSync('october-installer-archive')
+        const tmpFilePath = fileSystem.makeTmpFileName('october-installer-archive')
 
         this.textLog.addLine('Downloading the installer')
 
@@ -27,7 +20,7 @@ class Downloader {
         // DEBUG
         if ( nw.require('process').env.X_LOCAL_DEBUG == 1 ) {
             return fileSystem
-                .copy('/Users/alexeybobkov/tmp/installer.pak', fileInfo.path)
+                .copy('/Users/alexeybobkov/tmp/installer.pak', tmpFilePath)
                 .then(path => {
                     return path
                 })
@@ -36,7 +29,7 @@ class Downloader {
         var options = this.edgeUpdates ? config.installerDownloadOptions.edge : config.installerDownloadOptions.stable
 
         return new Promise((resolve, reject) => {
-            const file = fs.createWriteStream(fileInfo.path)
+            const file = fs.createWriteStream(tmpFilePath)
 
             const request = client.get(options)
 
@@ -60,7 +53,7 @@ class Downloader {
 
                 response.on('end', _ => {
                     file.end()
-                    resolve(fileInfo.path)
+                    resolve(tmpFilePath)
                 })
 
                 response.on('error', (err) => {

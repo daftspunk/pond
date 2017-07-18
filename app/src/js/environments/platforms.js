@@ -14,7 +14,7 @@ function typeToString(type) {
 }
 
 function getPlatform() {
-    return nw.require("os").platform()
+    return nw.require('os').platform()
 }
 
 function isSupportedPlatform(platform) {

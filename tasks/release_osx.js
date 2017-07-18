@@ -25,7 +25,14 @@ var init = function () {
 };
 
 var copyRuntime = function () {
-    return projectDir.copyAsync('nw-normal/node_modules/nw/nwjs/nwjs.app', finalAppDir.path());
+    var nodeSrcDir = 'nw-normal/node_modules/nw/nwjs/nwjs.app';
+
+    if (process.env.POND_DEV_RELEASE == 'true') {
+        nodeSrcDir = 'node_modules/nw/nwjs/nwjs.app';
+        console.log('Building DEV release. Do not use for production.');
+    }
+
+    return projectDir.copyAsync(nodeSrcDir, finalAppDir.path());
 };
 
 var copyBuiltApp = function () {

@@ -29,5 +29,14 @@ module.exports = {
                 version: '7.1'
             }
         }
+    },
+    getPondEnvironmentName: function() {
+        const nwProcess = nw.require('process');
+
+        if (nwProcess.env.NODE_ENV !== undefined) {
+            return nwProcess.env.NODE_ENV;
+        }
+
+        return 'production';
     }
 }

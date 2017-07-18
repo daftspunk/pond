@@ -1,3 +1,5 @@
+const Os = require('os')
+
 /**
  * Provides some file-system operations.
  * Unfortunately fs-extra doesn't work in the nw.js context.
@@ -57,9 +59,27 @@ function isDirectoryEmpty(path) {
     })
 }
 
+function _randomChars(count) {
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+    var value = []
+
+    for (var i = 0; i < count; i++) {
+      value.push(chars[Math.random(0, chars.length-1)])
+    }
+
+    return value.join('')
+}
+
+function makeTmpFileName(prefix) {
+    var tmpDir = nw.require('os').tmpdir()
+
+    return tmpDir + '/' + prefix + _randomChars(12)
+}
+
 module.exports = {
     copy,
     unlink,
     isDirectory,
-    isDirectoryEmpty
+    isDirectoryEmpty,
+    makeTmpFileName
 }

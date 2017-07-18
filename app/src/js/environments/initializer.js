@@ -44,8 +44,8 @@ class Initializer {
             const installerPath = await downloader.run()
 
             this.project.runtime.initState.step = initializationState.PROVISIONING
-            await this.provisioner.run(installerPath)
 
+            await this.provisioner.run(installerPath)
             try {
                 this.serverManager.setExtractorModeOn()
                 await this.serverManager.start()

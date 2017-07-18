@@ -1,13 +1,26 @@
 const path = require('path')
+const config = require('../config')
+
+function getDistDir() {
+    if (config.getPondEnvironmentName() == 'production') {
+        const processDir = nw.require('process').cwd()
+
+        // TODO: it's likely Windows environment another
+        // path to the assets directory directory.
+
+        return path.dirname(processDir) + '/app.nw/dist'
+    }
+    else {
+        return nw.require('process').cwd() + '/dist'
+    }
+}
 
 function getAssetsDir() {
-    return path.dirname(process.execPath) + '/dist/assets'
+    return getDistDir() + '/assets'
 }
 
 function getPhpBinDir() {
-    // TODO: this should return path to the packaged directory
-    console.log(__dirname)
-    return path.dirname(process.execPath) + '/src/assets-bin-php'
+    return getDistDir() + '/assets-bin-php'
 }
 
 module.exports = {
