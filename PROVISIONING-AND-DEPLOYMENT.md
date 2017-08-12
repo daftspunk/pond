@@ -1,5 +1,19 @@
 # Pond provisioning and deployment
 
+## Terminology
+
+### Server environment
+
+A copy of the website running on a web server (s). Server environments can be single server and load balanced. Each project can have multiple server environments, for different needs: production, staging, experiments, etc. Server environments of different types can be used with a single project. For example, the production environment can be load balanced and use multiple servers. In the same time, staging environment can be single server.
+
+Single server environments can host multiple projects. This means, that a single DO droplet can run multiple websites. A single server can run multiple server environments of each website. In other words, a single server can be used to host production, staging and other environments for different websites.
+
+On the other hand, a load balanced environment is supposed to run only a single website. Commonly it's used to run high traffic websites and having multiple websites on a load balanced environment just doesn't make much sense.
+
+### Deployment environment
+
+Each server environment has two deployment environments - blue and green. One of the deployment environments is always enabled and receives Internet traffic, and another one is used then website updates are deployed. After deploying updates it's possible to connect to the just updated and still inactive deployment environment with a browser and test the updated features. If the updated deployment environment works as expected, it can be made active using Pond environment manager.
+
 ## What Pond knows about DO
 
 These are kept in Pond settings.
@@ -12,15 +26,17 @@ These are kept in Pond project configuration.
 
 * Type of the server (reserved - currently just DO)
 * DO account (reference)
-* List of droplets associated with the project
-* A build tag of the last successful deployment
-* Green or Blue marker of the last successful deployment (will be needed when adding a new server to existing balanced environment). **Not needed:** this can always be loaded from the project's servers Pond metadata. If there are no associated servers with the project, just make Blue active on a new server.
-* Secret prefix for accessing the blue and green environments.
-* Domain name
-* Project directory name on the server(s)
-* Post-provision and post-deployment bash scripts
-* Deployment .pondignore file - what directories to ignore on deployment (config files are auto-ignored)
-* Configuration file templates for session, database, cache and other files.
+* List of server environments associated with the project
+  * Server environment type (single server / load balanced)
+  * List of droplets associated with the server environment
+  * Environment domain name
+  * A build tag of the last successful deployment
+  * Green or Blue marker of the last successful deployment (will be needed when adding a new server to existing balanced environment). **Not needed:** this can always be loaded from the project's servers Pond metadata. If there are no associated servers with the project, just make Blue active on a new server.
+  * Secret prefix for accessing the blue and green environments.
+  * Project directory name on the server(s)
+  * Post-provision and post-deployment bash scripts
+  * Deployment .pondignore file - what directories to ignore on deployment (config files are auto-ignored)
+  * Configuration file templates for session, database, cache and other files.
 
 ## What a server knows about Pond
 
@@ -30,14 +46,12 @@ These are kept in Pond project configuration.
 
 ## Deploying a project, flow diagram
 
-* Single server
-    * New server
-    * Bind to existing server
-        * Select droplet to bind to
-* Load balanced infrastructure
-    * New infrastructure
-    * Bind to existing infrastructure
-        * Select load balancer, droplets, DB server, session storage server.
+* Create server environment from scratch
+  * Single server
+      * New server
+  * Load balanced environment
+      * New environment
+* Create environment and bind to existing DO servers
 
 ### Deploying a new single server
 
@@ -56,7 +70,7 @@ These are kept in Pond project configuration.
 
 ## Operations required to provision a droplet
 
-These things can be factored out from the single and balanced infrastructures. It looks like everything can be done with a large bash command. Something bash language with conditions and variables.
+These things can be factored out from the single and balanced environments. It looks like everything can be done with a large bash command. Something bash language with conditions and variables.
 
 Requirements for the server - web server and database server. Not necessary Apache, not necessary MySQL. We only need two directories and DB server type connection and connection information. This could be done later.
 
@@ -85,6 +99,10 @@ Code deployment steps on subsequent deployments:
 * Run post-deployment bash scripts
 * Save pond logs entries
 
+Switching to another deployment environment (blue/green) should not be automatic when deploying to an existing server environment. This should be performed from the server environment status area, allowing the user to test the new copy before activating it.
+
+There should be an ability to unbind Pond project from a droplet and start the deployment over - to another server, etc..
+
 ## Deploying themes
 
 Themes are deploying like regular directories. There will be no issues with assets as they are stored in separate environment directories (blue/green), and accessed via a symbolic link bound to a virtual host.
@@ -93,29 +111,32 @@ Themes are deploying like regular directories. There will be no issues with asse
 
 /var/www/pond/projects
   /project1
-    /config
-    /blue
-      /storage - (symlink to the common storage)
-    /green
-      /storage - (symlink to the common storage)
-    /current (symlink)
-    /metadata
-      log
-    /storage
-      /app
-      /framework
-        /sessions
+    /production
+      /config
+      /blue
+        /storage - (symlink to the common storage)
+      /green
+        /storage - (symlink to the common storage)
+      /current (symlink)
+      /metadata
+        log
+      /storage
+        /app
+        /framework
+          /sessions
+    /staging
+      ...
+    /test1
+      ...
 
-## Infrastructure status
+## Environment status
 
-Pond projects should be able to request and show the infrastructure status: what droplets are registered, their status (running or stopped), which environment is current, what is the last deployed build tag, when was the last deployment. Also, Pond log for every server should be available with clicking a button.
+Pond projects should be able to request and show the server environment status: what droplets are registered, their status (running or stopped), which environment is current, what is the last deployed build tag, when was the last deployment. Also, Pond log for every server should be available with clicking a button.
 
 ## Binding project to an existing server(s)
 
-* Select server(s)
+Deployed environments must keep enough metadata to simplify the process of binding Pond installations to existing infrastructures. Droplets should use tags matching project names.
+
+* Choose what type of infrastructure we're binding to
+* Select server(s) - this should be semi-automated with tags
 * Choose directory
-
-## Not-the-first-time deployment
-
-* There should be an ability to unbind Pond project from a droplet and start the deployment over.
-* Switching to another environment (blue/green) should not be automatic. This should be performed from the infrastructure status area, allowing the user to test the new copy before activating it.
