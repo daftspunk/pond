@@ -4,7 +4,7 @@
 
 ### Server environment
 
-A copy of the website running on a web server (s). Server environments can be single server and load balanced. Each project can have multiple server environments, for different needs: production, staging, experiments, etc. Server environments of different types can be used with a single project. For example, the production environment can be load balanced and use multiple servers. In the same time, staging environment can be single server.
+A copy of the website running on a web server(s). Server environments can be single server and load balanced. Each project can have multiple server environments, for different needs: production, staging, experiments, etc. Server environments of different types can be used with a single project. For example, the production environment can be load balanced and use multiple servers. In the same time, the staging environment can be single server.
 
 Single server environments can host multiple projects. This means, that a single DO droplet can run multiple websites. A single server can run multiple server environments of each website. In other words, a single server can be used to host production, staging and other environments for different websites.
 
