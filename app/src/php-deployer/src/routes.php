@@ -1,10 +1,10 @@
 <?php
-// Routes
 
-$app->get('/[{name}]', function ($request, $response, $args) {
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' route");
+$app->get('/validate-host', function ($request, $response, $args) {
+    Deployer::testMe();
 
-    // Render index view
-    return $this->renderer->render($response, 'index.phtml', $args);
+    $this->logger->info("PHP deployer'/validate-host' route");
+
+    $data = array('name' => 'Bob', 'age' => 40);
+    return $response->withJson($data);
 });

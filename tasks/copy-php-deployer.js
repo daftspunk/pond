@@ -7,13 +7,10 @@ var projectDir = jetpack;
 var copyAssets = function() {
     var finalDir = projectDir.path('app/dist/php-deployer');
     projectDir.dir(finalDir, { empty: true });
-    return projectDir.copyAsync('app/src/php-deployer', finalDir, { overwrite: true })
-        .then(function() {
-            return projectDir.dir(finalDir+'/logs', { empty: true })
-                .then(function() {
-                    return projectDir.dir(finalDir+'/tests', { empty: true })
-                })
-        })
+    return projectDir.copyAsync('app/src/php-deployer', finalDir, { 
+        overwrite: true,
+        matching: ['!logs/*', '!tests/**', '!composer.*', '!.gitignore', '!CONTRIBUTING.md', '!phpunit.xml', '!README.md']
+    });
 }
 
 gulp.task('copy-php-deployer', function () {
