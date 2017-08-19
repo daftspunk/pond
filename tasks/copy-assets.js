@@ -10,6 +10,6 @@ var copyAssets = function() {
     return projectDir.copyAsync('app/src/assets', finalDir, { overwrite: true });
 }
 
-gulp.task('copy-assets', function () {
+gulp.task('copy-assets', ['copy-php-deployer'], function () {
     return copyAssets();
 });

@@ -1,5 +1,23 @@
 # Pond provisioning and deployment
 
+## Problems with providing a server-based service
+
+Initially, we have two options - implement a server-based service like Forge, or have just a desktop client. With our goals of having a life style business and a low level of real-time responsibility, the desktop option is much more appealing, although there're trade offs, see below.
+
+**Problems with the server options**
+
+1. **Security.** We would need to either use a special user(s) with a key pair for accessing clients' servers, or transmit the client's private key from Pond to our server in order to work with the client's server. Keeping private keys is risky - if we get hacked, the hacker could obtain access to all customer's servers and we even won't be able to fix it promptly.
+2. **Reliability.** If our server is overloaded, everybody experience latency. If our server is down, nobody can deploy.
+3. **Keeping important client data.** The infrastructure configuration might be an important aspect of a business. A web studio could have multiple environments with complex configuration. If we lose somebody's configuration, this could be fatal for the business.
+
+**What is a better option**
+
+A better solution would be offload the security responsibilities to our users and let Pond to act on behalf of the user, from the user's computer.
+
+This approach has known trade offs - if there's no centralized storage for the configuration, it could be cumbersome to share the configuration between multiple Pond users in same organization. But this can be solved with import/export procedures.
+
+On the other hand, a desktop client is a very simple tool which could be picked up and understood by a broader audience.
+
 ## Terminology
 
 ### Server environment

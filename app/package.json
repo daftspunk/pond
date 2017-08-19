@@ -26,6 +26,7 @@
     "jquery": "^3.2.1",
     "less": "^2.7.2",
     "marked": "^0.3.6",
+    "node-sshclient": "^0.2.0",
     "npm": "^5.0.3",
     "pouchdb": "^6.2.0",
     "pouchdb-find": "^6.2.0",

@@ -33,6 +33,7 @@
                         class="btn btn-primary pull-right"
                         btn-icon="deploy"
                         href="#"
+                        @click.stop="deploy"
                     >{{ $t('projects.deploy') }}</a>
                 </div>
 
@@ -104,6 +105,8 @@ import LogPanel from './log-panel.vue'
 import Environments from '../environments'
 import EnvironmentStatus from '../environments/status'
 
+import DeployTest from '../remote/deployment/deploy-test'
+
 export default {
     computed: {
         selectedProject () {
@@ -163,6 +166,12 @@ export default {
         openProjectFolder () {
             const gui = nw.require('nw.gui')
             gui.Shell.showItemInFolder(this.selectedProject.location)
+        },
+        deploy () {
+            // This is temporary
+
+            const deployTest = new DeployTest()
+            deployTest.deploy()
         }
     },
     components: {

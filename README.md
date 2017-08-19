@@ -39,11 +39,17 @@ Here is a weird part. Although `"nw": "^0.23.6-sdk-1"` is specified in package.j
 
 * TODO. Perhaps standard PHP binaries will work fine. They should be copied to `app/src/assets-bin-php/win32`.
 
+**Important:** We need to have SSH2 PHP library available in the built-in server. For Windows it requires a DLL for specific version of PHP. Hopefully, we can just download a file without building anything. See https://pecl.php.net/package/ssh2/1.1.2/windows, https://www.libssh2.org/.
+
 ### Windows only - install NSIS installer
 
 As installer [NSIS](http://nsis.sourceforge.net/Main_Page) is used for building Windows releases. You have to install it (version 3.0), and add NSIS folder to PATH in Environment Variables, so it is reachable to scripts in this project (path should look something like C:/Program Files (x86)/NSIS).
 
 It's OK to upgrade the supported PHP version as long as it is compatible with the minimum target system requirements (see below). It's important to keep the version string actual in src/js/config/index.js.
+
+### Install composer dependencies
+
+Run `composer install` in app/src/php-deployer.
 
 ### Start the development building process
 
