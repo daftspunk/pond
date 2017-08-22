@@ -6,6 +6,7 @@ npm-debug.log
 tmp/*
 app/dist/*
 releases/*
+.vagrant
 *.sublime-project
 *.sublime-workspace
 !app/dist/.gitkeep

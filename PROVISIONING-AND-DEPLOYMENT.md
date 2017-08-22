@@ -14,7 +14,7 @@ Initially, we have two options - implement a server-based service like Forge, or
 
 A better solution would be offload the security responsibilities to our users and let Pond to act on behalf of the user, from the user's computer.
 
-This approach has known trade offs - if there's no centralized storage for the configuration, it could be cumbersome to share the configuration between multiple Pond users in same organization. But this can be solved with import/export procedures.
+This approach has known trade offs - if there's no centralized storage for the configuration. This will be solved with environment configuration stored in a JSON file, which can be shared with git between multiple users.
 
 On the other hand, a desktop client is a very simple tool which could be picked up and understood by a broader audience.
 
@@ -151,10 +151,6 @@ Themes are deploying like regular directories. There will be no issues with asse
 
 Pond projects should be able to request and show the server environment status: what droplets are registered, their status (running or stopped), which environment is current, what is the last deployed build tag, when was the last deployment. Also, Pond log for every server should be available with clicking a button.
 
-## Binding project to an existing server(s)
+## Keeping some data on the could servers
 
-Deployed environments must keep enough metadata to simplify the process of binding Pond installations to existing infrastructures. Droplets should use tags matching project names.
-
-* Choose what type of infrastructure we're binding to
-* Select server(s) - this should be semi-automated with tags
-* Choose directory
+Deployed environments must keep enough metadata to determine what projects the belong to, just for convenience of administrators. Droplets will use tags matching project names.
