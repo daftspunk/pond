@@ -11,3 +11,7 @@ PHP deployer uses Slim framework. I chose Slim, because its twice smaller than L
 ## 2017-08-21
 
 Created a target-server-dev-enviroment Vagrant environment for emulating working with a cloud target server locally. This environment will also be used to run unit tests in the PHP deployer project.
+
+## 2017-08-22
+
+Updated Scotch box in target-server-dev-enviroment to v.3, because it supports PHP 7. Scaffolding the unit testing environment. BTW, this Vagrant environment contains good examples of integrating custom shell scripts into the Vagrant provisioning process: https://github.com/rlerdorf/php7dev
