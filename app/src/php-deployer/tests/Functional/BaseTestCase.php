@@ -7,20 +7,35 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Environment;
 
+use PHPUnit\Framework\TestCase;
+use PhpDeployer\Connection;
+
 /**
  * This is an example class that shows how you could set up a method that
  * runs the application. Note that it doesn't cover all use-cases and is
  * tuned to the specifics of this skeleton app, so if your needs are
  * different, you'll need to change it.
  */
-class BaseTestCase extends \PHPUnit_Framework_TestCase
+class BaseTestCase extends TestCase
 {
+    private static $configValues;
+
     /**
      * Use middleware when running application?
      *
      * @var bool
      */
     protected $withMiddleware = true;
+
+    public static function setUpBeforeClass()
+    {
+        self::$configValues = json_decode(file_get_contents(__DIR__.'/../fixtures/config.json'), true);
+    }
+
+    protected static function getConfig($name)
+    {
+        return self::$configValues[$name];
+    }
 
     /**
      * Process the application given a request method and URI
@@ -73,5 +88,16 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
 
         // Return the response
         return $response;
+    }
+
+    protected function makeValidConnection()
+    {
+        $config = self::getConfig('connection');
+
+        return new Connection($config['host'], 
+            $config['publicKey'], 
+            $config['privateKey'], 
+            $config['user'], 
+            $config['stringMask']);
     }
 }

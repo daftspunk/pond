@@ -6,7 +6,7 @@ Make sure you have latest Vagrant and VirtualBox installed.
 
 In the Terminal go to the `target-server-dev-environment` directory and start Vagrant environment with `vagrant up`. Then SSH to the box (`vagrant ssh`) and run the commands below. 
 
-TODO: this can be fully automated with `config.vm.provision "shell", path: pathToShellScriptToRun`. See `https://github.com/rlerdorf/php7dev/blob/master/scripts/php7dev.rb` for copying SSH keys from the host machine to the box (a simpler way would be to share `target-server-dev-environment` directory with Vagrant and copy the files inside the box, internally).
+TODO: this can be fully automated with `config.vm.provision "shell", path: pathToShellScriptToRun`. SSH keys are available after the box boots in /var/target-server-dev-environment/keys/ and can be copied inside the box.
 
 ```
 sudo adduser --disabled-password --gecos "" deploy
@@ -21,14 +21,12 @@ exit
 cd /var/php-deployer
 composer install
 cd ~
-wget https://phar.phpunit.de/phpunit-6.3.phar
-chmod +x phpunit-6.3.phar
-sudo mv phpunit-6.3.phar /usr/local/bin/phpunit
-sudo add-apt-repository ppa:ondrej/php
+sudo add-apt-repository ppa:ondrej/php -y
 sudo apt-get update
 sudo apt-get -y install php7.1
-sudo apt-get install php7.1-ssh2
-sudo apt-get install php7.1-xml
+sudo apt-get -y install php7.1-ssh2
+sudo apt-get -y install php7.1-xml
+sudo apt-get -y install php7.1-mbstring
 exit
 ```
 
@@ -52,4 +50,13 @@ After that the Deployer is available by this address: `http://192.168.33.10:8001
 
 ## Running PHP deployer unit tests
 
-TODO
+Run tests in the `target-server-dev-environment` box. Unit tests require the box configuration described above.
+
+```
+vagrant ssh
+cd /var/php-deployer
+composer test 
+  [or, a bit faster start]
+php vendor/bin/phpunit --colors=always 
+```
+
