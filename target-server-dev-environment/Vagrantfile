@@ -8,8 +8,8 @@ Vagrant.configure("2") do |config|
     config.vm.hostname = "pond-target-vm"
     config.vm.synced_folder ".", "/var/www", :mount_options => ["dmode=777", "fmode=666"]
     
-    config.vm.synced_folder "../app/src/php-deployer", "/var/php-deployer", :mount_options => ["dmode=777", "fmode=666"]
-    config.vm.synced_folder ".", "/var/target-server-dev-environment", :mount_options => ["dmode=777", "fmode=666"]
+    config.vm.synced_folder "../app/src/php-deployer", "/var/php-deployer", :mount_options => ["dmode=777", "fmode=777"]
+    config.vm.synced_folder ".", "/var/target-server-dev-environment", :mount_options => ["dmode=777", "fmode=777"]
 
     # Optional NFS. Make sure to remove other synced_folder line too
     #config.vm.synced_folder ".", "/var/www", :nfs => { :mount_options => ["dmode=777","fmode=666"] }

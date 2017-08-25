@@ -14,7 +14,7 @@ class Connection
     /**
      * @param $stringMasks array Array of strings to be replaced with xxx value in command logs and exception messages.
      */
-    public function __construct($ip, $publicKeyPath, $privateKeyPath, $userName, array $stringMasks = [], $connectionTimeout = 3)
+    public function __construct($ip, $publicKeyPath, $privateKeyPath, $userName, array $stringMasks = [], $connectionTimeout = 10)
     {
         $this->setSocketTimeout($connectionTimeout);
         $this->session = @ssh2_connect($ip, 22, array('hostkey'=>'ssh-rsa'));
@@ -44,29 +44,59 @@ class Connection
         }
 
         $result = '';
-        $time_start = time();
-        stream_set_blocking($stream, true);
+        $timeStart = time();
 
-        while (true) {
-            $result .= fread($stream, 4096);
+        $stdOutStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
+        $stdErrStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
 
-            if (strpos($result, $this->termStr) !== false) {
-                break;
+        try {
+            while (true) {
+                $stdOutBuffer = fread($stdOutStream, 4096);
+                $stdErrBuffer = fread($stdErrStream, 4096);
+
+                if ($stdErrBuffer) {
+                    throw new Exception($this->maskCommand($stdErrBuffer));
+                }
+
+                if (strlen($stdOutBuffer)) {
+                    // If the command returns any output during the execution,
+                    // we don't consider it timing out. The timeout is always
+                    // measured since the last time we heard anything from 
+                    // the command.
+
+                    $timeStart = time();
+                }
+
+                $result .= $stdOutBuffer;
+
+                if (strpos($result, $this->termStr) !== false) {
+                    break;
+                }
+
+                if ((time() - $timeStart) > $timeout) {
+                    throw new Exception(sprintf('Command timed out: `%s`', $this->maskCommand($command)));
+                }
             }
+        }
+        finally {
+            @fclose($stdOutStream);
+            @fclose($stdErrStream);
+            @fclose($stream);
+        }
 
-            if ((time() - $time_start) > $timeout) {
-                throw new Exception(sprintf('Command timed out: `%s`', $this->maskCommand($command)));
-                break;
+        $matches = [];
+        if (preg_match('/'.$this->termStr.'([0-9]+)$/mD', $result, $matches)) {
+            if ($matches[1] != 0) {
+                throw new ErrorOutputException($this->maskCommand($result), $matches[1]);
             }
         }
 
-        @fclose($stream);
         return $this->maskCommand($result);
     }
 
     private function makeTermCommand()
     {
-        return sprintf($this->termCmd, $this->termStr);
+        return sprintf($this->termCmd, $this->termStr.'$?');
     }
 
     private function makeMasks($stringMasks)
@@ -91,9 +121,11 @@ class Connection
     {
         $masks = $this->stringMasks;
         $masks[$this->makeTermCommand()] = '';
-        $masks[$this->termStr] = '';
 
-        return strtr($command, $masks);
+        $command = strtr($command, $masks);
+        $command = preg_replace('/'.$this->termStr.'[0-9]+$/mD', '', $command);
+
+        return $command;
     }
 
     private function validateKeyFile($filePath)
