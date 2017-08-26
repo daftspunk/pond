@@ -4,6 +4,6 @@
         "publicKey": "/var/target-server-dev-environment/keys/id_rsa.pub",
         "privateKey": "/var/target-server-dev-environment/keys/id_rsa",
         "user": "deploy",
-        "stringMask": ["secretString"]
+        "stringMask": ["secretString", "passhpraseValue"]
     }
 }

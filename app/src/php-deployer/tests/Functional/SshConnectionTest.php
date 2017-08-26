@@ -1,6 +1,7 @@
 <?php namespace Tests\Functional;
 
 use PhpDeployer\Connection;
+use PhpDeployer\BufferedOutputException;
 
 class SshConnectionTest extends BaseTestCase
 {
@@ -77,7 +78,7 @@ class SshConnectionTest extends BaseTestCase
         $connection = $this->makeValidConnection();
 
         $result = $connection->runCommand('ls /var/php-deployer/tests/fixtures/test-dir');
-        $this->assertEquals('README.md', trim($result));
+        $this->assertEquals('README.md', $result);
     }
 
     public function testRunShortSleepCommand()
@@ -85,7 +86,7 @@ class SshConnectionTest extends BaseTestCase
         $connection = $this->makeValidConnection();
 
         $result = $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/sleep-2-seconds.sh', 3);
-        $this->assertEquals('done', trim($result));
+        $this->assertEquals('done', $result);
     }
 
     /**
@@ -97,7 +98,7 @@ class SshConnectionTest extends BaseTestCase
         $connection = $this->makeValidConnection();
 
         $result = $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/sleep-5-seconds.sh', 1);
-        $this->assertEquals('done', trim($result));
+        $this->assertEquals('done', $result);
     }
 
     public function testRunLongButNotTimedOutCommand()
@@ -105,35 +106,90 @@ class SshConnectionTest extends BaseTestCase
         $connection = $this->makeValidConnection();
 
         $result = $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/run-2-seconds-output-500ms.sh', 1);
-        $this->assertEquals('1'.PHP_EOL.'2'.PHP_EOL.'3'.PHP_EOL.'4', trim($result));
+        $this->assertEquals('1'.Connection::NL.'2'.Connection::NL.'3'.Connection::NL.'4', $result);
     }
 
-    /**
-     * @expectedException        Exception
-     * @expectedExceptionMessage command not found
-     */
     public function testRunInvalidCommand()
     {
         $connection = $this->makeValidConnection();
 
-        $result = $connection->runCommand('this-command-doesnt-exist');
+        try {
+            $connection->runCommand('this-command-doesnt-exist');
+
+            $this->assertTrue(false, 'The invalid command `this-command-doesnt-exist` must fail');
+        }
+        catch (BufferedOutputException $ex) {
+            $this->assertInstanceOf(BufferedOutputException::class, $ex);
+            $this->assertEquals(127, $ex->getCode());
+            $this->assertEmpty($ex->getStdOutBuffer());
+            $this->assertContains('command not found', $ex->getMessage());
+        }
     }
 
-    /**
-     * @expectedException        PhpDeployer\ErrorOutputException
-     * @expectedExceptionMessage Something
-     * @expectedExceptionCode    1
-     */
+    public function testRunSyntaxErrorCommand()
+    {
+        $connection = $this->makeValidConnection();
+
+        try {
+            $connection->runCommand('ls -l;;', 2);
+
+            $this->assertTrue(false, 'The command with syntax error `ls -l;;` must fail');
+        }
+        catch (BufferedOutputException $ex) {
+            $this->assertInstanceOf(BufferedOutputException::class, $ex);
+            $this->assertEquals(127, $ex->getCode());
+            $this->assertEmpty($ex->getStdOutBuffer());
+            $this->assertContains('syntax error', $ex->getMessage());
+        }
+    }
+
+// TODO: test syntax error inside .sh
+// TODO: command timed out should return buffered stdout
+
     public function testRunErrorCommandPrintedSomethingToStdOut()
     {
         $connection = $this->makeValidConnection();
 
-        $result = $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/error-but-returning-to-stdio.sh');
+        try {
+            $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/error-but-returning-to-stdio.sh');
+        }
+        catch (BufferedOutputException $ex) {
+            $this->assertInstanceOf(BufferedOutputException::class, $ex);
+            $this->assertEquals(1, $ex->getCode());
+            $this->assertContains('Something', $ex->getStdOutBuffer());
+            $this->assertContains('The command returned non-zero exit code', $ex->getMessage());
+        }
     }
 
-    // Test case when a script writes something to stdoout
+    public function testRunErrorCommandPrintedSomethingToStdErrAndStdIo()
+    {
+        $connection = $this->makeValidConnection();
 
-    // Test masking
+        try {
+            $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/output-to-stderr-and-stdio.sh');
+        }
+        catch (BufferedOutputException $ex) {
+            $this->assertInstanceOf(BufferedOutputException::class, $ex);
+            $this->assertEquals(1, $ex->getCode());
+            $this->assertEquals('SomethngStdIo', $ex->getStdOutBuffer());
+            $this->assertContains('SomethingStdErr', $ex->getMessage());
+        }
+    }
 
-    // Test timeout
+    public function testMasking()
+    {
+        $connection = $this->makeValidConnection();
+
+        $connection->runCommand('ls /var/php-deployer/tests/fixtures/test-dir');
+        $masked = $connection->maskCommand('secretString and passhpraseValue');
+        $this->assertEquals('xxx and xxx', $masked);
+    }
+
+    // public function testRunMultiCommandsNoError()
+    // {
+    //     $connection = $this->makeValidConnection();
+
+    //     $result = $connection->runMultipleCommands('echo 1; echo 2;'.PHP_EOL.'echo 3'); // OK to use PHP_EOL here as it's an input
+    //     $this->assertEquals('$ echo 1; echo 2;'.Connection::NL.'1'.Connection::NL.'2'.Connection::NL.'$ echo 3'.Connection::NL.'3', $result);
+    // }
 }

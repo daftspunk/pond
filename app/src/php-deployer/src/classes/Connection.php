@@ -4,6 +4,8 @@ use Exception;
 
 class Connection
 {
+    const NL = "\n"; // Don't depend on the platform new line. The target servers are Unix-based and always use \n.
+
     private $session;
     private $stringMasks = [];
     private $termStr = '@COMMAND-FINISHED@';
@@ -34,9 +36,19 @@ class Connection
         $this->makeMasks($stringMasks);
     }
 
+    /**
+     * Executes a single command and returns its result.
+     *
+     * Throws BufferedOutputException or Exception in case of issues.
+     * 
+     * @param string $command Command to execute
+     * @param int $timeout Timeout for executing the command
+     * @return string Returns the stdout buffer
+     */
     public function runCommand($command, $timeout = 10)
     {
         $command .= $this->makeTermCommand();
+
         $stream = ssh2_exec($this->session, $command);
 
         if (!$stream) {
@@ -53,9 +65,25 @@ class Connection
             while (true) {
                 $stdOutBuffer = fread($stdOutStream, 4096);
                 $stdErrBuffer = fread($stdErrStream, 4096);
+                $result .= $stdOutBuffer;
 
-                if ($stdErrBuffer) {
-                    throw new Exception($this->maskCommand($stdErrBuffer));
+                if (strlen($stdErrBuffer)) {
+                    $exitCode = $this->extractExitCode($result);
+
+                    if (strpos($stdErrBuffer, 'syntax error') === false) {
+                        $result = $this->readUntilTerm($stdOutStream, $result);
+                    }
+                    else {
+                        if ($exitCode === 0) {
+                            $exitCode = 127; // http://tldp.org/LDP/abs/html/exitcodes.html
+                        }
+                    }
+
+                    throw new BufferedOutputException(
+                        $this->maskCommand($stdErrBuffer),
+                        $exitCode,
+                        $this->maskCommand($result)
+                    );
                 }
 
                 if (strlen($stdOutBuffer)) {
@@ -67,13 +95,11 @@ class Connection
                     $timeStart = time();
                 }
 
-                $result .= $stdOutBuffer;
-
                 if (strpos($result, $this->termStr) !== false) {
                     break;
                 }
-
-                if ((time() - $timeStart) > $timeout) {
+// TODO: command timed out should return buffered stdout
+                if ((time() - $timeStart) >= $timeout) {
                     throw new Exception(sprintf('Command timed out: `%s`', $this->maskCommand($command)));
                 }
             }
@@ -84,14 +110,104 @@ class Connection
             @fclose($stream);
         }
 
-        $matches = [];
-        if (preg_match('/'.$this->termStr.'([0-9]+)$/mD', $result, $matches)) {
-            if ($matches[1] != 0) {
-                throw new ErrorOutputException($this->maskCommand($result), $matches[1]);
-            }
+        $exitCode = $this->extractExitCode($result);
+        if ($exitCode != 0) {
+            throw new BufferedOutputException(
+                'The command returned non-zero exit code',
+                $exitCode,
+                $this->maskCommand($result)
+            );
         }
 
         return $this->maskCommand($result);
+    }
+
+    /**
+     * Runs multiple commands separated with the newline character.
+     * Commands should not be related bound to each other, e.g. there
+     * should not be multi-line expressions, condition structures,
+     * variable assignments, etc.
+     *
+     * The output will contain commands themselves and their output.
+     * The operation will stop on first error and BufferedOutputException 
+     * will be thrown. The stderr buffer won't get to the result
+     * in this case and should be read from BufferedOutputException.
+     * 
+     * @param string $commandsStr Commands to execute
+     * @param int $timeout Timeout for executing a single command.
+     * @return string Returns the stdout buffer
+     */
+    public function runMultipleCommands(string $commandsStr, $timeout = 10)
+    {
+        $commandsStr = str_replace("\r\n", self::NL, $commandsStr);
+        $commands = explode(self::NL, $commandsStr);
+
+        $result = '';
+        foreach ($commands as $command) {
+            $command = trim($command);
+            if (!strlen($command)) {
+                continue;
+            }
+
+            $result .= '$ '.$this->maskCommand($command);
+
+            try {
+                $result .= self::NL.$this->runCommand($command, $timeout).self::NL;
+            }
+            catch (BufferedOutputException $ex) {
+                $result .= $ex->getStdOutBuffer();
+
+                throw new BufferedOutputException(
+                    $ex->getMessage(),
+                    $ex->getCode(),
+                    $result
+                );
+            }
+            catch (Exception $ex) {
+                throw new BufferedOutputException(
+                    $ex->getMessage(),
+                    $ex->getCode(),
+                    $result
+                );
+            }
+        }
+
+        return $result;
+    }
+
+    public function maskCommand($command)
+    {
+        $masks = $this->stringMasks;
+        $masks[$this->makeTermCommand()] = '';
+
+        $command = strtr($command, $masks);
+        $command = preg_replace('/'.$this->termStr.'[0-9]+$/mD', '', $command);
+
+        return trim($command);
+    }
+
+    private function readUntilTerm($stream, $result, $timeout = 1)
+    {
+        $timeStart = time();
+
+        while (true) {
+            $buffer = fread($stream, 4096);
+            $result .= $buffer;
+
+            if (strpos($result, $this->termStr) !== false) {
+                break;
+            }
+
+            if (strlen($buffer)) {
+                $timeStart = time();
+            }
+
+            if ((time() - $timeStart) >= $timeout) {
+                return $result;
+            }
+        }
+
+        return $result;
     }
 
     private function makeTermCommand()
@@ -117,15 +233,15 @@ class Connection
         ini_set("default_socket_timeout", $this->defaultTimeout);
     }
 
-    private function maskCommand($command)
+    private function extractExitCode($str)
     {
-        $masks = $this->stringMasks;
-        $masks[$this->makeTermCommand()] = '';
+        $matches = [];
 
-        $command = strtr($command, $masks);
-        $command = preg_replace('/'.$this->termStr.'[0-9]+$/mD', '', $command);
+        if (preg_match('/'.$this->termStr.'([0-9]+)$/mD', $str, $matches)) {
+            return $matches[1];
+        }
 
-        return $command;
+        return 0;
     }
 
     private function validateKeyFile($filePath)
