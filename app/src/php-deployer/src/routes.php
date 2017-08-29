@@ -2,6 +2,6 @@
 
 use PhpDeployer\Deployer;
 
-$app->get('/validate-host', function ($request, $response, $args) {
-    return Deployer::testMe($request, $response, $args);
+$app->get('/deploy', function ($request, $response, $args) {
+    return Deployer::deployProject($request, $response, $args);
 });

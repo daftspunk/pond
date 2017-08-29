@@ -2,9 +2,14 @@
 
 class Deployer
 {
-    public static function testMe($request, $response, $args)
+    public static function deployProject($request, $response, $args)
     {
-        $data = array('name' => 'Bob', 'age' => 40);
+        $privateKeyPath = $request->getParam('private-key-path');
+
+        if (!strlen($privateKeyPath)) {
+           throw new HttpException('Bad request: invalid argument', 400);
+        }
+
         return $response->withJson($data);
     }
 }

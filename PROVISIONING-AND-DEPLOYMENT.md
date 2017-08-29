@@ -6,13 +6,13 @@ Initially, we have two options - implement a server-based service like Forge, or
 
 **Problems with the server options**
 
-1. **Security.** We would need to either use a special user(s) with a key pair for accessing clients' servers, or transmit the client's private key from Pond to our server in order to work with the client's server. Keeping private keys is risky - if we get hacked, the hacker could obtain access to all customer's servers and we even won't be able to fix it promptly.
-2. **Reliability.** If our server is overloaded, everybody experience latency. If our server is down, nobody can deploy.
+1. **Security.** We would need to either use a special user(s) with a key pair for accessing clients' servers, or transmit the client's private key from Pond to our server in order to work with the client's server. Keeping private keys is risky - if we get hacked, the hacker could obtain access to all customer's servers and we won't even be able to fix it promptly.
+2. **Reliability.** If our server is overloaded, everybodys experience latency. If our server is down, nobody can deploy.
 3. **Keeping important client data.** The infrastructure configuration might be an important aspect of a business. A web studio could have multiple environments with complex configuration. If we lose somebody's configuration, this could be fatal for the business.
 
 **What is a better option**
 
-A better solution would be offload the security responsibilities to our users and let Pond to act on behalf of the user, from the user's computer.
+A better solution would be to offload the security responsibilities to our users and let Pond to act on behalf of the user, from the user's computer.
 
 This approach has known trade offs - if there's no centralized storage for the configuration. This will be solved with environment configuration stored in a JSON file, which can be shared with git between multiple users.
 
@@ -127,6 +127,7 @@ Themes are deploying like regular directories. There will be no issues with asse
 
 ## Directory layout on a server
 
+```
 /var/www/pond/projects
   /project1
     /production
@@ -146,6 +147,7 @@ Themes are deploying like regular directories. There will be no issues with asse
       ...
     /test1
       ...
+```
 
 ## Environment status
 

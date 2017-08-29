@@ -47,19 +47,20 @@ class Connection
      */
     public function runCommand($command, $timeout = 10)
     {
-        $command .= $this->makeTermCommand();
+        $command = rtrim($command, ';').$this->makeTermCommand();
 
         $stream = ssh2_exec($this->session, $command);
 
         if (!$stream) {
-            throw new Exception(sprintf('Error executing command `%s`', $this->maskCommand($command)));
+            throw new Exception('Error executing command');
         }
 
         $result = '';
-        $timeStart = time();
 
         $stdOutStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDIO);
         $stdErrStream = ssh2_fetch_stream($stream, SSH2_STREAM_STDERR);
+
+        $timeStart = time();
 
         try {
             while (true) {
@@ -70,12 +71,13 @@ class Connection
                 if (strlen($stdErrBuffer)) {
                     $exitCode = $this->extractExitCode($result);
 
-                    if (strpos($stdErrBuffer, 'syntax error') === false) {
+                    if (strpos($stdErrBuffer, 'syntax error') === false) {;
                         $result = $this->readUntilTerm($stdOutStream, $result);
+                        $exitCode = $this->extractExitCode($result);
                     }
                     else {
                         if ($exitCode === 0) {
-                            $exitCode = 127; // http://tldp.org/LDP/abs/html/exitcodes.html
+                            $exitCode = 2;
                         }
                     }
 
@@ -98,9 +100,13 @@ class Connection
                 if (strpos($result, $this->termStr) !== false) {
                     break;
                 }
-// TODO: command timed out should return buffered stdout
+
                 if ((time() - $timeStart) >= $timeout) {
-                    throw new Exception(sprintf('Command timed out: `%s`', $this->maskCommand($command)));
+                    throw new BufferedOutputException(
+                        'Command timed out',
+                        124,
+                        $this->maskCommand($result)
+                    );
                 }
             }
         }
@@ -203,7 +209,7 @@ class Connection
             }
 
             if ((time() - $timeStart) >= $timeout) {
-                return $result;
+                break;
             }
         }
 

@@ -89,24 +89,28 @@ class SshConnectionTest extends BaseTestCase
         $this->assertEquals('done', $result);
     }
 
-    /**
-     * @expectedException        Exception
-     * @expectedExceptionMessage Command timed out
-     */
     public function testRunTimedOutCommand()
     {
         $connection = $this->makeValidConnection();
 
-        $result = $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/sleep-5-seconds.sh', 1);
-        $this->assertEquals('done', $result);
+        try {
+            $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/sleep-5-seconds.sh', 1);
+            $this->assertTrue(false, 'The command `sleep-5-seconds.sh` must time out');
+        }
+        catch (BufferedOutputException $ex) {
+            $this->assertInstanceOf(BufferedOutputException::class, $ex);
+            $this->assertEquals(124, $ex->getCode());
+            $this->assertEquals('start', $ex->getStdOutBuffer());
+            $this->assertEquals('Command timed out', $ex->getMessage());
+        }
     }
 
     public function testRunLongButNotTimedOutCommand()
     {
         $connection = $this->makeValidConnection();
 
-        $result = $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/run-2-seconds-output-500ms.sh', 1);
-        $this->assertEquals('1'.Connection::NL.'2'.Connection::NL.'3'.Connection::NL.'4', $result);
+        $result = $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/run-2-seconds-output-300ms.sh', 2);
+        $this->assertEquals('1'.Connection::NL.'2'.Connection::NL.'3'.Connection::NL.'4'.Connection::NL.'5'.Connection::NL.'6'.Connection::NL.'7', $result);
     }
 
     public function testRunInvalidCommand()
@@ -115,7 +119,6 @@ class SshConnectionTest extends BaseTestCase
 
         try {
             $connection->runCommand('this-command-doesnt-exist');
-
             $this->assertTrue(false, 'The invalid command `this-command-doesnt-exist` must fail');
         }
         catch (BufferedOutputException $ex) {
@@ -131,20 +134,32 @@ class SshConnectionTest extends BaseTestCase
         $connection = $this->makeValidConnection();
 
         try {
-            $connection->runCommand('ls -l;;', 2);
-
-            $this->assertTrue(false, 'The command with syntax error `ls -l;;` must fail');
+            $connection->runCommand('ls ;;-l', 2);
+            $this->assertTrue(false, 'The command with syntax error `ls ;;-l` must fail');
         }
         catch (BufferedOutputException $ex) {
             $this->assertInstanceOf(BufferedOutputException::class, $ex);
-            $this->assertEquals(127, $ex->getCode());
+            $this->assertEquals(2, $ex->getCode());
             $this->assertEmpty($ex->getStdOutBuffer());
             $this->assertContains('syntax error', $ex->getMessage());
         }
     }
 
-// TODO: test syntax error inside .sh
-// TODO: command timed out should return buffered stdout
+    public function testRunSyntaxErrorInShCommand()
+    {
+        $connection = $this->makeValidConnection();
+
+        try {
+            $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/syntax-error.sh');
+            $this->assertTrue(false, 'The command with syntax error `syntax-error.sh` must fail');
+        }
+        catch (BufferedOutputException $ex) {
+            $this->assertInstanceOf(BufferedOutputException::class, $ex);
+            $this->assertEquals(2, $ex->getCode());
+            $this->assertEmpty($ex->getStdOutBuffer());
+            $this->assertContains('syntax error', $ex->getMessage());
+        }
+    }
 
     public function testRunErrorCommandPrintedSomethingToStdOut()
     {
@@ -152,6 +167,7 @@ class SshConnectionTest extends BaseTestCase
 
         try {
             $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/error-but-returning-to-stdio.sh');
+            $this->assertTrue(false, 'The command `error-but-returning-to-stdio.sh` must fail');
         }
         catch (BufferedOutputException $ex) {
             $this->assertInstanceOf(BufferedOutputException::class, $ex);
@@ -167,6 +183,7 @@ class SshConnectionTest extends BaseTestCase
 
         try {
             $connection->runCommand('/var/php-deployer/tests/fixtures/test-scripts/output-to-stderr-and-stdio.sh');
+            $this->assertTrue(false, 'The command `output-to-stderr-and-stdio.sh` must fail');
         }
         catch (BufferedOutputException $ex) {
             $this->assertInstanceOf(BufferedOutputException::class, $ex);
@@ -185,11 +202,27 @@ class SshConnectionTest extends BaseTestCase
         $this->assertEquals('xxx and xxx', $masked);
     }
 
-    // public function testRunMultiCommandsNoError()
-    // {
-    //     $connection = $this->makeValidConnection();
+    public function testRunMultiCommandsNoError()
+    {
+        $connection = $this->makeValidConnection();
 
-    //     $result = $connection->runMultipleCommands('echo 1; echo 2;'.PHP_EOL.'echo 3'); // OK to use PHP_EOL here as it's an input
-    //     $this->assertEquals('$ echo 1; echo 2;'.Connection::NL.'1'.Connection::NL.'2'.Connection::NL.'$ echo 3'.Connection::NL.'3', $result);
-    // }
+        $result = $connection->runMultipleCommands('echo 1; echo 2;'.PHP_EOL.'echo 3'); // OK to use PHP_EOL here as it's an input
+        $this->assertEquals('$ echo 1; echo 2;'.Connection::NL.'1'.Connection::NL.'2'.Connection::NL.'$ echo 3'.Connection::NL.'3'.Connection::NL, $result);
+    }
+
+    public function testRunMultiCommandsSyntaxErrorWithSanitizing()
+    {
+        $connection = $this->makeValidConnection();
+
+        try {
+            $result = $connection->runMultipleCommands('echo 1; echo 2;'.PHP_EOL.';;echo secretString');
+            $this->assertTrue(false, 'The command with syntax error must fail');
+        }
+        catch (BufferedOutputException $ex) {
+            $this->assertInstanceOf(BufferedOutputException::class, $ex);
+            $this->assertContains('syntax error', $ex->getMessage());
+            $this->assertEquals(2, $ex->getCode());
+            $this->assertEquals('$ echo 1; echo 2;'.Connection::NL.'1'.Connection::NL.'2'.Connection::NL.'$ ;;echo xxx', $ex->getStdOutBuffer());
+        }
+    }
 }
