@@ -1,7 +1,9 @@
 <?php
 
-use PhpDeployer\Deployer;
+use PhpDeployer\DeployerController;
 
-$app->get('/deploy', function ($request, $response, $args) {
-    return Deployer::deployProject($request, $response, $args);
+$app->post('/deploy', function ($request, $response, $args) {
+    $controller = new DeployerController($request, $response, $args);
+
+    return $controller->deployProject();
 });

@@ -2,6 +2,7 @@
 
 use PhpDeployer\NotFoundHandler;
 use PhpDeployer\ErrorHandler;
+use PhpDeployer\NotAllowedHandler;
 
 // DIC configuration
 
@@ -18,10 +19,11 @@ $container['logger'] = function ($c) {
 
 
 $container['notFoundHandler'] = function ($c) { 
-    return new NotFoundHandler(null, function ($request, $response) use ($c) { 
-        return $c['response'] 
-            ->withStatus(404); 
-    }); 
+    return new NotFoundHandler(); 
+};
+
+$container['notAllowedHandler'] = function ($c) { 
+    return new NotAllowedHandler(); 
 };
 
 $container['errorHandler'] = function ($c) { 

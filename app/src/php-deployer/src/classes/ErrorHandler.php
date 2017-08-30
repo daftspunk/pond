@@ -31,7 +31,7 @@ class ErrorHandler
 
         $data = [
             'type' => 'general',
-            'error' => 'Server error'
+            'error' => $exception ? $exception->getMessage() : 'Server error',
         ];
 
         return $response->withJson($data, 500);

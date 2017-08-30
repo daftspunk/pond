@@ -10,8 +10,12 @@ class NotFoundHandler extends NotFound
     { 
         parent::__invoke($request, $response);
 
-        $response->getBody()->write('Not found');
-        return $response->withStatus(404); 
+        $data = [
+            'type' => 'http',
+            'error' => 'Not found',
+        ];
+
+        return $response->withJson($data, 404);
     }
 
 }

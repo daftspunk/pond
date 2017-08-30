@@ -42,10 +42,10 @@ class BaseTestCase extends TestCase
      *
      * @param string $requestMethod the request method (e.g. GET, POST, etc.)
      * @param string $requestUri the request URI
-     * @param array|object|null $requestData the request data
+     * @param callable $requestSetupCallback callable function for setting up the request properties
      * @return \Slim\Http\Response
      */
-    public function runApp($requestMethod, $requestUri, $requestData = null)
+    public function runApp($requestMethod, $requestUri, callable $requestSetupCallback = null)
     {
         // Create a mock environment for testing with
         $environment = Environment::mock(
@@ -59,8 +59,8 @@ class BaseTestCase extends TestCase
         $request = Request::createFromEnvironment($environment);
 
         // Add request data, if it exists
-        if (isset($requestData)) {
-            $request = $request->withParsedBody($requestData);
+        if (isset($requestSetupCallback)) {
+            $requestSetupCallback($request);
         }
 
         // Set up a response object
