@@ -1,8 +1,6 @@
-<?php
+<?php namespace Tests\Functional;
 
-namespace Tests\Functional;
-
-class DeployerControllerTest extends BaseTestCase
+class DeployerControllerValidationTest extends BaseCase
 {
     public function testDeployNotJson()
     {

@@ -1,9 +1,9 @@
 <?php namespace Tests\Functional;
 
-use PhpDeployer\Connection;
-use PhpDeployer\BufferedOutputException;
+use PhpDeployer\Ssh\Connection;
+use PhpDeployer\Exceptions\BufferedOutput as BufferedOutputException;
 
-class SshConnectionTest extends BaseTestCase
+class SshConnectionTest extends BaseCase
 {
     public function testConnectToHost()
     {

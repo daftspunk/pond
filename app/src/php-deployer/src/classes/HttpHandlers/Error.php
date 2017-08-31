@@ -1,10 +1,13 @@
-<?php namespace PhpDeployer;
+<?php namespace PhpDeployer\HttpHandlers;
+
+use PhpDeployer\Exceptions\BufferedOutput as BufferedOutputException;
+use PhpDeployer\Exceptions\Http as HttpException;
 
 use Psr\Http\Message\ServerRequestInterface; 
 use Psr\Http\Message\ResponseInterface;
 use Exception;
 
-class ErrorHandler
+class Error
 {
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, $exception) 
     { 

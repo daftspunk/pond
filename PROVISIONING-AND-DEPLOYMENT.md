@@ -32,6 +32,8 @@ On the other hand, a load balanced environment is supposed to run only a single 
 
 Each server environment has two deployment environments - blue and green. One of the deployment environments is always enabled and receives Internet traffic, and another one is used then website updates are deployed. After deploying updates it's possible to connect to the just updated and still inactive deployment environment with a browser and test the updated features. If the updated deployment environment works as expected, it can be made active using Pond environment manager.
 
+We always update the inactive deployment environment, e.g. if the currently active environment is blue, we will deploy to green and vice versa.
+
 ## What Pond knows about DO
 
 These are kept in Pond settings.

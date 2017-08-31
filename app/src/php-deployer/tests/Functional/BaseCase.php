@@ -1,6 +1,4 @@
-<?php
-
-namespace Tests\Functional;
+<?php namespace Tests\Functional;
 
 use Slim\App;
 use Slim\Http\Request;
@@ -8,7 +6,7 @@ use Slim\Http\Response;
 use Slim\Http\Environment;
 
 use PHPUnit\Framework\TestCase;
-use PhpDeployer\Connection;
+use PhpDeployer\Ssh\Connection;
 
 /**
  * This is an example class that shows how you could set up a method that
@@ -16,7 +14,7 @@ use PhpDeployer\Connection;
  * tuned to the specifics of this skeleton app, so if your needs are
  * different, you'll need to change it.
  */
-class BaseTestCase extends TestCase
+class BaseCase extends TestCase
 {
     private static $configValues;
 
@@ -99,5 +97,17 @@ class BaseTestCase extends TestCase
             $config['privateKey'], 
             $config['user'], 
             $config['stringMask']);
+    }
+
+    protected function generateUniqueProjectName($pondRoot)
+    {
+        $nameBase = 'test-project-';
+        $counter = 1;
+
+        do {
+            $name = $nameBase.$counter++;
+        } while (is_dir($pondRoot.'/'.$name));
+
+        return $name;
     }
 }

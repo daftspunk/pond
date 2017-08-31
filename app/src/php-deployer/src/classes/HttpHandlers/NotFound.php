@@ -1,10 +1,10 @@
-<?php namespace PhpDeployer;
+<?php namespace PhpDeployer\Handlers;
 
 use Slim\Handlers\NotFound; 
 use Psr\Http\Message\ServerRequestInterface; 
 use Psr\Http\Message\ResponseInterface;
 
-class NotFoundHandler extends NotFound 
+class NotFound extends NotFound 
 {
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response) 
     { 

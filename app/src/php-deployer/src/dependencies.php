@@ -1,8 +1,8 @@
 <?php
 
-use PhpDeployer\NotFoundHandler;
-use PhpDeployer\ErrorHandler;
-use PhpDeployer\NotAllowedHandler;
+use PhpDeployer\HttpHandlers\NotFound as NotFoundHandler;
+use PhpDeployer\HttpHandlers\Error as ErrorHandler;
+use PhpDeployer\HttpHandlers\NotAllowed as NotAllowedHandler;
 
 // DIC configuration
 

@@ -1,15 +1,19 @@
-<?php namespace PhpDeployer;
+<?php namespace PhpDeployer\Controllers;
 
+use PhpDeployer\Exceptions\Http as HttpException;
 use Respect\Validation\Validator as Validator;
 
-class ControllerBase
+class Base
 {
+    protected $app;
+
     protected $request;
     protected $response;
     protected $args;
 
-    public function __construct($request, $response, $args)
+    public function __construct($app, $request, $response, $args)
     {
+        $this->app = $app;
         $this->request = $request;
         $this->response = $response;
         $this->args = $args;

@@ -1,4 +1,4 @@
-<?php namespace PhpDeployer;
+<?php namespace PhpDeployer\Exceptions;
 
 use Exception;
 
@@ -6,7 +6,7 @@ use Exception;
  * Keeps the stdoout buffer, stderr buffer and exit code for a failed command.
  * The stderr buffer is the exception message;
  */
-class BufferedOutputException extends Exception
+class BufferedOutput extends Exception
 {
     private $stdOutBuffer = null;
 

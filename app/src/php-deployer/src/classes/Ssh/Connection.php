@@ -1,5 +1,7 @@
-<?php namespace PhpDeployer;
+<?php namespace PhpDeployer\Ssh;
 
+use PhpDeployer\Exceptions\BufferedOutput as BufferedOutputException;
+use Respect\Validation\Validator as Validator;
 use Exception;
 
 class Connection
@@ -190,6 +192,19 @@ class Connection
         $command = preg_replace('/'.$this->termStr.'[0-9]+$/mD', '', $command);
 
         return trim($command);
+    }
+
+    //
+    // Convenience functions
+    //
+
+    public function directoryExists($directoryName)
+    {
+        if (!Validator::notEmpty()->alnum('-_/')->noWhitespace()->validate($directoryName)) {
+            throw new Exception('The directory name can contain only alphanumeric, dash, forward slash and underscore characters');
+        }
+
+        return $this->runCommand('if [ -d "'.$directoryName.'" ]; then echo "exists"; fi') === 'exists';
     }
 
     private function readUntilTerm($stream, $result, $timeout = 1)

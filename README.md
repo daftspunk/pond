@@ -109,6 +109,8 @@ Packaging copies `index.html`, `package.json` files and `dist` directory from th
 
 By default packaging uses the normal (non SDK) flavor of NW.js. For debugging needs it's possible to build a package with SDK flavor with `POND_DEV_RELEASE=true npm run release`.
 
+TODO: package PHP Deployer to phar.
+
 ## Coding standards
 
 Coding standards are usual (no semicolons) with some additions.
@@ -140,6 +142,12 @@ Pond is created to be as simple as possible. In order to achieve this some featu
 
 * File and folder permission modes are not presented in the installer Advanced Options, because Pond is a local installation manager. Files and folders are created with 777 mode, making its possible for user to edit and remove files if needed.
 * The back-end URL is always /backend.
+
+## Code security
+
+The only risk we have is that somebody uses Pond to deploy projects without being charged, bypassing billing on our server. We will address this with protecting the source code and securing the communication channel between our server and Pond. In the production JavaScript code will be compiled to native code. PHP code will be compiled to Phar. Although these methods don't provide 100% protection, we are protected from simple and obvious ways to bypass the billing system.
+
+All other possible risks are outside of our responsibility. Users will manage their SSH keys and custom deployment scripts on their own risk.
 
 ## UX notes
 
