@@ -143,17 +143,17 @@ Pond is created to be as simple as possible. In order to achieve this some featu
 * File and folder permission modes are not presented in the installer Advanced Options, because Pond is a local installation manager. Files and folders are created with 777 mode, making its possible for user to edit and remove files if needed.
 * The back-end URL is always /backend.
 
-## Code security
+## Protecting the code
 
-The only risk we have is that somebody uses Pond to deploy projects without being charged, bypassing billing on our server. We will address this with protecting the source code and securing the communication channel between our server and Pond. In the production JavaScript code will be compiled to native code. PHP code will be compiled to Phar. Although these methods don't provide 100% protection, we are protected from simple and obvious ways to bypass the billing system.
+The only risk we have is that somebody uses Pond to deploy projects without being billed and charged, bypassing the billing phase on our server. We will address this with protecting the source code and securing the communication channel between our server and Pond. In the production JavaScript code will be compiled to native code. PHP code will be compiled to Phar. Although these methods don't provide 100% protection, we are protected from simple and obvious ways to bypass the billing system. It's more complicated to decode JavaScript native code than a Phar archive, and also there are fewer real JavaScript experts than PHP experts, so we consider JavaScript part more protected than PHP and the billing part will be implemented in JavaScript.
 
-All other possible risks are outside of our responsibility. Users will manage their SSH keys and custom deployment scripts on their own risk.
+All other possible risks are out of our responsibility. Users will manage their SSH keys and custom deployment scripts on their own risk. Nevertheless we do validate and sanitize SSH commands and their arguments whenever it's possible.
 
 ## UX notes
 
 * Do not use animation without purpose (for decoration).
 * Use Icomoon icon set.
-* Always avoid half-pixels in icons.
+* Avoid half-pixels in icons.
 
 ## Target system requirements
 

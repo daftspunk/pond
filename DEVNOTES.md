@@ -15,3 +15,7 @@ Created a target-server-dev-enviroment Vagrant environment for emulating working
 ## 2017-08-22
 
 Updated Scotch box in target-server-dev-enviroment to v.3, because it supports PHP 7. Scaffolding the unit testing environment. BTW, this Vagrant environment contains good examples of integrating custom shell scripts into the Vagrant provisioning process: https://github.com/rlerdorf/php7dev
+
+## 2017-09-05
+
+Instead of replacing the blue or green directories completely, as I was planning from the beginning, we actually should replace only parts of it, e.g. - a specific plugin, core or theme.

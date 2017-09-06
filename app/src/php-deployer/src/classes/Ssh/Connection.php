@@ -1,6 +1,7 @@
 <?php namespace PhpDeployer\Ssh;
 
 use PhpDeployer\Exceptions\BufferedOutput as BufferedOutputException;
+use PhpDeployer\Util\Validation as ValidationUtil;
 use Respect\Validation\Validator as Validator;
 use Exception;
 
@@ -141,14 +142,20 @@ class Connection
      * will be thrown. The stderr buffer won't get to the result
      * in this case and should be read from BufferedOutputException.
      * 
-     * @param string $commandsStr Commands to execute
+     * @param string|array $commandsStr Commands to execute
      * @param int $timeout Timeout for executing a single command.
      * @return string Returns the stdout buffer
      */
-    public function runMultipleCommands(string $commandsStr, $timeout = 10)
+    public function runMultipleCommands($commands, $timeout = 10)
     {
-        $commandsStr = str_replace("\r\n", self::NL, $commandsStr);
-        $commands = explode(self::NL, $commandsStr);
+        if (!is_string($commands) && !is_array($commands)) {
+            throw new Exception('The commands argument must be a string or array.');
+        }
+
+        if (!is_array($commands)) {
+            $commands = str_replace("\r\n", self::NL, $commands);
+            $commands = explode(self::NL, $commands);
+        }
 
         $result = '';
         foreach ($commands as $command) {
@@ -200,11 +207,20 @@ class Connection
 
     public function directoryExists($directoryName)
     {
-        if (!Validator::notEmpty()->alnum('-_/')->noWhitespace()->validate($directoryName)) {
-            throw new Exception('The directory name can contain only alphanumeric, dash, forward slash and underscore characters');
-        }
+        ValidationUtil::dirName($directoryName);
 
         return $this->runCommand('if [ -d "'.$directoryName.'" ]; then echo "exists"; fi') === 'exists';
+    }
+
+    public function makeDirIfNotExists($directoryName, $permissionMask)
+    {
+        ValidationUtil::dirName($directoryName);
+
+        if (!Validator::notEmpty()->alnum()->noWhitespace()->validate($permissionMask)) {
+            throw new Exception('Invalid permission mask in makeDirIfNotExists() call');
+        }
+
+        return $this->runCommand('mkdir -m '.$permissionMask.' -p "'.$directoryName.'"');
     }
 
     private function readUntilTerm($stream, $result, $timeout = 1)

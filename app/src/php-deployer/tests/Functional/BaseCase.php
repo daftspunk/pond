@@ -8,6 +8,8 @@ use Slim\Http\Environment;
 use PHPUnit\Framework\TestCase;
 use PhpDeployer\Ssh\Connection;
 
+use PhpDeployer\Operations\Deployment as DeploymentOperation;
+
 /**
  * This is an example class that shows how you could set up a method that
  * runs the application. Note that it doesn't cover all use-cases and is
@@ -99,8 +101,9 @@ class BaseCase extends TestCase
             $config['stringMask']);
     }
 
-    protected function generateUniqueProjectName($pondRoot)
+    protected function generateUniqueProjectName()
     {
+        $pondRoot = DeploymentOperation::POND_ROOT;
         $nameBase = 'test-project-';
         $counter = 1;
 
@@ -109,5 +112,49 @@ class BaseCase extends TestCase
         } while (is_dir($pondRoot.'/'.$name));
 
         return $name;
+    }
+
+    protected function generateUniqueEnvironmentName($projectName)
+    {
+        $pondRoot = DeploymentOperation::POND_ROOT;
+        $nameBase = 'test-environment-';
+        $counter = 1;
+
+        do {
+            $name = $nameBase.$counter++;
+        } while (is_dir($pondRoot.'/'.$projectName.'/'.$name));
+
+        return $name;
+    }
+
+    protected function makeValidDeploymentConfig()
+    {
+        $config = self::getConfig('connection');
+        $projectName = $this->generateUniqueProjectName();
+
+        return [
+            'privateKeyPath' => $config['privateKey'],
+            'publicKeyPath' => $config['publicKey'],
+            'ip' => $config['host'],
+            'user' => $config['user'],
+            'update' => false,
+            'projectDirectoryName' => $projectName,
+            'environmentDirectoryName' => $this->generateUniqueEnvironmentName($projectName)
+        ];
+    }
+
+    protected function makeDir($path)
+    {
+        if (!mkdir($path, 0777, true)) {
+            throw new Exception('Error creating test directory');
+        }
+    }
+
+    protected function runDeploymentRequest($params)
+    {
+        return $this->runApp('POST', '/deploy', function($request) use ($params) {
+            $request->withHeader('Content-Type', 'application/json');
+            $request->getBody()->write(json_encode($params));
+        });
     }
 }

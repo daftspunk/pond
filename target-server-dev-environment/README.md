@@ -6,11 +6,12 @@ Make sure you have latest Vagrant and VirtualBox installed.
 
 In the Terminal go to the `target-server-dev-environment` directory and start Vagrant environment with `vagrant up`. Then SSH to the box (`vagrant ssh`) and run the commands below. 
 
-TODO: this can be fully automated with `config.vm.provision "shell", path: pathToShellScriptToRun`. SSH keys are available after the box boots in /var/target-server-dev-environment/keys/ and can be copied inside the box.
+TODO: this should be fully automated with `config.vm.provision "shell", path: pathToShellScriptToRun`. SSH keys are available after the box boots in /var/target-server-dev-environment/keys/ and can be copied directly inside the box.
 
 ```
 sudo adduser --disabled-password --gecos "" deploy
 sudo chown -R deploy:deploy /var/www
+sudo chmod 777 /var/www
 sudo su - deploy
 mkdir ~/.ssh
 nano ~/.ssh/authorized_keys

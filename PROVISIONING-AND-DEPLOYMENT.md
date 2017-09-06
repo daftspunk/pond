@@ -138,7 +138,7 @@ Themes are deploying like regular directories. There will be no issues with asse
         /storage - (symlink to the common storage)
       /green
         /storage - (symlink to the common storage)
-      /current (symlink)
+      /current (symlink to blue or green)
       /metadata
         log
       /storage
@@ -147,7 +147,7 @@ Themes are deploying like regular directories. There will be no issues with asse
           /sessions
     /staging
       ...
-    /test1
+    /test
       ...
 ```
 

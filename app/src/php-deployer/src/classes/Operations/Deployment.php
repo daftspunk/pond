@@ -21,22 +21,30 @@ use Exception;
  *         /storage - (symlink to the common storage)
  *       /green
  *         /storage - (symlink to the common storage)
- *       /current (symlink)
+ *       /current (symlink to blue or green)
  *       /metadata
  *         log
  *       /storage
  *         /app
  *         /framework
  *           /sessions
- *
+ *     /staging
+ *       ...
  */
 class Deployment extends Base
 {
     const POND_ROOT = '/var/www';
 
+    // The following properties must stay private.
+    // If they're set from external sources, their
+    // values must be validated.
+
     private $update;
     private $projectDirectoryName;
     private $environmentDirectoryName;
+
+    private $unixDirectoryMask = "755"; 
+    private $unixFileMask = "644";
 
     public function setDeploymentParameters($update, $projectDirectoryName, $environmentDirectoryName)
     {
@@ -77,20 +85,28 @@ class Deployment extends Base
         }
 
         // If we are creating the environment, make sure the 
-        // environment's directory does not exist. If the
-        // project directory does not exist yet - create it.
+        // environment's directory does not exist.
 
         $projectDirectory = self::POND_ROOT.'/'.$this->projectDirectoryName;
-        $environmentDirectory = self::POND_ROOT.'/'.$this->projectDirectoryName.'/'.$this->environmentDirectoryName;
+        $envDirectory = self::POND_ROOT.'/'.$this->projectDirectoryName.'/'.$this->environmentDirectoryName;
 
-        if ($connection->directoryExists($environmentDirectory)) {
-// FAIL HERE
+        if ($connection->directoryExists($envDirectory)) {
+            throw new Exception(sprintf('The project environment directory already exists: %s', $envDirectory));
         }
 
-
-        if (!$connection->directoryExists($projectDirectory)) {
-// RUN MULTI COMMANDS HERE
-        }
+        $commands = [
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$projectDirectory.'"',     // Create project directory
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'"',         // Create environment directory
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/config'.'"', 
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/blue'.'"', 
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/green'.'"', 
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/metadata'.'"', 
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage'.'"', 
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/framework/sessions'.'"', 
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/uploads/public'.'"', 
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/media'.'"', 
+            'ln -s "'.$envDirectory.'/blue'.'" "'.$envDirectory.'/green'.'"'
+        ];
     }
 
     private function validateEnvironmentDirectories()
