@@ -15,11 +15,7 @@ class DeployerControllerValidationTest extends BaseCase
 
     public function testDeployNoCommonArguments()
     {
-        $response = $this->runApp('POST', '/deploy', function($request) {
-            $request->withHeader('Content-Type', 'application/json');
-            $data = [];
-            $request->getBody()->write(json_encode($data));
-        });
+        $response = $this->runDeploymentRequest([]);
 
         $this->assertEquals(400, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
@@ -30,16 +26,10 @@ class DeployerControllerValidationTest extends BaseCase
 
     public function testDeployInvalidIp()
     {
-        $response = $this->runApp('POST', '/deploy', function($request) {
-            $request->withHeader('Content-Type', 'application/json');
-            $data = [
-                'privateKeyPath' => 'something',
-                'publicKeyPath' => 'something',
-                'ip' => 'a.b.c.d',
-                'user' => 'some'
-            ];
-            $request->getBody()->write(json_encode($data));
-        });
+        $params = $this->makeValidDeploymentConfig();
+        $params['ip'] = 'a.b.c.d';
+
+        $response = $this->runDeploymentRequest($params);
 
         $this->assertEquals(400, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
@@ -50,16 +40,10 @@ class DeployerControllerValidationTest extends BaseCase
 
     public function testDeployNoUser()
     {
-        $response = $this->runApp('POST', '/deploy', function($request) {
-            $request->withHeader('Content-Type', 'application/json');
-            $data = [
-                'privateKeyPath' => 'something',
-                'publicKeyPath' => 'something',
-                'ip' => '127.0.0.1',
-                'user' => ''
-            ];
-            $request->getBody()->write(json_encode($data));
-        });
+        $params = $this->makeValidDeploymentConfig();
+        $params['user'] = '';
+
+        $response = $this->runDeploymentRequest($params);
 
         $this->assertEquals(400, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
@@ -68,41 +52,54 @@ class DeployerControllerValidationTest extends BaseCase
         $this->assertEquals('Invalid user name', $responseBody->error);
     }
 
-    public function testDeployNoUpdateFlag()
+    public function testDeployNoParams()
     {
-        $response = $this->runApp('POST', '/deploy', function($request) {
-            $request->withHeader('Content-Type', 'application/json');
-            $data = [
-                'privateKeyPath' => 'something',
-                'publicKeyPath' => 'something',
-                'ip' => '127.0.0.1',
-                'user' => 'deploy'
-            ];
-            $request->getBody()->write(json_encode($data));
-        });
+        $params = $this->makeValidDeploymentConfig();
+        unset($params['params']);
+
+        $response = $this->runDeploymentRequest($params);
 
         $this->assertEquals(400, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
         $this->assertNotNull($responseBody);
         $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('Argument update not found', $responseBody->error);
+        $this->assertContains('params not found in the request', $responseBody->error);
+    }
+
+    public function testDeployParamsNotArray()
+    {
+        $params = $this->makeValidDeploymentConfig();
+        $params['params'] = 'test';
+
+        $response = $this->runDeploymentRequest($params);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('should be an array', $responseBody->error);
+    }
+
+    public function testDeployNoUpdateFlag()
+    {
+        $params = $this->makeValidDeploymentConfig();
+        unset($params['params']['update']);
+
+        $response = $this->runDeploymentRequest($params);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('parameter update not found', $responseBody->error);
     }
 
     public function testDeployInvalidUpdateFlag()
     {
-        $response = $this->runApp('POST', '/deploy', function($request) {
-            $request->withHeader('Content-Type', 'application/json');
-            $data = [
-                'privateKeyPath' => 'something',
-                'publicKeyPath' => 'something',
-                'ip' => '127.0.0.1',
-                'user' => 'deploy',
-                'update' => 'invalid',
-                'projectDirectoryName' => 'something',
-                'environmentDirectoryName' => 'production'
-            ];
-            $request->getBody()->write(json_encode($data));
-        });
+        $params = $this->makeValidDeploymentConfig();
+        $params['params']['update'] = 'invalid';
+
+        $response = $this->runDeploymentRequest($params);
 
         $this->assertEquals(400, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
@@ -113,55 +110,15 @@ class DeployerControllerValidationTest extends BaseCase
 
     public function testDeployInvalidProjectDirectoryName()
     {
-        $response = $this->runApp('POST', '/deploy', function($request) {
-            $request->withHeader('Content-Type', 'application/json');
-            $data = [
-                'privateKeyPath' => 'something',
-                'publicKeyPath' => 'something',
-                'ip' => '127.0.0.1',
-                'user' => 'deploy',
-                'update' => true,
-                'projectDirectoryName' => 'some/thing',
-                'environmentDirectoryName' => 'production'
-            ];
+        $params = $this->makeValidDeploymentConfig();
+        $params['params']['projectDirectoryName'] = 'some/thing';
 
-            $request->getBody()->write(json_encode($data));
-        });
+        $response = $this->runDeploymentRequest($params);
 
         $this->assertEquals(400, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
         $this->assertNotNull($responseBody);
         $this->assertEquals('http', $responseBody->type);
         $this->assertEquals('The project directory name can contain only alphanumeric, dash and underscore characters', $responseBody->error);
-    }
-
-    public function testEmptyValues()
-    {
-        $allParams = [
-            'privateKeyPath' => 'something',
-            'publicKeyPath' => 'something',
-            'ip' => '127.0.0.1',
-            'user' => 'deploy',
-            'update' => true,
-            'projectDirectoryName' => 'something',
-            'environmentDirectoryName' => 'production'
-        ];
-
-        foreach ($allParams as $param=>$value) {
-            $params = $allParams;
-
-            unset($params[$param]);
-
-            $response = $this->runApp('POST', '/deploy', function($request) use ($params) {
-                $request->withHeader('Content-Type', 'application/json');
-                $request->getBody()->write(json_encode($params));
-            });
-
-            $this->assertEquals(400, $response->getStatusCode());
-            $responseBody = json_decode((string)$response->getBody());
-            $this->assertNotNull($responseBody);
-            $this->assertEquals('http', $responseBody->type);
-            $this->assertContains($param, $responseBody->error);
-        }
     }
 }

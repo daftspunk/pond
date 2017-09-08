@@ -11,8 +11,8 @@ class DeployerControllerOperationTest extends BaseCase
         $pondRoot = DeploymentOperation::POND_ROOT;
 
         $environmentDirectory = $pondRoot.'/'.
-            $params['projectDirectoryName'].'/'.
-            $params['environmentDirectoryName'];
+            $params['params']['projectDirectoryName'].'/'.
+            $params['params']['environmentDirectoryName'];
 
         $this->assertDirectoryNotExists($environmentDirectory);
         $this->makeDir($environmentDirectory);
@@ -29,7 +29,29 @@ class DeployerControllerOperationTest extends BaseCase
 
     public function testInitDirectories()
     {
-        // initDirectories 
+        $params = $this->makeValidDeploymentConfig();
+        $pondRoot = DeploymentOperation::POND_ROOT;
+
+        $environmentDirectory = $pondRoot.'/'.
+            $params['params']['projectDirectoryName'].'/'.
+            $params['params']['environmentDirectoryName'];
+
+        $this->assertDirectoryNotExists($environmentDirectory);
+
+        $response = $this->runDeploymentRequest($params);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        // $this->assertNotNull($responseBody); Should not be null, should return the actual log of commands and responses
+
+        $this->assertDirectoryExists($environmentDirectory.'/config');
+        $this->assertDirectoryExists($environmentDirectory.'/blue');
+        $this->assertDirectoryExists($environmentDirectory.'/green');
+        $this->assertDirectoryExists($environmentDirectory.'/metadata');
+        $this->assertDirectoryExists($environmentDirectory.'/storage');
+        $this->assertDirectoryExists($environmentDirectory.'/storage');
+        $this->assertTrue(is_link($environmentDirectory.'/current'));
+        $this->assertEquals($environmentDirectory.'/green', readlink($environmentDirectory.'/current'));
     }
 
     public function testNewDeploymentNoErrors()

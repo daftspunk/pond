@@ -121,7 +121,13 @@ Code deployment steps on subsequent deployments:
 
 Switching to another deployment environment (blue/green) should not be automatic when deploying to an existing server environment. This should be performed from the server environment status area, allowing the user to test the new copy before activating it.
 
-There should be an ability to unbind Pond project from a droplet and start the deployment over - to another server, etc..
+There should be an ability to unbind Pond project from a droplet and start the deployment over - to another server, etc.
+
+The only case when Pond deployer removes files from the server is when we deploy a plugin. The plugin's directory is removed from the server before it's replaced from the archive.
+
+### .pondignore
+
+.pondignore is a text file with patterns for excluding from the deployment archives. One pattern per line. Allows comments starting with #
 
 ## Deploying themes
 
@@ -135,9 +141,11 @@ Themes are deploying like regular directories. There will be no issues with asse
     /production
       /config
       /blue
-        /storage - (symlink to the common storage)
+        /storage/app - (symlink to the common storage/app)
+        /storage/framework/sessions - (symlink to the common storage/framework/sessions)
       /green
-        /storage - (symlink to the common storage)
+        /storage/app - (symlink to the common storage/app)
+        /storage/framework/sessions - (symlink to the common storage/framework/sessions)
       /current (symlink to blue or green)
       /metadata
         log
@@ -158,3 +166,11 @@ Pond projects should be able to request and show the server environment status: 
 ## Keeping some data on the could servers
 
 Deployed environments must keep enough metadata to determine what projects the belong to, just for convenience of administrators. Droplets will use tags matching project names.
+
+## Billing
+
+There will be 2 points when we contact our server - when the deployment starts to check if the account has positive balance and when the deployment is almost finished, just before we report to the user that the deployment is done, when it's know that it was successful. We can measure the number of pre and post deployment events for a contacts to estimate whether it could be an abuse.
+
+## Configuration files
+
+Configuration files that we manage are created on first deployment basing on the configuration variable values set by the user. We can also consider using environment variables, but this might be not a good idea, because we can deploy multiple projects and environments to a same server and would need to deal environment variable naming.

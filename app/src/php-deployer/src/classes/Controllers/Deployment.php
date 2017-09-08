@@ -1,13 +1,14 @@
 <?php namespace PhpDeployer\Controllers;
 
 use PhpDeployer\Operations\Deployment as DeploymentOperation;
+use PhpDeployer\Exceptions\Http as HttpException;
 use Respect\Validation\Validator as Validator;
 
 class Deployment extends Base
 {
     public function deployProject()
     {
-        $this->validateDeployProjectArguments();
+        $this->validateDeployParamsArgument();
 
         $deployment = new DeploymentOperation();
         $deployment->setConnectionParameters(
@@ -16,20 +17,16 @@ class Deployment extends Base
             $this->getRequestArgument('ip'),
             $this->getRequestArgument('user'));
 
-        $deployment->setDeploymentParameters(
-            $this->getRequestArgument('update'),
-            $this->getRequestArgument('projectDirectoryName'),
-            $this->getRequestArgument('environmentDirectoryName'));
-
+        $deployment->setDeploymentParameters($this->getRequestArgument('params'));
         $deployment->run();
     }
 
-    private function validateDeployProjectArguments()
+    private function validateDeployParamsArgument()
     {
-        $this->validateArgumentsExist([
-            'update',
-            'projectDirectoryName',
-            'environmentDirectoryName'
-        ]);
+        $this->validateArgumentsExist(['params']);
+
+        if (!Validator::arrayType()->validate($this->getRequestArgument('params'))) {
+            throw new HttpException('The params argument should be an array', 400);
+        }
     }
 }

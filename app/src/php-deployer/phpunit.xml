@@ -1,7 +1,7 @@
 <phpunit bootstrap="vendor/autoload.php">
     <testsuites>
         <testsuite name="Pond">
-            <directory>tests</directory>
+            <directory>tests/Functional</directory>
         </testsuite>
     </testsuites>
 </phpunit>

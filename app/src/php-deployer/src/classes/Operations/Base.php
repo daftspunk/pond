@@ -1,6 +1,7 @@
 <?php namespace PhpDeployer\Operations;
 
 use PhpDeployer\Ssh\Connection;
+use PhpDeployer\Exceptions\Http as HttpException;
 
 /**
  * Base class for deployment and configuration operations.
@@ -39,6 +40,19 @@ abstract class Base
         }
 
         return $this->connection;
+    }
+
+    protected function getParameterValue($params, $key, $required = true, $default = null)
+    {
+        if (!array_key_exists($key, $params)) {
+            if ($required) {
+                throw new HttpException(sprintf('Required parameter %s not found in the request', $key), 400);
+            }
+
+            return $default;
+        }
+
+        return $params[$key];
     }
 
     abstract public function run();

@@ -28,6 +28,8 @@ sudo apt-get -y install php7.1
 sudo apt-get -y install php7.1-ssh2
 sudo apt-get -y install php7.1-xml
 sudo apt-get -y install php7.1-mbstring
+sudo apt-get update
+sudo apt-get -y install php7.1-zip
 exit
 ```
 

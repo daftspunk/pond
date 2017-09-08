@@ -137,9 +137,12 @@ class BaseCase extends TestCase
             'publicKeyPath' => $config['publicKey'],
             'ip' => $config['host'],
             'user' => $config['user'],
-            'update' => false,
-            'projectDirectoryName' => $projectName,
-            'environmentDirectoryName' => $this->generateUniqueEnvironmentName($projectName)
+            'params' => [
+                'update' => false,
+                'projectDirectoryName' => $projectName,
+                'environmentDirectoryName' => $this->generateUniqueEnvironmentName($projectName),
+                'localProjectPath' => __DIR__.'/../fixtures/test-project'
+            ]
         ];
     }
 

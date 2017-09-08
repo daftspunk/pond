@@ -11,16 +11,18 @@ use Exception;
  * deployment environment, e.g. if the currently active environment
  * is blue, we will deploy to green and vice versa.
  *
- * Target directory layout:
+ * Target directory layout (rough and not complete, for reference only):
  *
  * /var/www/pond/projects
  *   /project1
  *     /production
  *       /config
  *       /blue
- *         /storage - (symlink to the common storage)
+ *         /storage/app - (symlink to the common storage/app)
+ *         /storage/framework/sessions - (symlink to the common storage/framework/sessions)
  *       /green
- *         /storage - (symlink to the common storage)
+ *         /storage/app - (symlink to the common storage/app)
+ *         /storage/framework/sessions - (symlink to the common storage/framework/sessions)
  *       /current (symlink to blue or green)
  *       /metadata
  *         log
@@ -42,15 +44,17 @@ class Deployment extends Base
     private $update;
     private $projectDirectoryName;
     private $environmentDirectoryName;
+    private $localProjectPath;
 
     private $unixDirectoryMask = "755"; 
     private $unixFileMask = "644";
 
-    public function setDeploymentParameters($update, $projectDirectoryName, $environmentDirectoryName)
+    public function setDeploymentParameters($parameters)
     {
-        $this->update = $update;
-        $this->projectDirectoryName = $projectDirectoryName;
-        $this->environmentDirectoryName = $environmentDirectoryName;
+        $this->update = $this->getParameterValue($parameters, 'update');
+        $this->projectDirectoryName = $this->getParameterValue($parameters, 'projectDirectoryName');
+        $this->environmentDirectoryName = $this->getParameterValue($parameters, 'environmentDirectoryName');
+        $this->localProjectPath = $this->getParameterValue($parameters, 'localProjectPath');
 
         if (!Validator::boolType()->validate($this->update)) {
             throw new HttpException('The update parameter should be of boolean type', 400);
@@ -63,6 +67,10 @@ class Deployment extends Base
         if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($this->environmentDirectoryName)) {
             throw new HttpException('The environment directory name can contain only alphanumeric, dash and underscore characters', 400);
         }
+
+        if (!Validator::directory()->validate($this->localProjectPath)) {
+            throw new HttpException('The local project directory not found', 400);
+        }
     }
 
     public function run()
@@ -73,6 +81,7 @@ class Deployment extends Base
         }
         else {
             $this->initDirectories();
+
         }
     }
 
@@ -94,6 +103,8 @@ class Deployment extends Base
             throw new Exception(sprintf('The project environment directory already exists: %s', $envDirectory));
         }
 
+        // TODO: create /storage/app, /storage/framework/sessions symlinks
+
         $commands = [
             'mkdir -m '.$this->unixDirectoryMask.' -p "'.$projectDirectory.'"',     // Create project directory
             'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'"',         // Create environment directory
@@ -104,15 +115,17 @@ class Deployment extends Base
             'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage'.'"', 
             'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/framework/sessions'.'"', 
             'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/uploads/public'.'"', 
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/uploads/protected'.'"', 
             'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/media'.'"', 
-            'ln -s "'.$envDirectory.'/blue'.'" "'.$envDirectory.'/green'.'"'
+            'ln -s "'.$envDirectory.'/green'.'" "'.$envDirectory.'/current'.'"'
         ];
+
+        $connection->runMultipleCommands($commands);
     }
 
     private function validateEnvironmentDirectories()
     {
         // If we are updating the environment make sure the
         // project and environment directories exist.
-
     }
 }
