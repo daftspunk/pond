@@ -5,34 +5,37 @@ use Exception;
 class ProjectArchiver
 {
     private $projectPath;
+    private $forceIgnorePaths;
 
     private $components = [
         'core' => [
-            '.git/*',         // We support git, unless it's removed with .pondignore
+            '.pondgitdir',    // This is for unit testing purposes only
+            '.git',         // We support git, unless it's removed with .pondignore
             '.gitignore',
             '.htaccess',
             'index.php',
             'artisan',
-            'bootstrap/*'
-            'modules/*',
-            'vendor/*'
+            'bootstrap',
+            'modules',
+            'vendor'
         ],
         'media' => [
-            'storage/app/media/*'
+            'storage/app/media'
         ],
         'uploads' => [
-            'storage/app/uploads/*'
+            'storage/app/uploads'
         ],
-        'plugins' => 'plugins/',
-        'themes' => 'themes/',
+        'plugins' => 'plugins',
+        'themes' => 'themes',
         'config' => [
-            'config/*'
+            'config'
         ]
     ];
 
-    public function __construct($projectPath)
+    public function __construct($projectPath, $forceIgnorePaths = null)
     {
         $this->projectPath = $projectPath;
+        $this->forceIgnorePaths = $forceIgnorePaths;
     }
 
     /**
@@ -64,18 +67,20 @@ class ProjectArchiver
             throw new Exception('Cannot create temporary file');
         }
 
-        Zip::make($tempFilePath, $ignoreFilter, function($zip) {
-            foreach ($components as $component=>$componentConfig) {
-                if ($componentConfig) {
-                    $this->addComponent($zip, $component, $componentConfig, $ignorePaths);
-                }
+        $zipMaker = new ZipMaker($ignoreFilter, $this->projectPath, $tempFilePath);
+
+        foreach ($components as $component=>$componentConfig) {
+            if ($componentConfig) {
+                $this->addComponent($zipMaker, $component, $componentConfig);
             }
-        });
+        }
+
+        $zipMaker->close();
 
         return $tempFilePath;
     }
 
-    private function addComponent($zip, $component, $componentConfig, $ignorePaths)
+    private function addComponent($zip, $component, $componentConfig)
     {
         if (!array_key_exists($component, $this->components)) {
             throw new Exception(sprintf('Unknown component: ', $component));
@@ -87,32 +92,42 @@ class ProjectArchiver
             // Core, media, uploads, config
 
             foreach ($componentPaths as $path) {
-                $zip->add($path, ['ignore'=>$ignorePaths]);
+                $zip->add($path);
             }
         }
         else {
             // Plugins and themes, configured as ['plugins'=>true] 
             // or ['plugins'=>['author/plugin', 'author/plugin']]
 
-            if (!is_array($componentConfig)) {
+            if (!is_array($componentConfig) && $componentConfig !== true) {
                 throw new Exception(sprintf('The %s component configuration must be either TRUE or an array', $component));
             }
 
+            if ($componentConfig === true) {
+                $zip->add($componentPaths);
+                return;
+            }
+
             foreach ($componentConfig as $configPath) {
-                if (!preg_match('/^[0-9a-z_-\/]+$/i'), $configPath) {
+                if (!preg_match('/^[0-9a-z_-\/]+$/i', $configPath)) {
                     throw new Exception(sprintf('Invalid value passed to the %s component configuration: %s', $component, $configPath));
                 }
 
-                $zip->add($componentPaths.$configPath.'/*', ['ignore'=>$ignorePaths]);
+                $zip->add($componentPaths.$configPath);
             }
         }
     }
 
     private function getIgnorePaths()
     {
+        // This is for unit testing.
+        if (is_array($this->forceIgnorePaths)) {
+            return $this->forceIgnorePaths;
+        }
+
         $path = $this->projectPath.'/.pondignore';
 
-        if (!file_exists($path) {
+        if (!file_exists($path)) {
             return [];
         }
 
