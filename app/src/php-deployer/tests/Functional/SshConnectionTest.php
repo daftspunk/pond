@@ -225,4 +225,27 @@ class SshConnectionTest extends BaseCase
             $this->assertEquals('$ echo 1; echo 2;'.Connection::NL.'1'.Connection::NL.'2'.Connection::NL.'$ ;;echo xxx', $ex->getStdOutBuffer());
         }
     }
+
+    public function testUpload()
+    {
+        $connection = $this->makeValidConnection();
+        $remoteFilePath = '/var/www/'.microtime().'.tmp';
+        $connection->upload(__DIR__.'/../fixtures/test-dir/README.md', $remoteFilePath);
+        $result = $connection->runCommand('ls "'.$remoteFilePath.'"');
+        $this->assertContains($remoteFilePath, $result);
+
+        $result = $connection->runCommand('cat "'.$remoteFilePath.'"');
+        $this->assertContains('command via SSH', $result);
+    }
+
+    /**
+     * @expectedException        Exception
+     * @expectedExceptionMessage Error uploading
+     */
+    public function testUploadError()
+    {
+        $connection = $this->makeValidConnection();
+        $remoteFilePath = '/var/www/'.microtime().'.tmp';
+        $connection->upload(__DIR__.'/../fixtures/test-dir/not-a-file', $remoteFilePath);
+    }
 }

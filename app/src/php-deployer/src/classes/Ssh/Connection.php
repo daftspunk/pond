@@ -52,7 +52,7 @@ class Connection
     {
         $command = rtrim($command, ';').$this->makeTermCommand();
 
-        $stream = ssh2_exec($this->session, $command);
+        $stream = @ssh2_exec($this->session, $command);
 
         if (!$stream) {
             throw new Exception('Error executing command');
@@ -201,26 +201,40 @@ class Connection
         return trim($command);
     }
 
+    public function upload($from, $to)
+    {
+        if (!@ssh2_scp_send($this->session, $from, $to)) {
+            throw new Exception('Error uploading file to the server');
+        }
+    }
+
     //
     // Convenience functions
     //
 
     public function directoryExists($directoryName)
     {
-        ValidationUtil::dirName($directoryName);
+        ValidationUtil::filePath($directoryName);
 
         return $this->runCommand('if [ -d "'.$directoryName.'" ]; then echo "exists"; fi') === 'exists';
     }
 
     public function makeDirIfNotExists($directoryName, $permissionMask)
     {
-        ValidationUtil::dirName($directoryName);
+        ValidationUtil::filePath($directoryName);
 
         if (!Validator::notEmpty()->alnum()->noWhitespace()->validate($permissionMask)) {
             throw new Exception('Invalid permission mask in makeDirIfNotExists() call');
         }
 
         return $this->runCommand('mkdir -m '.$permissionMask.' -p "'.$directoryName.'"');
+    }
+
+    public function fileExists($fileName)
+    {
+        ValidationUtil::filePath($fileName);
+
+        return $this->runCommand('if [ -f "'.$fileName.'" ]; then echo "exists"; fi') === 'exists';
     }
 
     private function readUntilTerm($stream, $result, $timeout = 1)

@@ -27,7 +27,7 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertContains('directory already exists', $responseBody->error);
     }
 
-    public function testInitDirectories()
+    public function testNewDeploymentNoErrors()
     {
         $params = $this->makeValidDeploymentConfig();
         $pondRoot = DeploymentOperation::POND_ROOT;
@@ -39,7 +39,7 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertDirectoryNotExists($environmentDirectory);
 
         $response = $this->runDeploymentRequest($params);
-
+print_r((string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
         // $this->assertNotNull($responseBody); Should not be null, should return the actual log of commands and responses
@@ -52,23 +52,7 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertDirectoryExists($environmentDirectory.'/storage');
         $this->assertTrue(is_link($environmentDirectory.'/current'));
         $this->assertEquals($environmentDirectory.'/green', readlink($environmentDirectory.'/current'));
+
+// TODO: Test all the stuff exists in the green environment
     }
-
-    public function testNewDeploymentNoErrors()
-    {
-//         $params = $this->makeValidDeploymentConfig();
-
-//         $response = $this->runApp('POST', '/deploy', function($request) use ($params) {
-//             $request->withHeader('Content-Type', 'application/json');
-//             $request->getBody()->write(json_encode($params));
-//         });
-// print_r((string)$response->getBody());
-//         $this->assertEquals(200, $response->getStatusCode());
-        // $responseBody = json_decode((string)$response->getBody());
-        // $this->assertNotNull($responseBody);
-        // $this->assertEquals('http', $responseBody->type);
-        // $this->assertContains($param, $responseBody->error);
-    }
-
-
 }

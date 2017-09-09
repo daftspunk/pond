@@ -2,6 +2,7 @@
 
 use PhpDeployer\Exceptions\Http as HttpException;
 use Respect\Validation\Validator as Validator;
+use PhpDeployer\Archiver\ProjectArchiver;
 use Exception;
 
 /**
@@ -30,12 +31,15 @@ use Exception;
  *         /app
  *         /framework
  *           /sessions
+ *       /pond-tmp
  *     /staging
  *       ...
  */
 class Deployment extends Base
 {
     const POND_ROOT = '/var/www';
+
+    const DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT = 'green';
 
     // The following properties must stay private.
     // If they're set from external sources, their
@@ -75,13 +79,15 @@ class Deployment extends Base
 
     public function run()
     {
+        // TODO: remove temporary files in the end
+
         if ($this->update) {
             $this->validateEnvironmentDirectories();
             $this->loadMetadata();
         }
         else {
             $this->initDirectories();
-
+            $this->archiveUploadAndExtract(self::DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT);
         }
     }
 
@@ -96,8 +102,8 @@ class Deployment extends Base
         // If we are creating the environment, make sure the 
         // environment's directory does not exist.
 
-        $projectDirectory = self::POND_ROOT.'/'.$this->projectDirectoryName;
-        $envDirectory = self::POND_ROOT.'/'.$this->projectDirectoryName.'/'.$this->environmentDirectoryName;
+        $projectDirectory = $this->getProjectDirectoryRemotePath();
+        $envDirectory = $this->getEnvironmentDirectoryRemotePath();
 
         if ($connection->directoryExists($envDirectory)) {
             throw new Exception(sprintf('The project environment directory already exists: %s', $envDirectory));
@@ -116,11 +122,53 @@ class Deployment extends Base
             'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/framework/sessions'.'"', 
             'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/uploads/public'.'"', 
             'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/uploads/protected'.'"', 
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/media'.'"', 
-            'ln -s "'.$envDirectory.'/green'.'" "'.$envDirectory.'/current'.'"'
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/media'.'"',
+            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/pond-tmp'.'"',
+            'ln -s "'.$envDirectory.'/'.self::DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT.'" "'.$envDirectory.'/current'.'"'
         ];
 
         $connection->runMultipleCommands($commands);
+    }
+
+    private function archiveUploadAndExtract($deploymentEnvironmentName)
+    {
+        $archiver = new ProjectArchiver($this->localProjectPath);
+        $zipPath = $archiver->make();
+
+        try {
+            $tmpFileName = $this->makeRemoteTempFileName();
+            $envDirectory = $this->getEnvironmentDirectoryRemotePath();
+            $destRemotePath = $envDirectory.'/pond-tmp/'.$tmpFileName;
+            $connection = $this->getConnection();
+            $connection->upload($zipPath, $destRemotePath);
+
+            if (!$connection->fileExists($destRemotePath)) {
+                throw new Exception('Error uploading the archive');
+            }
+
+            $connection->run('unzip '.$destRemotePath.' -d '.$envDirectory.'/'.$deploymentEnvironmentName);
+            $connection->run('rm '.$destRemotePath);
+        }
+        finally {
+            @unlink($zipPath);
+        }
+    }
+
+    private function getProjectDirectoryRemotePath()
+    {
+        return self::POND_ROOT.'/'.$this->projectDirectoryName;
+    }
+
+    private function getEnvironmentDirectoryRemotePath()
+    {
+        return $this->getProjectDirectoryRemotePath().'/'.$this->environmentDirectoryName;
+    }
+
+    private function makeRemoteTempFileName()
+    {
+        $result = microtime(true);
+
+        return str_replace('.', '-', $result);
     }
 
     private function validateEnvironmentDirectories()

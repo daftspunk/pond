@@ -5,7 +5,7 @@ use Exception;
 class ProjectArchiver
 {
     private $projectPath;
-    private $forceIgnorePaths;
+    private $disableIgnorePaths;
 
     private $components = [
         'core' => [
@@ -32,10 +32,19 @@ class ProjectArchiver
         ]
     ];
 
-    public function __construct($projectPath, $forceIgnorePaths = null)
+    private $allComponents = [
+        'core'=>true, 
+        'media'=>true,
+        'uploads'=>true,
+        'plugins'=>true,
+        'themes'=>true,
+        'config'=>true
+    ];
+
+    public function __construct($projectPath, $disableIgnorePaths = false)
     {
         $this->projectPath = $projectPath;
-        $this->forceIgnorePaths = $forceIgnorePaths;
+        $this->disableIgnorePaths = $disableIgnorePaths;
     }
 
     /**
@@ -56,8 +65,12 @@ class ProjectArchiver
      * ]
      * @return string Returns a path to the archive
      */
-    public function make(array $components)
+    public function make(array $components = null)
     {
+        if ($components === null) {
+            $components = $this->allComponents;
+        }
+
         $ignorePaths = $this->getIgnorePaths();
         $ignoreFilter = new IgnoreFilter($ignorePaths);
 
@@ -109,11 +122,11 @@ class ProjectArchiver
             }
 
             foreach ($componentConfig as $configPath) {
-                if (!preg_match('/^[0-9a-z_-\/]+$/i', $configPath)) {
+                if (!preg_match('/^[0-9a-z_\-\/]+$/i', $configPath)) {
                     throw new Exception(sprintf('Invalid value passed to the %s component configuration: %s', $component, $configPath));
                 }
 
-                $zip->add($componentPaths.$configPath);
+                $zip->add($componentPaths.'/'.$configPath);
             }
         }
     }
@@ -121,8 +134,8 @@ class ProjectArchiver
     private function getIgnorePaths()
     {
         // This is for unit testing.
-        if (is_array($this->forceIgnorePaths)) {
-            return $this->forceIgnorePaths;
+        if ($this->disableIgnorePaths) {
+            return [];
         }
 
         $path = $this->projectPath.'/.pondignore';

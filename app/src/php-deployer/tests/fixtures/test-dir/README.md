@@ -1,1 +1,1 @@
-Don't put any other files to this directory, it's used for testing the `ls` command via SSH.
+Don't put any other files to this directory, it's used for testing the `ls` command via SSH. Also, don't change contents of this file.

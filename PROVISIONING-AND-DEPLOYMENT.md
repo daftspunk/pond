@@ -153,6 +153,7 @@ Themes are deploying like regular directories. There will be no issues with asse
         /app
         /framework
           /sessions
+      /pond-tmp
     /staging
       ...
     /test

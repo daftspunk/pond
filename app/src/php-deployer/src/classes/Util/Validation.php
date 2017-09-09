@@ -5,10 +5,10 @@ use Exception;
 
 class Validation
 {
-    public static function dirName($directoryName)
+    public static function filePath($directoryName)
     {
-        if (!Validator::notEmpty()->alnum('-_/')->noWhitespace()->validate($directoryName)) {
-            throw new Exception('The directory name can contain only alphanumeric, dash, forward slash and underscore characters');
+        if (!Validator::notEmpty()->alnum('-_/.')->noWhitespace()->validate($directoryName)) {
+            throw new Exception('File path can contain only alphanumeric, dash, forward slash, dot and underscore characters');
         }
     }
 }

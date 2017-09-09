@@ -21,7 +21,9 @@ class ZipMaker
         }
 
         $this->zip = new ZipArchive();
-        $this->zip->open($archivePath, ZIPARCHIVE::CREATE | ZipArchive::OVERWRITE);
+        if ($this->zip->open($archivePath, ZIPARCHIVE::CREATE | ZipArchive::OVERWRITE) !== true) {
+            throw new Exception('ZipMaker - unable to create a ZIP archive.');
+        }
     }
 
     public function close()
