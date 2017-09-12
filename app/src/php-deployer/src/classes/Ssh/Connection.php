@@ -13,6 +13,7 @@ class Connection
     private $stringMasks = [];
     private $termStr = '@COMMAND-FINISHED@';
     private $termCmd = '; echo "%s"';
+    private $singleCommandHasRun = false;
 
     private $defaultTimeout;
 
@@ -46,11 +47,16 @@ class Connection
      * 
      * @param string $command Command to execute
      * @param int $timeout Timeout for executing the command
+     * @param array $variables A list of variable name and values to replace placeholders in commands.
+     * The placeholder syntax is {{$var}}. Variables are not escaped or sanitized, this must be
+     * done in the calling code.
      * @return string Returns the stdout buffer
      */
-    public function runCommand($command, $timeout = 10)
+    public function runCommand($command, $timeout = 10, array $variables = [])
     {
+        $this->singleCommandHasRun = true;
         $command = rtrim($command, ';').$this->makeTermCommand();
+        $command = $this->replaceVariables($command, $variables);
 
         $stream = @ssh2_exec($this->session, $command);
 
@@ -144,9 +150,12 @@ class Connection
      * 
      * @param string|array $commandsStr Commands to execute
      * @param int $timeout Timeout for executing a single command.
+     * @param array $variables A list of variable name and values to replace placeholders in commands.
+     * The placeholder syntax is {{$var}}. Variables are not escaped or sanitized, this must be
+     * done in the calling code.
      * @return string Returns the stdout buffer
      */
-    public function runMultipleCommands($commands, $timeout = 10)
+    public function runMultipleCommands($commands, $timeout = 10, array $variables = [])
     {
         if (!is_string($commands) && !is_array($commands)) {
             throw new Exception('The commands argument must be a string or array.');
@@ -163,6 +172,10 @@ class Connection
             if (!strlen($command)) {
                 continue;
             }
+
+            // Apply the variables here to prevent leaking their values
+            // through $result.
+            $command = $this->replaceVariables($command, $variables);
 
             $result .= '$ '.$this->maskCommand($command);
 
@@ -203,6 +216,10 @@ class Connection
 
     public function upload($from, $to)
     {
+        if ($this->singleCommandHasRun) {
+            throw new Exception('Cannot use a same SSH connection for running commands and uploading files.');
+        }
+
         if (!@ssh2_scp_send($this->session, $from, $to)) {
             throw new Exception('Error uploading file to the server');
         }
@@ -304,5 +321,14 @@ class Connection
         if (!is_readable($filePath)) {
             throw new Exception(sprintf('SSH key is not readable: `%s`', $filePath));
         }
+    }
+
+    private function replaceVariables($command, $variables)
+    {
+        foreach ($variables as $name=>$value) {
+            $command = str_replace('{{$'.$name.'}}', $value, $command);
+        }
+
+        return $command;
     }
 }

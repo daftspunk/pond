@@ -9,6 +9,7 @@ use PhpDeployer\Exceptions\Http as HttpException;
 abstract class Base
 {
     private $connection;
+    private $scpConnection;
 
     protected $privateKeyPath;
     protected $publicKeyPath;
@@ -40,6 +41,19 @@ abstract class Base
         }
 
         return $this->connection;
+    }
+
+    protected function getScpConnection()
+    {
+        if (!$this->scpConnection) {
+            $this->scpConnection = new Connection(
+                $this->ip, 
+                $this->publicKeyPath,
+                $this->privateKeyPath,
+                $this->user);
+        }
+
+        return $this->scpConnection;
     }
 
     protected function getParameterValue($params, $key, $required = true, $default = null)

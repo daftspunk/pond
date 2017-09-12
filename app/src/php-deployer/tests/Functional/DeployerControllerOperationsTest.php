@@ -27,14 +27,18 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertContains('directory already exists', $responseBody->error);
     }
 
-    public function testNewDeploymentNoErrors()
+    public function testNewDeploymentPartialProjectNoErrors()
     {
         $params = $this->makeValidDeploymentConfig();
+        $params['params']['localProjectPath'] = __DIR__.'/../fixtures/partial-test-project';
+
         $pondRoot = DeploymentOperation::POND_ROOT;
 
         $environmentDirectory = $pondRoot.'/'.
             $params['params']['projectDirectoryName'].'/'.
             $params['params']['environmentDirectoryName'];
+
+        echo $environmentDirectory.PHP_EOL;
 
         $this->assertDirectoryNotExists($environmentDirectory);
 
@@ -53,6 +57,20 @@ print_r((string)$response->getBody());
         $this->assertTrue(is_link($environmentDirectory.'/current'));
         $this->assertEquals($environmentDirectory.'/green', readlink($environmentDirectory.'/current'));
 
-// TODO: Test all the stuff exists in the green environment
+        $this->assertTrue(is_link($environmentDirectory.'/blue/storage/app'));
+        $this->assertEquals($environmentDirectory.'/storage/app', readlink($environmentDirectory.'/blue/storage/app'));
+        $this->assertTrue(is_link($environmentDirectory.'/blue/storage/framework/sessions'));
+        $this->assertEquals($environmentDirectory.'/storage/framework/sessions', readlink($environmentDirectory.'/blue/storage/framework/sessions'));
+
+        $this->assertTrue(is_link($environmentDirectory.'/green/storage/app'));
+        $this->assertEquals($environmentDirectory.'/storage/app', readlink($environmentDirectory.'/green/storage/app'));
+        $this->assertTrue(is_link($environmentDirectory.'/green/storage/framework/sessions'));
+        $this->assertEquals($environmentDirectory.'/storage/framework/sessions', readlink($environmentDirectory.'/green/storage/framework/sessions'));
+
+        $this->assertFileExists($environmentDirectory.'/green/index.php');
+        $this->assertFileExists($environmentDirectory.'/green/plugins/october/demo/Plugin.php');
+
+        $this->assertFileExists($environmentDirectory.'/blue/index.php');
+        $this->assertFileExists($environmentDirectory.'/blue/plugins/october/demo/Plugin.php');
     }
 }

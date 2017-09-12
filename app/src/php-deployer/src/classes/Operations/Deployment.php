@@ -87,7 +87,7 @@ class Deployment extends Base
         }
         else {
             $this->initDirectories();
-            $this->archiveUploadAndExtract(self::DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT);
+            $this->archiveUploadAndExtract(['blue', 'green']);
         }
     }
 
@@ -109,29 +109,44 @@ class Deployment extends Base
             throw new Exception(sprintf('The project environment directory already exists: %s', $envDirectory));
         }
 
-        // TODO: create /storage/app, /storage/framework/sessions symlinks
-
         $commands = [
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$projectDirectory.'"',     // Create project directory
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'"',         // Create environment directory
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/config'.'"', 
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/blue'.'"', 
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/green'.'"', 
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/metadata'.'"', 
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage'.'"', 
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/framework/sessions'.'"', 
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/uploads/public'.'"', 
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/uploads/protected'.'"', 
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/storage/app/media'.'"',
-            'mkdir -m '.$this->unixDirectoryMask.' -p "'.$envDirectory.'/pond-tmp'.'"',
-            'ln -s "'.$envDirectory.'/'.self::DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT.'" "'.$envDirectory.'/current'.'"'
+            'mkdir -m {{$dirMask}} -p "{{$projDirectory}}"',
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}"',
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/config'.'"', 
+
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/blue'.'"', 
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/blue/storage/framework'.'"', 
+            'ln -s "{{$envDirectory}}/storage/app" "{{$envDirectory}}/blue/storage/app'.'"',
+            'ln -s "{{$envDirectory}}/storage/framework/sessions" "{{$envDirectory}}/blue/storage/framework/sessions'.'"',
+
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/green'.'"', 
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/green/storage/framework'.'"', 
+            'ln -s "{{$envDirectory}}/storage/app" "{{$envDirectory}}/green/storage/app'.'"',
+            'ln -s "{{$envDirectory}}/storage/framework/sessions" "{{$envDirectory}}/green/storage/framework/sessions'.'"',
+
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/metadata'.'"', 
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/storage'.'"', 
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/storage/framework/sessions'.'"', 
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/storage/app/uploads/public'.'"', 
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/storage/app/uploads/protected'.'"', 
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/storage/app/media'.'"',
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/pond-tmp'.'"',
+            'ln -s "{{$envDirectory}}/{{$currentEnv}}" "{{$envDirectory}}/current'.'"'
         ];
 
-        $connection->runMultipleCommands($commands);
+        $variables = [
+            'dirMask' => $this->unixDirectoryMask,
+            'envDirectory' => $envDirectory,
+            'projDirectory' => $projectDirectory,
+            'currentEnv' => self::DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT
+        ];
+
+        $connection->runMultipleCommands($commands, 10, $variables);
     }
 
-    private function archiveUploadAndExtract($deploymentEnvironmentName)
+    private function archiveUploadAndExtract($deploymentEnvironmentNames)
     {
+        $deploymentEnvironmentNames = (array)$deploymentEnvironmentNames;
         $archiver = new ProjectArchiver($this->localProjectPath);
         $zipPath = $archiver->make();
 
@@ -140,14 +155,26 @@ class Deployment extends Base
             $envDirectory = $this->getEnvironmentDirectoryRemotePath();
             $destRemotePath = $envDirectory.'/pond-tmp/'.$tmpFileName;
             $connection = $this->getConnection();
-            $connection->upload($zipPath, $destRemotePath);
+
+            $this->getScpConnection()->upload($zipPath, $destRemotePath);
 
             if (!$connection->fileExists($destRemotePath)) {
                 throw new Exception('Error uploading the archive');
             }
 
-            $connection->run('unzip '.$destRemotePath.' -d '.$envDirectory.'/'.$deploymentEnvironmentName);
-            $connection->run('rm '.$destRemotePath);
+            try {
+                foreach ($deploymentEnvironmentNames as $deploymentEnvironmentName) {
+                    $params = [
+                        'zipPath' => $destRemotePath,
+                        'destPath' => $envDirectory.'/'.$deploymentEnvironmentName
+                    ];
+
+                    $connection->runCommand('unzip -o "{{$zipPath}}" -d "{{$destPath}}"', 30, $params);
+                }
+            }
+            finally {
+                $connection->runCommand('rm '.$destRemotePath);
+            }
         }
         finally {
             @unlink($zipPath);

@@ -81,6 +81,14 @@ class SshConnectionTest extends BaseCase
         $this->assertEquals('README.md', $result);
     }
 
+    public function testRunSimpleWithVars()
+    {
+        $connection = $this->makeValidConnection();
+
+        $result = $connection->runCommand('ls {{$path}}', 10, ['path'=>'/var/php-deployer/tests/fixtures/test-dir']);
+        $this->assertEquals('README.md', $result);
+    }
+
     public function testRunShortSleepCommand()
     {
         $connection = $this->makeValidConnection();
@@ -208,6 +216,14 @@ class SshConnectionTest extends BaseCase
 
         $result = $connection->runMultipleCommands('echo 1; echo 2;'.PHP_EOL.'echo 3'); // OK to use PHP_EOL here as it's an input
         $this->assertEquals('$ echo 1; echo 2;'.Connection::NL.'1'.Connection::NL.'2'.Connection::NL.'$ echo 3'.Connection::NL.'3'.Connection::NL, $result);
+    }
+
+    public function testRunMultiCommandsWithVarsNoError()
+    {
+        $connection = $this->makeValidConnection();
+
+        $result = $connection->runMultipleCommands('echo {{$num}}; echo {{$num}};'.PHP_EOL.'echo 3', 10, ['num'=>4]); // OK to use PHP_EOL here as it's an input
+        $this->assertEquals('$ echo 4; echo 4;'.Connection::NL.'4'.Connection::NL.'4'.Connection::NL.'$ echo 3'.Connection::NL.'3'.Connection::NL, $result);
     }
 
     public function testRunMultiCommandsSyntaxErrorWithSanitizing()
