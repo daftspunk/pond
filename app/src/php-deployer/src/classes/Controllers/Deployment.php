@@ -21,6 +21,21 @@ class Deployment extends Base
         $deployment->run();
     }
 
+    public function configureProject()
+    {
+        $this->validateDeployParamsArgument();
+
+        $configuration = new ConfigurationOperation();
+        $configuration->setConnectionParameters(
+            $this->getRequestArgument('privateKeyPath'),
+            $this->getRequestArgument('publicKeyPath'),
+            $this->getRequestArgument('ip'),
+            $this->getRequestArgument('user'));
+
+        $configuration->setConfigurationParameters($this->getRequestArgument('params'));
+        $configuration->run();
+    }
+
     private function validateDeployParamsArgument()
     {
         $this->validateArgumentsExist(['params']);

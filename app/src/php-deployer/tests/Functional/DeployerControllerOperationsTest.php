@@ -1,6 +1,7 @@
 <?php namespace Tests\Functional;
 
 use PhpDeployer\Operations\Deployment as DeploymentOperation;
+use PhpDeployer\Util\Configuration as DeployerConfiguration;
 use Exception;
 
 class DeployerControllerOperationTest extends BaseCase
@@ -8,7 +9,7 @@ class DeployerControllerOperationTest extends BaseCase
     public function testNewDeploymentEnviromentDirectoryExists()
     {
         $params = $this->makeValidDeploymentConfig();
-        $pondRoot = DeploymentOperation::POND_ROOT;
+        $pondRoot = DeployerConfiguration::POND_ROOT;
 
         $environmentDirectory = $pondRoot.'/'.
             $params['params']['projectDirectoryName'].'/'.
@@ -27,23 +28,21 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertContains('directory already exists', $responseBody->error);
     }
 
-    public function testNewDeploymentPartialProjectNoErrors()
+    public function testNewDeploymentPartialProjectNoErrorsNoConfig()
     {
         $params = $this->makeValidDeploymentConfig();
         $params['params']['localProjectPath'] = __DIR__.'/../fixtures/partial-test-project';
 
-        $pondRoot = DeploymentOperation::POND_ROOT;
+        $pondRoot = DeployerConfiguration::POND_ROOT;
 
         $environmentDirectory = $pondRoot.'/'.
             $params['params']['projectDirectoryName'].'/'.
             $params['params']['environmentDirectoryName'];
 
-        echo $environmentDirectory.PHP_EOL;
-
         $this->assertDirectoryNotExists($environmentDirectory);
 
         $response = $this->runDeploymentRequest($params);
-print_r((string)$response->getBody());
+
         $this->assertEquals(200, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
         // $this->assertNotNull($responseBody); Should not be null, should return the actual log of commands and responses
@@ -72,5 +71,25 @@ print_r((string)$response->getBody());
 
         $this->assertFileExists($environmentDirectory.'/blue/index.php');
         $this->assertFileExists($environmentDirectory.'/blue/plugins/october/demo/Plugin.php');
+
+        return $params;
+    }
+
+    /**
+     * @depends testNewDeploymentPartialProjectNoErrorsNoConfig
+     */
+    public function testConfigurationOperation($params)
+    {
+        // TODO: supply templates to $params, run tests with errros
+
+        $response = $this->runDeploymentRequest($params, '/configure');
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        // Test no templates
+        // Test invalid template names
+        // Test 'template' parameter not found
+        // Test 'var' parameter not found or is not an array
+        // Test template is not string
     }
 }

@@ -2,6 +2,8 @@
 
 use PhpDeployer\Ssh\Connection;
 use PhpDeployer\Exceptions\Http as HttpException;
+use Respect\Validation\Validator as Validator;
+use PhpDeployer\Util\Configuration as DeployerConfiguration;
 
 /**
  * Base class for deployment and configuration operations.
@@ -15,6 +17,22 @@ abstract class Base
     protected $publicKeyPath;
     protected $ip;
     protected $user;
+
+    // The following properties must stay private.
+    // If they're set from external sources, their
+    // values must be validated.
+
+    private $projectDirectoryName;
+    private $environmentDirectoryName;
+
+    public function __construct(Connection $connection = null, Connection $scpConnection = null)
+    {
+        // This allows to reuse an existing connection when
+        // the operation is used from inside of another 
+        // operation.
+        $this->connection = $connection;
+        $this->scpConnection = $scpConnection;
+    }
 
     /**
      * Sets the common connection parameters.
@@ -67,6 +85,44 @@ abstract class Base
         }
 
         return $params[$key];
+    }
+
+    protected function setProjectDirectoryName($value)
+    {
+        if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($value)) {
+            throw new HttpException('The project directory name can contain only alphanumeric, dash and underscore characters', 400);
+        }
+
+        $this->projectDirectoryName = $value;
+    }
+
+    protected function getProjectDirectoryName()
+    {
+        return $this->projectDirectoryName;
+    }
+
+    protected function setEnvironmentDirectoryName($value)
+    {
+        if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($value)) {
+            throw new HttpException('The environment directory name can contain only alphanumeric, dash and underscore characters', 400);
+        }
+
+        $this->environmentDirectoryName = $value;
+    }
+
+    protected function getEnvironmentDirectoryName()
+    {
+        return $this->environmentDirectoryName;
+    }
+
+    protected function getProjectDirectoryRemotePath()
+    {
+        return DeployerConfiguration::POND_ROOT.'/'.$this->getProjectDirectoryName();
+    }
+
+    protected function getEnvironmentDirectoryRemotePath()
+    {
+        return $this->getProjectDirectoryRemotePath().'/'.$this->getEnvironmentDirectoryName();
     }
 
     abstract public function run();

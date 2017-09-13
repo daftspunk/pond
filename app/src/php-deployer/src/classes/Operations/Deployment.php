@@ -1,6 +1,8 @@
 <?php namespace PhpDeployer\Operations;
 
 use PhpDeployer\Exceptions\Http as HttpException;
+use PhpDeployer\Operations\Configuration as ConfigurationOperation;
+use PhpDeployer\Util\Configuration as DeployerConfiguration;
 use Respect\Validation\Validator as Validator;
 use PhpDeployer\Archiver\ProjectArchiver;
 use Exception;
@@ -37,8 +39,6 @@ use Exception;
  */
 class Deployment extends Base
 {
-    const POND_ROOT = '/var/www';
-
     const DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT = 'green';
 
     // The following properties must stay private.
@@ -46,34 +46,36 @@ class Deployment extends Base
     // values must be validated.
 
     private $update;
-    private $projectDirectoryName;
-    private $environmentDirectoryName;
     private $localProjectPath;
-
-    private $unixDirectoryMask = "755"; 
-    private $unixFileMask = "644";
+    private $configurationOperation;
 
     public function setDeploymentParameters($parameters)
     {
         $this->update = $this->getParameterValue($parameters, 'update');
-        $this->projectDirectoryName = $this->getParameterValue($parameters, 'projectDirectoryName');
-        $this->environmentDirectoryName = $this->getParameterValue($parameters, 'environmentDirectoryName');
         $this->localProjectPath = $this->getParameterValue($parameters, 'localProjectPath');
+
+        $this->setProjectDirectoryName($this->getParameterValue($parameters, 'projectDirectoryName'));
+        $this->setEnvironmentDirectoryName($this->getParameterValue($parameters, 'environmentDirectoryName'));
 
         if (!Validator::boolType()->validate($this->update)) {
             throw new HttpException('The update parameter should be of boolean type', 400);
         }
 
-        if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($this->projectDirectoryName)) {
-            throw new HttpException('The project directory name can contain only alphanumeric, dash and underscore characters', 400);
-        }
-
-        if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($this->environmentDirectoryName)) {
-            throw new HttpException('The environment directory name can contain only alphanumeric, dash and underscore characters', 400);
-        }
-
         if (!Validator::directory()->validate($this->localProjectPath)) {
             throw new HttpException('The local project directory not found', 400);
+        }
+
+        $configTemplatesProvided = $this->getParameterValue($parameters, 'configTemplates', false) !== null;
+        if (!$this->update && !$configTemplatesProvided) {
+            throw new HttpException('Configuration templates must be provided for the new deployment', 400);
+        }
+
+        if ($configTemplatesProvided) {
+            // Create the configuration operation early to detect possible
+            // problems with templates before deployment.
+
+            $this->configurationOperation = new ConfigurationOperation();
+            $this->configurationOperation->setConfigurationParameters($parameters);
         }
     }
 
@@ -95,8 +97,8 @@ class Deployment extends Base
     {
         $connection = $this->getConnection();
 
-        if (!$connection->directoryExists(self::POND_ROOT)) {
-            throw new Exception(sprintf('%s directory not found on the server $pondRoot', self::POND_ROOT));
+        if (!$connection->directoryExists(DeployerConfiguration::POND_ROOT)) {
+            throw new Exception(sprintf('%s directory not found on the server $pondRoot', DeployerConfiguration::POND_ROOT));
         }
 
         // If we are creating the environment, make sure the 
@@ -135,7 +137,7 @@ class Deployment extends Base
         ];
 
         $variables = [
-            'dirMask' => $this->unixDirectoryMask,
+            'dirMask' => DeployerConfiguration::UNIX_DIRECTORY_MASK,
             'envDirectory' => $envDirectory,
             'projDirectory' => $projectDirectory,
             'currentEnv' => self::DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT
@@ -179,16 +181,6 @@ class Deployment extends Base
         finally {
             @unlink($zipPath);
         }
-    }
-
-    private function getProjectDirectoryRemotePath()
-    {
-        return self::POND_ROOT.'/'.$this->projectDirectoryName;
-    }
-
-    private function getEnvironmentDirectoryRemotePath()
-    {
-        return $this->getProjectDirectoryRemotePath().'/'.$this->environmentDirectoryName;
     }
 
     private function makeRemoteTempFileName()

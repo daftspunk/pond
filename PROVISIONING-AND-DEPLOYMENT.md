@@ -34,6 +34,8 @@ Each server environment has two deployment environments - blue and green. One of
 
 We always update the inactive deployment environment, e.g. if the currently active environment is blue, we will deploy to green and vice versa.
 
+Deployment environments belonging to a same server environment share the same configuration, uploaded files, media and sessions. 
+
 ## What Pond knows about DO
 
 These are kept in Pond settings.

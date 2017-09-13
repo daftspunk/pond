@@ -65,7 +65,7 @@ class Base
             throw new HttpException('Invalid IP address', 400);
         }
 
-        if (!Validator::notEmpty()->regex('/[a-z_][a-z0-9_]{0,30}/')->validate($this->getRequestArgument('user'))) {
+        if (!Validator::notEmpty()->regex('/^[a-z_][a-z0-9_]{0,30}$/i')->validate($this->getRequestArgument('user'))) {
             throw new HttpException('Invalid user name', 400);
         }
     }

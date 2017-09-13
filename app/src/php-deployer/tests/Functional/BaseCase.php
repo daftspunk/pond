@@ -7,6 +7,7 @@ use Slim\Http\Environment;
 
 use PHPUnit\Framework\TestCase;
 use PhpDeployer\Ssh\Connection;
+use PhpDeployer\Util\Configuration as DeployerConfiguration;
 
 use PhpDeployer\Operations\Deployment as DeploymentOperation;
 
@@ -103,7 +104,7 @@ class BaseCase extends TestCase
 
     protected function generateUniqueProjectName()
     {
-        $pondRoot = DeploymentOperation::POND_ROOT;
+        $pondRoot = DeployerConfiguration::POND_ROOT;
         $nameBase = 'test-project-';
         $counter = 1;
 
@@ -116,7 +117,7 @@ class BaseCase extends TestCase
 
     protected function generateUniqueEnvironmentName($projectName)
     {
-        $pondRoot = DeploymentOperation::POND_ROOT;
+        $pondRoot = DeployerConfiguration::POND_ROOT;
         $nameBase = 'test-environment-';
         $counter = 1;
 
@@ -141,7 +142,8 @@ class BaseCase extends TestCase
                 'update' => false,
                 'projectDirectoryName' => $projectName,
                 'environmentDirectoryName' => $this->generateUniqueEnvironmentName($projectName),
-                'localProjectPath' => __DIR__.'/../fixtures/test-project'
+                'localProjectPath' => __DIR__.'/../fixtures/test-project',
+                'configTemplates' => []
             ]
         ];
     }
@@ -153,9 +155,9 @@ class BaseCase extends TestCase
         }
     }
 
-    protected function runDeploymentRequest($params)
+    protected function runDeploymentRequest($params, $operation = '/deploy')
     {
-        return $this->runApp('POST', '/deploy', function($request) use ($params) {
+        return $this->runApp('POST', $operation, function($request) use ($params) {
             $request->withHeader('Content-Type', 'application/json');
             $request->getBody()->write(json_encode($params));
         });

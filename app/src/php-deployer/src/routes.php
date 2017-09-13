@@ -7,3 +7,9 @@ $app->post('/deploy', function ($request, $response, $args) use ($app) {
 
     return $controller->deployProject();
 });
+
+$app->post('/configure', function ($request, $response, $args) use ($app) {
+    $controller = new Deployment($app, $request, $response, $args);
+
+    return $controller->configureProject();
+});
