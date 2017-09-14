@@ -1,6 +1,7 @@
 <?php namespace PhpDeployer\Controllers;
 
 use PhpDeployer\Operations\Deployment as DeploymentOperation;
+use PhpDeployer\Operations\Configuration as ConfigurationOperation;
 use PhpDeployer\Exceptions\Http as HttpException;
 use Respect\Validation\Validator as Validator;
 

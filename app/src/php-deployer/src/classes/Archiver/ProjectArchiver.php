@@ -10,7 +10,7 @@ class ProjectArchiver
     private $components = [
         'core' => [
             '.pondgitdir',    // This is for unit testing purposes only
-            '.git',         // We support git, unless it's removed with .pondignore
+            '.git',           // We support git, unless it's removed with .pondignore
             '.gitignore',
             '.htaccess',
             'index.php',
@@ -40,6 +40,8 @@ class ProjectArchiver
         'themes'=>true,
         'config'=>true
     ];
+
+    private $archivedComponentPaths;
 
     public function __construct($projectPath, $disableIgnorePaths = false)
     {
@@ -71,6 +73,8 @@ class ProjectArchiver
             $components = $this->allComponents;
         }
 
+        $this->archivedComponentPaths = [];
+
         $ignorePaths = $this->getIgnorePaths();
         $ignoreFilter = new IgnoreFilter($ignorePaths);
 
@@ -93,6 +97,14 @@ class ProjectArchiver
         return $tempFilePath;
     }
 
+    /**
+     * Returns paths to files and top-level directories that were archived with the last make() call.
+     */
+    public function getArchivedComponentPaths()
+    {
+        return $this->archivedComponentPaths;
+    }
+
     private function addComponent($zip, $component, $componentConfig)
     {
         if (!array_key_exists($component, $this->components)) {
@@ -105,7 +117,7 @@ class ProjectArchiver
             // Core, media, uploads, config
 
             foreach ($componentPaths as $path) {
-                $zip->add($path);
+                $this->addPathToZip($zip, $path);
             }
         }
         else {
@@ -117,7 +129,7 @@ class ProjectArchiver
             }
 
             if ($componentConfig === true) {
-                $zip->add($componentPaths);
+                $this->addPathToZip($zip, $componentPaths);
                 return;
             }
 
@@ -126,9 +138,15 @@ class ProjectArchiver
                     throw new Exception(sprintf('Invalid value passed to the %s component configuration: %s', $component, $configPath));
                 }
 
-                $zip->add($componentPaths.'/'.$configPath);
+                $this->addPathToZip($zip, $componentPaths.'/'.$configPath);
             }
         }
+    }
+
+    private function addPathToZip($zip, $path)
+    {
+        $this->archivedComponentPaths[] = $path;
+        $zip->add($path);
     }
 
     private function getIgnorePaths()

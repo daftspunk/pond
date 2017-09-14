@@ -264,4 +264,15 @@ class SshConnectionTest extends BaseCase
         $remoteFilePath = '/var/www/'.microtime().'.tmp';
         $connection->upload(__DIR__.'/../fixtures/test-dir/not-a-file', $remoteFilePath);
     }
+
+    public function testCompoundCommand()
+    {
+        $connection = $this->makeValidConnection();
+        $params = [
+            'path' => __DIR__.'/../fixtures/partial-test-project'
+        ];
+
+        $result = $connection->runCommand('if [ -d "{{$path}}" ]; then find "{{$path}}" -type f; fi', 120, $params);
+        $this->assertContains('autoload.php', $result);
+    }
 }

@@ -74,7 +74,10 @@ class Deployment extends Base
             // Create the configuration operation early to detect possible
             // problems with templates before deployment.
 
-            $this->configurationOperation = new ConfigurationOperation();
+            $this->configurationOperation = new ConfigurationOperation(
+                $this->getConnection(), 
+                $this->getScpConnection());
+
             $this->configurationOperation->setConfigurationParameters($parameters);
         }
     }
@@ -90,6 +93,10 @@ class Deployment extends Base
         else {
             $this->initDirectories();
             $this->archiveUploadAndExtract(['blue', 'green']);
+        }
+
+        if ($this->configurationOperation) {
+            $this->configurationOperation->run();
         }
     }
 
@@ -166,12 +173,15 @@ class Deployment extends Base
 
             try {
                 foreach ($deploymentEnvironmentNames as $deploymentEnvironmentName) {
+                    $unzipPath = $envDirectory.'/'.$deploymentEnvironmentName;
                     $params = [
                         'zipPath' => $destRemotePath,
-                        'destPath' => $envDirectory.'/'.$deploymentEnvironmentName
+                        'destPath' => $unzipPath
                     ];
 
                     $connection->runCommand('unzip -o "{{$zipPath}}" -d "{{$destPath}}"', 30, $params);
+
+                    $this->fixPermissions($archiver, $unzipPath);
                 }
             }
             finally {
@@ -180,6 +190,27 @@ class Deployment extends Base
         }
         finally {
             @unlink($zipPath);
+        }
+    }
+
+    private function fixPermissions($archiver, $directory)
+    {
+        $connection = $this->getConnection();
+        $archivedPaths = $archiver->getArchivedComponentPaths();
+        foreach ($archivedPaths as $path) {
+            $params = [
+                'path' => $directory.'/'.$path,
+                'fileMask' => DeployerConfiguration::UNIX_FILE_MASK,
+                'dirMask' => DeployerConfiguration::UNIX_DIRECTORY_MASK
+            ];
+
+            if ($path != 'config') {
+                // Permissions for configuration files are
+                // managed with the configuration operation.
+                $connection->runCommand('if [ -f "{{$path}}" ]; then find "{{$path}}" -type f -exec chmod {{$fileMask}} {} \;; fi', 120, $params);
+            }
+
+            $connection->runCommand('if [ -d "{{$path}}" ]; then find "{{$path}}" -type d -exec chmod {{$dirMask}} {} \;; fi', 120, $params);
         }
     }
 

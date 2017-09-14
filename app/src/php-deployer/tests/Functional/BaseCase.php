@@ -11,6 +11,8 @@ use PhpDeployer\Util\Configuration as DeployerConfiguration;
 
 use PhpDeployer\Operations\Deployment as DeploymentOperation;
 
+use Exception;
+
 /**
  * This is an example class that shows how you could set up a method that
  * runs the application. Note that it doesn't cover all use-cases and is
@@ -30,6 +32,7 @@ class BaseCase extends TestCase
 
     public static function setUpBeforeClass()
     {
+        DeployerConfiguration::setWorldReadableConfigFiles();
         self::$configValues = json_decode(file_get_contents(__DIR__.'/../fixtures/config.json'), true);
     }
 
@@ -161,5 +164,25 @@ class BaseCase extends TestCase
             $request->withHeader('Content-Type', 'application/json');
             $request->getBody()->write(json_encode($params));
         });
+    }
+
+    protected function loadTestConfigTemplates($sourceDir, $namesAndParameters)
+    {
+        $result = [];
+
+        foreach ($namesAndParameters as $name=>$parameters) {
+            $path = $sourceDir.'/'.$name;
+            $contents = file_get_contents($path);
+            if ($contents === false) {
+                throw new Exception(sprintf('Error loading fixture configuration file: %s', $path));
+            }
+
+            $result[$name] = [
+                'template' => $contents,
+                'vars' => $parameters
+            ];
+        }
+
+        return $result;
     }
 }

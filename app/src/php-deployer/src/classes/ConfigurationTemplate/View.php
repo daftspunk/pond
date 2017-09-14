@@ -33,7 +33,8 @@ class View
 
         return $this->twig = new Twig_Environment($this->getLoader(), [
             'cache' => false,
-            'strict_variables' => true
+            'strict_variables' => true,
+            'autoescape' => false
         ]);
     }
 

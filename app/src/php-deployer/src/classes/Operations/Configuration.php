@@ -1,6 +1,7 @@
 <?php namespace PhpDeployer\Operations;
 
 use PhpDeployer\Exceptions\Http as HttpException;
+use PhpDeployer\Util\Configuration as DeployerConfiguration;
 use PhpDeployer\ConfigurationTemplate\View as ConfigurationTemplateView;
 use Respect\Validation\Validator as Validator;
 use Exception;
@@ -50,7 +51,7 @@ class Configuration extends Base
 
             // Do this to fail early if there are syntax errors,
             // undefined variables or other issues in the templates.
-            $this->renderTemplate($templateName, $source, $variables);
+            $this->renderTemplate($templateName, $templateConfiguration['template'], $templateConfiguration['vars']);
         }
     }
 
@@ -83,13 +84,17 @@ class Configuration extends Base
         }
 
         try {
-            $contents = $this->renderTemplate($templateName, $source, $variables);
+            $contents = $this->renderTemplate($templateName, $templateConfiguration['template'], $templateConfiguration['vars']);
             if (@file_put_contents($tempFilePath, $contents) === false) {
                 throw new Exception('Cannot save configuration template string to a temporary file');
             }
 
             $destRemotePath = $configDirectory.'/'.$templateName;
             $this->getScpConnection()->upload($tempFilePath, $destRemotePath);
+            $this->getConnection()->runCommand('chmod {{$mask}} {{$path}}', 10, [
+                'mask' => DeployerConfiguration::getUnixConfigFileMask(),
+                'path' => $destRemotePath
+            ]);
         }
         finally {
             @unlink($tempFilePath);

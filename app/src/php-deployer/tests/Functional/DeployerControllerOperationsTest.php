@@ -28,10 +28,17 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertContains('directory already exists', $responseBody->error);
     }
 
-    public function testNewDeploymentPartialProjectNoErrorsNoConfig()
+    public function testNewDeploymentPartialProjectNoErrors()
     {
         $params = $this->makeValidDeploymentConfig();
         $params['params']['localProjectPath'] = __DIR__.'/../fixtures/partial-test-project';
+
+        $templatesParams = [
+            'app.php' => ['value'=>'true'],
+            'view.php' => ['value'=>'"string"']
+        ];
+
+        $params['params']['configTemplates'] = $this->loadTestConfigTemplates(__DIR__.'/../fixtures/test-config', $templatesParams);
 
         $pondRoot = DeployerConfiguration::POND_ROOT;
 
@@ -72,24 +79,138 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertFileExists($environmentDirectory.'/blue/index.php');
         $this->assertFileExists($environmentDirectory.'/blue/plugins/october/demo/Plugin.php');
 
-        return $params;
+        $this->assertFileExists($environmentDirectory.'/config/app.php');
+        $this->assertFileExists($environmentDirectory.'/config/view.php');
+        $this->assertStringEqualsFile($environmentDirectory.'/config/app.php', '<?php return [\'param1\' => true];');
+        $this->assertStringEqualsFile($environmentDirectory.'/config/view.php', '<?php return [\'param2\' => "string"];');
+
+        $this->assertEquals(DeployerConfiguration::UNIX_FILE_MASK, substr(sprintf('%o', fileperms($environmentDirectory.'/blue/index.php')), -3));
+        $this->assertEquals(DeployerConfiguration::UNIX_DIRECTORY_MASK, substr(sprintf('%o', fileperms($environmentDirectory.'/blue/plugins/october')), -3));
+
+        return [
+            'params'=>$params, 
+            'environmentDirectory'=>$environmentDirectory
+        ];
     }
 
     /**
-     * @depends testNewDeploymentPartialProjectNoErrorsNoConfig
+     * @depends testNewDeploymentPartialProjectNoErrors
      */
-    public function testConfigurationOperation($params)
+    public function testConfigurationOperation($input)
     {
-        // TODO: supply templates to $params, run tests with errros
+        extract($input);
+
+        $templatesParams = [
+            'session.php' => ['value'=>'false']
+        ];
+
+        $params['params']['configTemplates'] = $this->loadTestConfigTemplates(__DIR__.'/../fixtures/test-config', $templatesParams);
 
         $response = $this->runDeploymentRequest($params, '/configure');
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        // Test no templates
-        // Test invalid template names
-        // Test 'template' parameter not found
-        // Test 'var' parameter not found or is not an array
-        // Test template is not string
+        $this->assertFileExists($environmentDirectory.'/config/app.php');
+        $this->assertFileExists($environmentDirectory.'/config/view.php');
+        $this->assertFileExists($environmentDirectory.'/config/session.php');
+        $this->assertStringEqualsFile($environmentDirectory.'/config/app.php', '<?php return [\'param1\' => true];');
+        $this->assertStringEqualsFile($environmentDirectory.'/config/view.php', '<?php return [\'param2\' => "string"];');
+        $this->assertStringEqualsFile($environmentDirectory.'/config/session.php', '<?php return [\'param3\' => false];');
+
+        $this->assertEquals(DeployerConfiguration::getUnixConfigFileMask(), substr(sprintf('%o', fileperms($environmentDirectory.'/config/app.php')), -3));
+    }
+
+    public function testConfigurationOperationNoTemplates()
+    {
+        $params = $this->makeValidDeploymentConfig();
+        unset($params['params']['configTemplates']);
+
+        $response = $this->runDeploymentRequest($params, '/configure');
+        $this->assertEquals(400, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('configTemplates not found in the request', $responseBody->error);
+    }
+
+    public function testConfigurationOperationInvalidTemplateNames()
+    {
+        $params = $this->makeValidDeploymentConfig();
+        $params['params']['configTemplates'] = [
+            'something.sh' => ['template' => '', 'vars' => []]
+        ];
+
+        $response = $this->runDeploymentRequest($params, '/configure');
+        $this->assertEquals(400, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('Invalid configuration template name', $responseBody->error);
+    }
+
+    public function testConfigurationOperationTemplateSourceNotFound()
+    {
+        $params = $this->makeValidDeploymentConfig();
+        $params['params']['configTemplates'] = [
+            'app.php' => ['vars' => []]
+        ];
+
+        $response = $this->runDeploymentRequest($params, '/configure');
+        $this->assertEquals(400, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('template parameter is not found', $responseBody->error);
+    }
+
+    public function testConfigurationOperationTemplateVarsNotFound()
+    {
+        $params = $this->makeValidDeploymentConfig();
+        $params['params']['configTemplates'] = [
+            'app.php' => ['template' => '']
+        ];
+
+        $response = $this->runDeploymentRequest($params, '/configure');
+        $this->assertEquals(400, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('vars parameter is not found', $responseBody->error);
+    }
+
+    public function testConfigurationOperationTemplateVarsNotArray()
+    {
+        $params = $this->makeValidDeploymentConfig();
+        $params['params']['configTemplates'] = [
+            'app.php' => ['template' => '', 'vars' => true]
+        ];
+
+        $response = $this->runDeploymentRequest($params, '/configure');
+        $this->assertEquals(400, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('must be an array', $responseBody->error);
+    }
+
+    public function testConfigurationOperationTemplateNotString()
+    {
+        $params = $this->makeValidDeploymentConfig();
+        $params['params']['configTemplates'] = [
+            'app.php' => ['template' => true, 'vars' => []]
+        ];
+
+        $response = $this->runDeploymentRequest($params, '/configure');
+        $this->assertEquals(400, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('must be a string', $responseBody->error);
     }
 }

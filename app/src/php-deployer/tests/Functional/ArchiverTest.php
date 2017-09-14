@@ -28,6 +28,10 @@ class ArchiverTest extends BaseCase
         $this->assertInternalType('array', $zip->statName('plugins/october/demo/Plugin.php'));
         $this->assertInternalType('array', $zip->statName('plugins/october/demo/.pondgitdir/test/test.txt'));
         $this->assertInternalType('array', $zip->statName('config/app.php'));
+
+        $archivedPaths = $archiver->getArchivedComponentPaths();
+        $this->assertContains('index.php', $archivedPaths);
+        $this->assertContains('plugins', $archivedPaths);
     }
 
     public function testDefaultPondIgnore()
@@ -65,6 +69,10 @@ class ArchiverTest extends BaseCase
         $this->assertFalse($zip->statName('modules/backend/behaviors/FormController.php'));
         $this->assertInternalType('array', $zip->statName('plugins/october/demo/Plugin.php'));
         $this->assertInternalType('array', $zip->statName('plugins/october/test/Plugin.php'));
+
+        $archivedPaths = $archiver->getArchivedComponentPaths();
+        $this->assertNotContains('index.php', $archivedPaths);
+        $this->assertContains('plugins', $archivedPaths);
     }
 
     public function testOnePlugin()
@@ -84,6 +92,10 @@ class ArchiverTest extends BaseCase
         $this->assertFalse($zip->statName('modules/backend/behaviors/FormController.php'));
         $this->assertInternalType('array', $zip->statName('plugins/october/demo/Plugin.php'));
         $this->assertFalse($zip->statName('plugins/october/test/Plugin.php'));
+
+        $archivedPaths = $archiver->getArchivedComponentPaths();
+        $this->assertNotContains('index.php', $archivedPaths);
+        $this->assertContains('plugins/october/demo', $archivedPaths);
     }
 
     public function testOneTheme()

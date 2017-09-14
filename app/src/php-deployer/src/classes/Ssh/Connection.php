@@ -55,7 +55,12 @@ class Connection
     public function runCommand($command, $timeout = 10, array $variables = [])
     {
         $this->singleCommandHasRun = true;
-        $command = rtrim($command, ';').$this->makeTermCommand();
+
+        if (substr($command, -2) != '\;') {
+            $command = rtrim($command, ';');
+        }
+
+        $command = $command.$this->makeTermCommand();
         $command = $this->replaceVariables($command, $variables);
 
         $stream = @ssh2_exec($this->session, $command);
