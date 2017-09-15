@@ -19,7 +19,18 @@ class Deployment extends Base
             $this->getRequestArgument('user'));
 
         $deployment->setDeploymentParameters($this->getRequestArgument('params'));
-        $deployment->run();
+
+        // We call saveRemoteLog() in the controller
+        // and not inside the run() method, because
+        // commands can invoke each other's run() method 
+        // and we want the log to be saved only once.
+
+        try {
+            $deployment->run();
+        }
+        finally {
+            $deployment->saveRemoteLog();
+        }
     }
 
     public function configureProject()
@@ -34,7 +45,13 @@ class Deployment extends Base
             $this->getRequestArgument('user'));
 
         $configuration->setConfigurationParameters($this->getRequestArgument('params'));
-        $configuration->run();
+
+        try {
+            $configuration->run();
+        }
+        finally {
+            $configuration->saveRemoteLog();
+        }
     }
 
     private function validateDeployParamsArgument()

@@ -53,8 +53,8 @@ These are kept in Pond project configuration.
   * List of droplets associated with the server environment
   * Environment domain name
   * A build tag of the last successful deployment
-  * Green or Blue marker of the last successful deployment (will be needed when adding a new server to existing balanced environment). **Not needed:** this can always be loaded from the project's servers Pond metadata. If there are no associated servers with the project, just make Blue active on a new server.
-  * Secret prefix for accessing the blue and green environments.
+  * Green or Blue marker of the last successful deployment (will be needed when adding a new server to existing balanced environment). **Not needed:** this can always be loaded from the project's servers Pond metadata. If there are no associated servers with the project, just make Green active on a new server.
+  * Secret prefix for accessing the blue and green environments with a browser.
   * Project directory name on the server(s)
   * Post-provision and post-deployment bash scripts
   * Deployment .pondignore file - what directories to ignore on deployment (config files are auto-ignored)
@@ -150,7 +150,7 @@ Themes are deploying like regular directories. There will be no issues with asse
         /storage/framework/sessions - (symlink to the common storage/framework/sessions)
       /current (symlink to blue or green)
       /metadata
-        log
+        /log
       /storage
         /app
         /framework
@@ -168,7 +168,31 @@ Pond projects should be able to request and show the server environment status: 
 
 ## Keeping some data on the could servers
 
-Deployed environments must keep enough metadata to determine what projects the belong to, just for convenience of administrators. Droplets will use tags matching project names.
+Deployed environments must keep enough metadata to determine what projects the belong to, just for convenience of administrators. Droplets will use tags matching project names. Metadata structure (/metadata/status.json):
+
+```
+{
+  "deploymentEnvironments": {
+    "blue": {
+      "lastDeployment": "datetime",
+      "buildTag": "string"
+    }
+  },
+  "deploymentLog": {
+    [
+      {
+        "datetime": "datetime",
+        "status": "success|fail",
+        "components": ["core", "config", ...],
+        "environment": ["blue"]
+      }
+    ],
+    ...
+  }
+}
+```
+
+The `deploymentLog` part keeps information only about X days of latest deployments.
 
 ## Billing
 

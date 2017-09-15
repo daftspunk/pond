@@ -32,7 +32,6 @@ class BaseCase extends TestCase
 
     public static function setUpBeforeClass()
     {
-        DeployerConfiguration::setWorldReadableConfigFiles();
         self::$configValues = json_decode(file_get_contents(__DIR__.'/../fixtures/config.json'), true);
     }
 

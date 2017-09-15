@@ -4,6 +4,7 @@ use PhpDeployer\Ssh\Connection;
 use PhpDeployer\Exceptions\Http as HttpException;
 use Respect\Validation\Validator as Validator;
 use PhpDeployer\Util\Configuration as DeployerConfiguration;
+use Exception;
 
 /**
  * Base class for deployment and configuration operations.
@@ -17,6 +18,9 @@ abstract class Base
     protected $publicKeyPath;
     protected $ip;
     protected $user;
+
+    private $logCallable;
+    private $combinedLog = [];
 
     // The following properties must stay private.
     // If they're set from external sources, their
@@ -48,6 +52,33 @@ abstract class Base
         $this->user = $user;
     }
 
+    public function setLogCallable(callable $logCallable)
+    {
+        $this->logCallable = $logCallable;
+    }
+
+    public function saveRemoteLog()
+    {
+        try {
+            $this->uploadRemoteLog();
+        }
+        catch (Exception $ex) {
+            // This will push the message to the client
+            $this->handleConnectionLogEntry(sprintf('Error creating log file on the server. %s', $ex->getMessage()));
+        }
+    }
+
+    public function saveRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails = null)
+    {
+        try {
+            $this->uploadRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails);
+        }
+        catch (Exception $ex) {
+            // This will push the message to the client
+            $this->handleConnectionLogEntry(sprintf('Error updating environment status file on the server. %s', $ex->getMessage()));
+        }
+    }
+
     protected function getConnection()
     {
         if (!$this->connection) {
@@ -56,6 +87,10 @@ abstract class Base
                 $this->publicKeyPath,
                 $this->privateKeyPath,
                 $this->user);
+
+            $this->connection->setLogCallable(function($string) {
+                $this->handleConnectionLogEntry($string);
+            });
         }
 
         return $this->connection;
@@ -69,6 +104,10 @@ abstract class Base
                 $this->publicKeyPath,
                 $this->privateKeyPath,
                 $this->user);
+
+            $this->scpConnection->setLogCallable(function($string) {
+                $this->handleConnectionLogEntry($string);
+            });
         }
 
         return $this->scpConnection;
@@ -123,6 +162,73 @@ abstract class Base
     protected function getEnvironmentDirectoryRemotePath()
     {
         return $this->getProjectDirectoryRemotePath().'/'.$this->getEnvironmentDirectoryName();
+    }
+
+    protected function makeRemoteTempFileName()
+    {
+        $result = microtime(true);
+
+        return str_replace('.', '-', $result);
+    }
+
+    private function handleConnectionLogEntry($string)
+    {
+        $this->combinedLog[] = $string;
+
+        $callable = $this->logCallable;
+        if ($callable) {
+            $callable($string);
+        }
+    }
+
+    private function uploadRemoteLog()
+    {
+        $localTmpPath = tempnam(sys_get_temp_dir(), 'pond_');
+        try {
+            $remoteTmpFileName = $this->makeRemoteTempFileName();
+
+            if (file_put_contents($localTmpPath, implode("\n", $this->combinedLog)) === false) {
+                throw new Exception('Error creating log file: cannot create a local temporary file');
+            }
+
+            $envDirectory = $this->getEnvironmentDirectoryRemotePath();
+            $destRemotePath = $envDirectory.'/pond-tmp/'.$remoteTmpFileName;
+
+            $connection = $this->getConnection();
+            $this->getScpConnection()->upload($localTmpPath, $destRemotePath);
+
+            if (!$connection->fileExists($destRemotePath)) {
+                throw new Exception('Error uploading the log file');
+            }
+
+            try {
+                $serverTime = $connection->runCommand('date +"%Y-%m-%dT%T"');
+                $finalLogPath = $envDirectory.'/metadata/log/'.$serverTime.'.txt';
+
+                $params = [
+                    'tmpPath' => $destRemotePath,
+                    'destPath' => $finalLogPath,
+                    'mask' => DeployerConfiguration::UNIX_FILE_MASK
+                ];
+
+                $connection->runCommand('mv "{{$tmpPath}}" "{{$destPath}}"', 30, $params);
+                $this->getConnection()->runCommand('chmod {{$mask}} "{{$destPath}}"', 10,  $params);
+            }
+            finally {
+                $connection->runCommand('rm '.$destRemotePath);
+            }
+        }
+        finally {
+            @unlink($localTmpPath);
+        }
+    }
+
+    private function uploadRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails)
+    {
+        // Download and parse the existing status file /metadata/status.json
+        // Merge with the log record details, remove old entries
+        // Merge with deploymentEnvironmentsDetails
+        // Upload and chmod
     }
 
     abstract public function run();

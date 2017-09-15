@@ -91,7 +91,7 @@ class Configuration extends Base
 
             $destRemotePath = $configDirectory.'/'.$templateName;
             $this->getScpConnection()->upload($tempFilePath, $destRemotePath);
-            $this->getConnection()->runCommand('chmod {{$mask}} {{$path}}', 10, [
+            $this->getConnection()->runCommand('chmod {{$mask}} "{{$path}}"', 10, [
                 'mask' => DeployerConfiguration::getUnixConfigFileMask(),
                 'path' => $destRemotePath
             ]);

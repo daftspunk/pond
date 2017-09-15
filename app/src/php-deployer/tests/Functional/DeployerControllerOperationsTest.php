@@ -46,6 +46,8 @@ class DeployerControllerOperationTest extends BaseCase
             $params['params']['projectDirectoryName'].'/'.
             $params['params']['environmentDirectoryName'];
 
+        echo PHP_EOL.'Partial deployment environment directory: '.$environmentDirectory.PHP_EOL;
+
         $this->assertDirectoryNotExists($environmentDirectory);
 
         $response = $this->runDeploymentRequest($params);
@@ -58,8 +60,14 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertDirectoryExists($environmentDirectory.'/blue');
         $this->assertDirectoryExists($environmentDirectory.'/green');
         $this->assertDirectoryExists($environmentDirectory.'/metadata');
+        $this->assertDirectoryExists($environmentDirectory.'/metadata/log');
         $this->assertDirectoryExists($environmentDirectory.'/storage');
-        $this->assertDirectoryExists($environmentDirectory.'/storage');
+        $this->assertDirectoryExists($environmentDirectory.'/storage/app');
+
+        $connection = $this->makeValidConnection();
+        $fileCount = $connection->runCommand('ls "{{$path}}" -1 | wc -l', 10, ['path'=>$environmentDirectory.'/metadata/log']);
+        $this->assertEquals(1, $fileCount);
+
         $this->assertTrue(is_link($environmentDirectory.'/current'));
         $this->assertEquals($environmentDirectory.'/green', readlink($environmentDirectory.'/current'));
 
@@ -81,9 +89,14 @@ class DeployerControllerOperationTest extends BaseCase
 
         $this->assertFileExists($environmentDirectory.'/config/app.php');
         $this->assertFileExists($environmentDirectory.'/config/view.php');
-        $this->assertStringEqualsFile($environmentDirectory.'/config/app.php', '<?php return [\'param1\' => true];');
-        $this->assertStringEqualsFile($environmentDirectory.'/config/view.php', '<?php return [\'param2\' => "string"];');
 
+        $fileContents = $connection->runCommand('cat "{{$path}}"', 10, ['path'=>$environmentDirectory.'/config/app.php']);
+        $this->assertEquals('<?php return [\'param1\' => true];', $fileContents);
+
+        $fileContents = $connection->runCommand('cat "{{$path}}"', 10, ['path'=>$environmentDirectory.'/config/view.php']);
+        $this->assertEquals('<?php return [\'param2\' => "string"];', $fileContents);
+
+        $this->assertEquals(DeployerConfiguration::getUnixConfigFileMask(), substr(sprintf('%o', fileperms($environmentDirectory.'/config/app.php')), -3));
         $this->assertEquals(DeployerConfiguration::UNIX_FILE_MASK, substr(sprintf('%o', fileperms($environmentDirectory.'/blue/index.php')), -3));
         $this->assertEquals(DeployerConfiguration::UNIX_DIRECTORY_MASK, substr(sprintf('%o', fileperms($environmentDirectory.'/blue/plugins/october')), -3));
 
@@ -113,9 +126,17 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertFileExists($environmentDirectory.'/config/app.php');
         $this->assertFileExists($environmentDirectory.'/config/view.php');
         $this->assertFileExists($environmentDirectory.'/config/session.php');
-        $this->assertStringEqualsFile($environmentDirectory.'/config/app.php', '<?php return [\'param1\' => true];');
-        $this->assertStringEqualsFile($environmentDirectory.'/config/view.php', '<?php return [\'param2\' => "string"];');
-        $this->assertStringEqualsFile($environmentDirectory.'/config/session.php', '<?php return [\'param3\' => false];');
+
+        $connection = $this->makeValidConnection();
+
+        $fileContents = $connection->runCommand('cat "{{$path}}"', 10, ['path'=>$environmentDirectory.'/config/app.php']);
+        $this->assertEquals('<?php return [\'param1\' => true];', $fileContents);
+
+        $fileContents = $connection->runCommand('cat "{{$path}}"', 10, ['path'=>$environmentDirectory.'/config/view.php']);
+        $this->assertEquals('<?php return [\'param2\' => "string"];', $fileContents);
+
+        $fileContents = $connection->runCommand('cat "{{$path}}"', 10, ['path'=>$environmentDirectory.'/config/session.php']);
+        $this->assertEquals('<?php return [\'param3\' => false];', $fileContents);
 
         $this->assertEquals(DeployerConfiguration::getUnixConfigFileMask(), substr(sprintf('%o', fileperms($environmentDirectory.'/config/app.php')), -3));
     }

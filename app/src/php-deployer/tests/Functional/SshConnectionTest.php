@@ -2,6 +2,7 @@
 
 use PhpDeployer\Ssh\Connection;
 use PhpDeployer\Exceptions\BufferedOutput as BufferedOutputException;
+use Exception;
 
 class SshConnectionTest extends BaseCase
 {
@@ -77,8 +78,22 @@ class SshConnectionTest extends BaseCase
     {
         $connection = $this->makeValidConnection();
 
+        $log = [];
+        $connection->setLogCallable(function($string) use (&$log) {
+            $log[] = $string;
+        });
+
         $result = $connection->runCommand('ls /var/php-deployer/tests/fixtures/test-dir');
+
         $this->assertEquals('README.md', $result);
+        $this->assertCount(2, $log);
+        $this->assertEquals('$ ls /var/php-deployer/tests/fixtures/test-dir', $log[0]);
+        $this->assertEquals('README.md', $log[1]);
+
+        $logArray = $connection->getLogAsArray();
+        $this->assertCount(2, $logArray);
+        $this->assertEquals('$ ls /var/php-deployer/tests/fixtures/test-dir', $logArray[0]);
+        $this->assertEquals('README.md', $logArray[1]);
     }
 
     public function testRunSimpleWithVars()
@@ -87,6 +102,37 @@ class SshConnectionTest extends BaseCase
 
         $result = $connection->runCommand('ls {{$path}}', 10, ['path'=>'/var/php-deployer/tests/fixtures/test-dir']);
         $this->assertEquals('README.md', $result);
+
+        $logArray = $connection->getLogAsArray();
+        $this->assertCount(2, $logArray);
+        $this->assertEquals('$ ls /var/php-deployer/tests/fixtures/test-dir', $logArray[0]);
+        $this->assertEquals('README.md', $logArray[1]);
+    }
+
+    public function testRunSimpleMasking()
+    {
+        $connection = $this->makeValidConnection();
+
+        $result = $connection->runCommand('echo "passhpraseValue"');
+        $this->assertEquals('xxx', $result);
+
+        $logArray = $connection->getLogAsArray();
+        $this->assertCount(2, $logArray);
+        $this->assertEquals('$ echo "xxx"', $logArray[0]);
+        $this->assertEquals('xxx', $logArray[1]);
+    }
+
+    public function testRunSimpleWithVarsMasking()
+    {
+        $connection = $this->makeValidConnection();
+
+        $result = $connection->runCommand('echo "{{$value}}"', 10, ['value'=>'passhpraseValue']);
+        $this->assertEquals('xxx', $result);
+
+        $logArray = $connection->getLogAsArray();
+        $this->assertCount(2, $logArray);
+        $this->assertEquals('$ echo "xxx"', $logArray[0]);
+        $this->assertEquals('xxx', $logArray[1]);
     }
 
     public function testRunShortSleepCommand()
@@ -134,6 +180,10 @@ class SshConnectionTest extends BaseCase
             $this->assertEquals(127, $ex->getCode());
             $this->assertEmpty($ex->getStdOutBuffer());
             $this->assertContains('command not found', $ex->getMessage());
+
+            $logArray = $connection->getLogAsArray();
+            $this->assertCount(2, $logArray);
+            $this->assertContains('command not found', $logArray[1]);
         }
     }
 
@@ -150,6 +200,10 @@ class SshConnectionTest extends BaseCase
             $this->assertEquals(2, $ex->getCode());
             $this->assertEmpty($ex->getStdOutBuffer());
             $this->assertContains('syntax error', $ex->getMessage());
+
+            $logArray = $connection->getLogAsArray();
+            $this->assertCount(2, $logArray);
+            $this->assertContains('syntax error', $logArray[1]);
         }
     }
 
@@ -216,6 +270,14 @@ class SshConnectionTest extends BaseCase
 
         $result = $connection->runMultipleCommands('echo 1; echo 2;'.PHP_EOL.'echo 3'); // OK to use PHP_EOL here as it's an input
         $this->assertEquals('$ echo 1; echo 2;'.Connection::NL.'1'.Connection::NL.'2'.Connection::NL.'$ echo 3'.Connection::NL.'3'.Connection::NL, $result);
+
+        $logArray = $connection->getLogAsArray();
+
+        $this->assertCount(4, $logArray);
+        $this->assertEquals('$ echo 1; echo 2;', $logArray[0]);
+        $this->assertEquals('1'.Connection::NL.'2', $logArray[1]);
+        $this->assertEquals('$ echo 3', $logArray[2]);
+        $this->assertEquals('3', $logArray[3]);
     }
 
     public function testRunMultiCommandsWithVarsNoError()
@@ -239,6 +301,14 @@ class SshConnectionTest extends BaseCase
             $this->assertContains('syntax error', $ex->getMessage());
             $this->assertEquals(2, $ex->getCode());
             $this->assertEquals('$ echo 1; echo 2;'.Connection::NL.'1'.Connection::NL.'2'.Connection::NL.'$ ;;echo xxx', $ex->getStdOutBuffer());
+
+            $logArray = $connection->getLogAsArray();
+
+            $this->assertCount(4, $logArray);
+            $this->assertEquals('$ echo 1; echo 2;', $logArray[0]);
+            $this->assertEquals('1'.Connection::NL.'2', $logArray[1]);
+            $this->assertEquals('$ ;;echo xxx', $logArray[2]);
+            $this->assertContains('syntax error', $logArray[3]);
         }
     }
 
@@ -247,6 +317,11 @@ class SshConnectionTest extends BaseCase
         $connection = $this->makeValidConnection();
         $remoteFilePath = '/var/www/'.microtime().'.tmp';
         $connection->upload(__DIR__.'/../fixtures/test-dir/README.md', $remoteFilePath);
+
+        $logArray = $connection->getLogAsArray();
+        $this->assertCount(1, $logArray);
+        $this->assertEquals('Uploading...', $logArray[0]);
+
         $result = $connection->runCommand('ls "'.$remoteFilePath.'"');
         $this->assertContains($remoteFilePath, $result);
 
@@ -254,15 +329,23 @@ class SshConnectionTest extends BaseCase
         $this->assertContains('command via SSH', $result);
     }
 
-    /**
-     * @expectedException        Exception
-     * @expectedExceptionMessage Error uploading
-     */
     public function testUploadError()
     {
         $connection = $this->makeValidConnection();
         $remoteFilePath = '/var/www/'.microtime().'.tmp';
-        $connection->upload(__DIR__.'/../fixtures/test-dir/not-a-file', $remoteFilePath);
+
+        try {
+            $connection->upload(__DIR__.'/../fixtures/test-dir/not-a-file', $remoteFilePath);
+            $this->assertTrue(false, 'Invalid upload must fail');
+        }
+        catch (Exception $ex) {
+            $this->assertContains('Error uploading', $ex->getMessage());
+
+            $logArray = $connection->getLogAsArray();
+            $this->assertCount(2, $logArray);
+            $this->assertEquals('Uploading...', $logArray[0]);
+            $this->assertEquals('Error uploading file to the server', $logArray[1]);
+        }
     }
 
     public function testCompoundCommand()

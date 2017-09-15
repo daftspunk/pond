@@ -28,7 +28,7 @@ use Exception;
  *         /storage/framework/sessions - (symlink to the common storage/framework/sessions)
  *       /current (symlink to blue or green)
  *       /metadata
- *         log
+ *         /log
  *       /storage
  *         /app
  *         /framework
@@ -84,8 +84,6 @@ class Deployment extends Base
 
     public function run()
     {
-        // TODO: remove temporary files in the end
-
         if ($this->update) {
             $this->validateEnvironmentDirectories();
             $this->loadMetadata();
@@ -133,7 +131,7 @@ class Deployment extends Base
             'ln -s "{{$envDirectory}}/storage/app" "{{$envDirectory}}/green/storage/app'.'"',
             'ln -s "{{$envDirectory}}/storage/framework/sessions" "{{$envDirectory}}/green/storage/framework/sessions'.'"',
 
-            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/metadata'.'"', 
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/metadata/log'.'"', 
             'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/storage'.'"', 
             'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/storage/framework/sessions'.'"', 
             'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/storage/app/uploads/public'.'"', 
@@ -179,7 +177,7 @@ class Deployment extends Base
                         'destPath' => $unzipPath
                     ];
 
-                    $connection->runCommand('unzip -o "{{$zipPath}}" -d "{{$destPath}}"', 30, $params);
+                    $connection->runCommand('unzip -q -o "{{$zipPath}}" -d "{{$destPath}}"', 30, $params);
 
                     $this->fixPermissions($archiver, $unzipPath);
                 }
@@ -212,13 +210,6 @@ class Deployment extends Base
 
             $connection->runCommand('if [ -d "{{$path}}" ]; then find "{{$path}}" -type d -exec chmod {{$dirMask}} {} \;; fi', 120, $params);
         }
-    }
-
-    private function makeRemoteTempFileName()
-    {
-        $result = microtime(true);
-
-        return str_replace('.', '-', $result);
     }
 
     private function validateEnvironmentDirectories()
