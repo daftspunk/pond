@@ -329,6 +329,19 @@ class SshConnectionTest extends BaseCase
         $this->assertContains('command via SSH', $result);
     }
 
+    public function testUploadFromString()
+    {
+        $commandConnection = $this->makeValidConnection();
+        $scpConnection = $this->makeValidConnection();
+        $contents = 'Test contents';
+        $remoteFilePath = '/var/www/'.microtime().'.tmp';
+
+        $scpConnection->uploadFromString($commandConnection, $contents, $remoteFilePath, '/var/www/', '664');
+        $this->assertFileExists($remoteFilePath);
+        $this->assertEquals('664', substr(sprintf('%o', fileperms($remoteFilePath)), -3));
+        $this->assertStringEqualsFile($remoteFilePath, $contents);
+    }
+
     public function testUploadError()
     {
         $connection = $this->makeValidConnection();
@@ -357,5 +370,11 @@ class SshConnectionTest extends BaseCase
 
         $result = $connection->runCommand('if [ -d "{{$path}}" ]; then find "{{$path}}" -type f; fi', 120, $params);
         $this->assertContains('autoload.php', $result);
+    }
+
+    public function testGetClientIp()
+    {
+        $connection = $this->makeValidConnection();
+        $this->assertEquals('127.0.0.1', $connection->getClientIp());
     }
 }

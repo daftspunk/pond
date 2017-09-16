@@ -68,16 +68,8 @@ abstract class Base
         }
     }
 
-    public function saveRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails = null)
-    {
-        try {
-            $this->uploadRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails);
-        }
-        catch (Exception $ex) {
-            // This will push the message to the client
-            $this->handleConnectionLogEntry(sprintf('Error updating environment status file on the server. %s', $ex->getMessage()));
-        }
-    }
+    abstract public function run();
+    abstract public function saveRemoteStatus($success);
 
     protected function getConnection()
     {
@@ -183,53 +175,37 @@ abstract class Base
 
     private function uploadRemoteLog()
     {
-        $localTmpPath = tempnam(sys_get_temp_dir(), 'pond_');
-        try {
-            $remoteTmpFileName = $this->makeRemoteTempFileName();
+        $commandConnection = $this->getConnection();
 
-            if (file_put_contents($localTmpPath, implode("\n", $this->combinedLog)) === false) {
-                throw new Exception('Error creating log file: cannot create a local temporary file');
-            }
+        $envDirectory = $this->getEnvironmentDirectoryRemotePath();
+        $remoteTmpDir = $envDirectory.'/pond-tmp';
+        $contents = implode("\n", $this->combinedLog);
 
-            $envDirectory = $this->getEnvironmentDirectoryRemotePath();
-            $destRemotePath = $envDirectory.'/pond-tmp/'.$remoteTmpFileName;
+        $serverTime = $commandConnection->runCommand('date +"%Y-%m-%dT%T"');
+        $finalLogPath = $envDirectory.'/metadata/log/'.$serverTime.'.txt';
 
-            $connection = $this->getConnection();
-            $this->getScpConnection()->upload($localTmpPath, $destRemotePath);
-
-            if (!$connection->fileExists($destRemotePath)) {
-                throw new Exception('Error uploading the log file');
-            }
-
-            try {
-                $serverTime = $connection->runCommand('date +"%Y-%m-%dT%T"');
-                $finalLogPath = $envDirectory.'/metadata/log/'.$serverTime.'.txt';
-
-                $params = [
-                    'tmpPath' => $destRemotePath,
-                    'destPath' => $finalLogPath,
-                    'mask' => DeployerConfiguration::UNIX_FILE_MASK
-                ];
-
-                $connection->runCommand('mv "{{$tmpPath}}" "{{$destPath}}"', 30, $params);
-                $this->getConnection()->runCommand('chmod {{$mask}} "{{$destPath}}"', 10,  $params);
-            }
-            finally {
-                $connection->runCommand('rm '.$destRemotePath);
-            }
-        }
-        finally {
-            @unlink($localTmpPath);
-        }
+        $this->getScpConnection()->uploadFromString(
+            $commandConnection, 
+            $contents, 
+            $finalLogPath, 
+            $remoteTmpDir, 
+            DeployerConfiguration::UNIX_FILE_MASK
+        );
     }
 
-    private function uploadRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails)
+    protected function updateRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails)
     {
-        // Download and parse the existing status file /metadata/status.json
-        // Merge with the log record details, remove old entries
-        // Merge with deploymentEnvironmentsDetails
-        // Upload and chmod
+        try {
+            $statusManager = new RemoteStatusManager($this->getConnection(), $this->getScpConnection());
+            $statusManager->updateStatus(
+                $this->getEnvironmentDirectoryRemotePath(),
+                $logRecordDetails,
+                $deploymentEnvironmentsDetails
+            );
+        }
+        catch (Exception $ex) {
+            // This will push the message to the client
+            $this->handleConnectionLogEntry(sprintf('Error updating environment status file on the server. %s', $ex->getMessage()));
+        }
     }
-
-    abstract public function run();
 }

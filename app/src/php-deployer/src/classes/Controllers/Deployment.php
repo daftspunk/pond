@@ -4,6 +4,7 @@ use PhpDeployer\Operations\Deployment as DeploymentOperation;
 use PhpDeployer\Operations\Configuration as ConfigurationOperation;
 use PhpDeployer\Exceptions\Http as HttpException;
 use Respect\Validation\Validator as Validator;
+use Exception;
 
 class Deployment extends Base
 {
@@ -20,13 +21,17 @@ class Deployment extends Base
 
         $deployment->setDeploymentParameters($this->getRequestArgument('params'));
 
-        // We call saveRemoteLog() in the controller
+        // We call saveRemoteLog() and saveRemoteStatus() in the controller
         // and not inside the run() method, because
         // commands can invoke each other's run() method 
         // and we want the log to be saved only once.
 
         try {
             $deployment->run();
+            $deployment->saveRemoteStatus(true);
+        }
+        catch (Exception $ex) {
+            $deployment->saveRemoteStatus(false);
         }
         finally {
             $deployment->saveRemoteLog();
@@ -48,6 +53,10 @@ class Deployment extends Base
 
         try {
             $configuration->run();
+            $configuration->saveRemoteStatus(true);
+        }
+        catch (Exception $ex) {
+            $configuration->saveRemoteStatus(false);
         }
         finally {
             $configuration->saveRemoteLog();

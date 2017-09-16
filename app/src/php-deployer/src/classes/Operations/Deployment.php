@@ -98,6 +98,15 @@ class Deployment extends Base
         }
     }
 
+    public function saveRemoteStatus($success)
+    {
+        throw new Exception('Not implemented');
+
+        // Call updateRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails).
+        // The $logRecordDetails and $deploymentEnvironmentsDetails should be 
+        // created basing on the known parameters.
+    }
+
     private function initDirectories()
     {
         $connection = $this->getConnection();

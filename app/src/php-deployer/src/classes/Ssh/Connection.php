@@ -183,6 +183,42 @@ class Connection
         }
     }
 
+    public function uploadFromString($commandSshConnection, $contents, $to, $remoteTmpDir, $permissionMask)
+    {
+        if ($this->singleCommandHasRun) {
+            throw new Exception('Cannot use a same SSH connection for running commands and uploading files.');
+        }
+
+        $localTmpPath = tempnam(sys_get_temp_dir(), 'pond_');
+        try {
+            $remoteTmpFileName = str_replace('.', '-', microtime(true));
+            $destRemotePath = $remoteTmpDir.'/'.$remoteTmpFileName;
+
+            if (file_put_contents($localTmpPath, $contents) === false) {
+                throw new Exception('Cannot create a local temporary file');
+            }
+
+            $this->upload($localTmpPath, $destRemotePath);
+
+            $params = [
+                'tmpPath' => $destRemotePath,
+                'destPath' => $to,
+                'mask' => $permissionMask
+            ];
+
+            try {
+                $commandSshConnection->runCommand('mv "{{$tmpPath}}" "{{$destPath}}"', 30, $params);
+                $commandSshConnection->runCommand('chmod {{$mask}} "{{$destPath}}"', 10,  $params);
+            }
+            finally {
+                $commandSshConnection->runCommand('if [ -f "{{$tmpPath}}" ]; then rm "{{$tmpPath}}"; fi', $params);
+            }
+        }
+        finally {
+            @unlink($localTmpPath);
+        }
+    }
+
     //
     // Convenience functions
     //
@@ -210,6 +246,11 @@ class Connection
         ValidationUtil::filePath($fileName);
 
         return $this->runCommand('if [ -f "'.$fileName.'" ]; then echo "exists"; fi') === 'exists';
+    }
+
+    public function getClientIp()
+    {
+        return $this->runCommand('echo $SSH_CONNECTION | awk \'{print $1}\'');
     }
 
     private function readUntilTerm($stream, $result, $timeout = 1)
