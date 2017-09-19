@@ -176,7 +176,7 @@ class Connection
             throw new Exception('Cannot use a same SSH connection for running commands and uploading files.');
         }
 
-        $this->addToLog('Uploading...');
+        $this->addToLog(sprintf('Uploading "%s"...', $to));
 
         if (!@ssh2_scp_send($this->session, $from, $to)) {
             throw new Exception($this->addToLog('Error uploading file to the server'));
@@ -251,6 +251,11 @@ class Connection
     public function getClientIp()
     {
         return $this->runCommand('echo $SSH_CONNECTION | awk \'{print $1}\'');
+    }
+
+    public function getRemoteDateTime()
+    {
+        return $this->runCommand('date +"%Y-%m-%d %T"');
     }
 
     private function readUntilTerm($stream, $result, $timeout = 1)

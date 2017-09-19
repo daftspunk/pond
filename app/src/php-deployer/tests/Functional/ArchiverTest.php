@@ -32,6 +32,14 @@ class ArchiverTest extends BaseCase
         $archivedPaths = $archiver->getArchivedComponentPaths();
         $this->assertContains('index.php', $archivedPaths);
         $this->assertContains('plugins', $archivedPaths);
+
+        $archivedComponents = $archiver->getArchivedComponents();
+        $this->assertContains('core', $archivedComponents);
+        $this->assertContains('media', $archivedComponents);
+        $this->assertContains('uploads', $archivedComponents);
+        $this->assertContains('plugins', $archivedComponents);
+        $this->assertContains('themes', $archivedComponents);
+        $this->assertContains('config', $archivedComponents);
     }
 
     public function testDefaultPondIgnore()
@@ -73,6 +81,14 @@ class ArchiverTest extends BaseCase
         $archivedPaths = $archiver->getArchivedComponentPaths();
         $this->assertNotContains('index.php', $archivedPaths);
         $this->assertContains('plugins', $archivedPaths);
+
+        $archivedComponents = $archiver->getArchivedComponents();
+        $this->assertNotContains('core', $archivedComponents);
+        $this->assertNotContains('media', $archivedComponents);
+        $this->assertNotContains('uploads', $archivedComponents);
+        $this->assertContains('plugins', $archivedComponents);
+        $this->assertNotContains('themes', $archivedComponents);
+        $this->assertNotContains('config', $archivedComponents);
     }
 
     public function testOnePlugin()
@@ -96,6 +112,14 @@ class ArchiverTest extends BaseCase
         $archivedPaths = $archiver->getArchivedComponentPaths();
         $this->assertNotContains('index.php', $archivedPaths);
         $this->assertContains('plugins/october/demo', $archivedPaths);
+
+        $archivedComponents = $archiver->getArchivedComponents();
+        $this->assertNotContains('core', $archivedComponents);
+        $this->assertNotContains('media', $archivedComponents);
+        $this->assertNotContains('uploads', $archivedComponents);
+        $this->assertContains('plugins/october/demo', $archivedComponents);
+        $this->assertNotContains('themes', $archivedComponents);
+        $this->assertNotContains('config', $archivedComponents);
     }
 
     public function testOneTheme()
@@ -115,5 +139,13 @@ class ArchiverTest extends BaseCase
         $this->assertFalse($zip->statName('modules/backend/behaviors/FormController.php'));
         $this->assertFalse($zip->statName('plugins/october/demo/Plugin.php'));
         $this->assertInternalType('array', $zip->statName('themes/demo/assets/css/vendor.css'));
+
+        $archivedComponents = $archiver->getArchivedComponents();
+        $this->assertNotContains('core', $archivedComponents);
+        $this->assertNotContains('media', $archivedComponents);
+        $this->assertNotContains('uploads', $archivedComponents);
+        $this->assertNotContains('plugins', $archivedComponents);
+        $this->assertContains('themes/demo', $archivedComponents);
+        $this->assertNotContains('config', $archivedComponents);
     }
 }

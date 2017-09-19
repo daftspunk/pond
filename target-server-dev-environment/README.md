@@ -8,6 +8,8 @@ In the Terminal go to the `target-server-dev-environment` directory and start Va
 
 TODO: this should be fully automated with `config.vm.provision "shell", path: pathToShellScriptToRun`. SSH keys are available after the box boots in /var/target-server-dev-environment/keys/ and can be copied directly inside the box.
 
+TODO: the provision script should also create an available and enabled virtual host dev-latest-deployed-environment.com pointing to `/var/www/latest-deployment-environment/current`
+
 ```
 sudo adduser --disabled-password --gecos "" deploy
 sudo chown -R deploy:deploy /var/www
@@ -62,4 +64,18 @@ composer test
   [or, a bit faster start]
 php vendor/bin/phpunit --colors=always 
 ```
+## Previewing latest full deployment
 
+There's a way to create a test full deployment with
+
+```
+TEST_FULL_DEPLOYMENT=true php vendor/bin/phpunit --filter testFullDeployment
+```
+
+The environment can be accessed through the browser as `http://dev-latest-deployed-environment.com/`. Make sure you added this line to `hosts`:
+
+```
+192.168.33.10   dev-latest-deployed-environment.com
+```
+
+The test full deployment is not fully functional and depends on the current environment status. Most likely the database-related features won't work.

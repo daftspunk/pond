@@ -75,6 +75,16 @@ class Configuration extends Base
         }
     }
 
+    public function saveRemoteStatus($success)
+    {
+        $logRecordDetails = RemoteStatusManager::makeLogRecordArray(
+            $success, 
+            ['config'], 
+            ['blue', 'green']);
+
+        $this->updateRemoteStatus($logRecordDetails, null);
+    }
+
     private function renderAndUpload($templateName, $templateConfiguration, $configDirectory)
     {
         $tempFilePath = tempnam(sys_get_temp_dir(), 'pond_');

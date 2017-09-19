@@ -41,6 +41,9 @@ class Deployment extends Base
 {
     const DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT = 'green';
 
+    private $updatedDeploymentEnvironments = [];
+    private $updatedComponents = [];
+
     // The following properties must stay private.
     // If they're set from external sources, their
     // values must be validated.
@@ -48,6 +51,7 @@ class Deployment extends Base
     private $update;
     private $localProjectPath;
     private $configurationOperation;
+    private $buildTag;
 
     public function setDeploymentParameters($parameters)
     {
@@ -63,6 +67,11 @@ class Deployment extends Base
 
         if (!Validator::directory()->validate($this->localProjectPath)) {
             throw new HttpException('The local project directory not found', 400);
+        }
+
+        $this->buildTag = $this->getParameterValue($parameters, 'buildTag', false, '');
+        if (!Validator::stringType()->length(null, 50)->validate($this->buildTag)) {
+            throw new HttpException('The build tag must be a string of at most 50 characters length.', 400);
         }
 
         $configTemplatesProvided = $this->getParameterValue($parameters, 'configTemplates', false) !== null;
@@ -100,11 +109,27 @@ class Deployment extends Base
 
     public function saveRemoteStatus($success)
     {
-        throw new Exception('Not implemented');
+        if ($success) {
+            $deploymentEnvironmentsDetails = [];
+            $remoteDateTime = $this->getConnection()->getRemoteDateTime();
 
-        // Call updateRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails).
-        // The $logRecordDetails and $deploymentEnvironmentsDetails should be 
-        // created basing on the known parameters.
+            foreach ($this->updatedDeploymentEnvironments as $name) {
+                $deploymentEnvironmentsDetails[$name] = [
+                    'buildTag' => $this->buildTag,
+                    'lastDeployment' => $remoteDateTime
+                ];
+            }
+        }
+        else {
+            $deploymentEnvironmentsDetails = null;
+        }
+
+        $logRecordDetails = RemoteStatusManager::makeLogRecordArray(
+            $success, 
+            $this->updatedComponents, 
+            $this->updatedDeploymentEnvironments);
+
+        $this->updateRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails);
     }
 
     private function initDirectories()
@@ -132,11 +157,13 @@ class Deployment extends Base
 
             'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/blue'.'"', 
             'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/blue/storage/framework'.'"', 
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/blue/storage/cms'.'"', 
             'ln -s "{{$envDirectory}}/storage/app" "{{$envDirectory}}/blue/storage/app'.'"',
             'ln -s "{{$envDirectory}}/storage/framework/sessions" "{{$envDirectory}}/blue/storage/framework/sessions'.'"',
 
             'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/green'.'"', 
             'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/green/storage/framework'.'"', 
+            'mkdir -m {{$dirMask}} -p "{{$envDirectory}}/green/storage/cms'.'"', 
             'ln -s "{{$envDirectory}}/storage/app" "{{$envDirectory}}/green/storage/app'.'"',
             'ln -s "{{$envDirectory}}/storage/framework/sessions" "{{$envDirectory}}/green/storage/framework/sessions'.'"',
 
@@ -165,6 +192,9 @@ class Deployment extends Base
         $deploymentEnvironmentNames = (array)$deploymentEnvironmentNames;
         $archiver = new ProjectArchiver($this->localProjectPath);
         $zipPath = $archiver->make();
+
+        $this->updatedDeploymentEnvironments = $deploymentEnvironmentNames;
+        $this->updatedComponents = $archiver->getArchivedComponents();
 
         try {
             $tmpFileName = $this->makeRemoteTempFileName();

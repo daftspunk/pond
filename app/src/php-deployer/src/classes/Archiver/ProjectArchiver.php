@@ -42,6 +42,7 @@ class ProjectArchiver
     ];
 
     private $archivedComponentPaths;
+    private $archivedComponents;
 
     public function __construct($projectPath, $disableIgnorePaths = false)
     {
@@ -73,6 +74,7 @@ class ProjectArchiver
             $components = $this->allComponents;
         }
 
+        $this->archivedComponents = $components;
         $this->archivedComponentPaths = [];
 
         $ignorePaths = $this->getIgnorePaths();
@@ -103,6 +105,28 @@ class ProjectArchiver
     public function getArchivedComponentPaths()
     {
         return $this->archivedComponentPaths;
+    }
+
+    public function getArchivedComponents()
+    {
+        $result = [];
+        foreach ($this->archivedComponents as $component=>$componentConfig) {
+            $configIsArray = is_array($componentConfig);
+
+            if (!$configIsArray) {
+                if ($componentConfig === true) {
+                    $result[] = $component;
+                }
+                continue;
+            }
+            else {
+                foreach ($componentConfig as $configPath) {
+                    $result[] = $component.'/'.$configPath;
+                }
+            }
+        }
+
+        return $result;
     }
 
     private function addComponent($zip, $component, $componentConfig)

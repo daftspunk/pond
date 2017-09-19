@@ -1,5 +1,7 @@
 <?php namespace PhpDeployer\Operations;
 
+use PhpDeployer\Util\Configuration as DeployerConfiguration;
+
 class RemoteStatusManager
 {
     const LOG_DAYS_TO_KEEP = 30;
@@ -9,7 +11,7 @@ class RemoteStatusManager
 
     public function __construct($connection, $scpConnection)
     {
-        $this->connection = $connection
+        $this->connection = $connection;
         $this->scpConnection = $scpConnection;
     }
 
@@ -18,41 +20,28 @@ class RemoteStatusManager
         $remoteFilePath = $envDirectory.'/metadata/status.json';
         $jsonContents = $this->downloadAndParse($remoteFilePath);
 
-        if ($deploymentEnvironmentsDetails) {
-            if (!isset($jsonContents['deploymentEnvironments'])) {
-                $jsonContents['deploymentEnvironments'] = [];
-            }
-
-            $jsonContents['deploymentEnvironments'] = array_merge_recursive($jsonContents['deploymentEnvironments'], $deploymentEnvironmentsDetails;);
-        }
-
-        // TODO - process log in a separate method
-        if ($logRecordDetails) {
-            if (!array_key_exists('deploymentLog', $jsonContents)) {
-                $jsonContents['deploymentLog'] = [];
-            }
-
-            $logRecordDetails['datetime'] = $this->connection->runCommand('date +"%Y-%m-%dT%T"');
-            $logRecordDetails['ip'] = $this->connection->getClientIp();
-
-            $jsonContents['deploymentLog'][] = $logRecordDetails;
-        }
-
-        if (array_key_exists('deploymentLog', $jsonContents)) {
-            $jsonContents['deploymentLog'] = $this->remoteOldLogEntries($jsonContents['deploymentLog']);
-        }
+        $this->mergeDeploymentEnvironmentDefails($jsonContents, $deploymentEnvironmentsDetails);
+        $this->updateDeploymentLog($jsonContents, $logRecordDetails);
 
         $jsonString = json_encode($jsonContents);
-
         $remoteTmpDir = $envDirectory.'/pond-tmp';
 
-        $this->getScpConnection()->uploadFromString(
-            $commandConnection, 
+        $this->scpConnection->uploadFromString(
+            $this->connection, 
             $jsonString, 
             $remoteFilePath, 
             $remoteTmpDir, 
             DeployerConfiguration::UNIX_FILE_MASK
         );
+    }
+
+    public static function makeLogRecordArray(bool $success, array $components, array $environments)
+    {
+        return [
+            'status' => $success ? 'success' : 'fail',
+            'components' => $components,
+            'environment' => $environments,
+        ];
     }
 
     private function remoteOldLogEntries($logEntries)
@@ -101,5 +90,37 @@ class RemoteStatusManager
         }
 
         return $result;
+    }
+
+    private function updateDeploymentLog(&$jsonContents, $newEntry)
+    {
+        if ($newEntry) {
+            if (!array_key_exists('deploymentLog', $jsonContents)) {
+                $jsonContents['deploymentLog'] = [];
+            }
+
+            $newEntry['datetime'] = $this->connection->getRemoteDateTime();
+            $newEntry['ip'] = $this->connection->getClientIp();
+
+            $jsonContents['deploymentLog'][] = $newEntry;
+        }
+
+        if (array_key_exists('deploymentLog', $jsonContents)) {
+            $jsonContents['deploymentLog'] = $this->remoteOldLogEntries($jsonContents['deploymentLog']);
+        }
+    }
+
+    private function mergeDeploymentEnvironmentDefails(&$jsonContents, $deploymentEnvironmentsDetails)
+    {
+        if (!$deploymentEnvironmentsDetails) {
+            return;
+        }
+
+        if (!isset($jsonContents['deploymentEnvironments'])) {
+            $jsonContents['deploymentEnvironments'] = [];
+        }
+
+        $merged = array_merge_recursive($jsonContents['deploymentEnvironments'], $deploymentEnvironmentsDetails);
+        $jsonContents['deploymentEnvironments'] = $merged;
     }
 }

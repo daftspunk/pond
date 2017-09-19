@@ -163,6 +163,22 @@ abstract class Base
         return str_replace('.', '-', $result);
     }
 
+    protected function updateRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails)
+    {
+        try {
+            $statusManager = new RemoteStatusManager($this->getConnection(), $this->getScpConnection());
+            $statusManager->updateStatus(
+                $this->getEnvironmentDirectoryRemotePath(),
+                $logRecordDetails,
+                $deploymentEnvironmentsDetails
+            );
+        }
+        catch (Exception $ex) {
+            // This will push the message to the client
+            $this->handleConnectionLogEntry(sprintf('Error updating environment status file on the server. %s', $ex->getMessage()));
+        }
+    }
+
     private function handleConnectionLogEntry($string)
     {
         $this->combinedLog[] = $string;
@@ -191,21 +207,5 @@ abstract class Base
             $remoteTmpDir, 
             DeployerConfiguration::UNIX_FILE_MASK
         );
-    }
-
-    protected function updateRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails)
-    {
-        try {
-            $statusManager = new RemoteStatusManager($this->getConnection(), $this->getScpConnection());
-            $statusManager->updateStatus(
-                $this->getEnvironmentDirectoryRemotePath(),
-                $logRecordDetails,
-                $deploymentEnvironmentsDetails
-            );
-        }
-        catch (Exception $ex) {
-            // This will push the message to the client
-            $this->handleConnectionLogEntry(sprintf('Error updating environment status file on the server. %s', $ex->getMessage()));
-        }
     }
 }

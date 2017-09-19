@@ -32,6 +32,7 @@ class Deployment extends Base
         }
         catch (Exception $ex) {
             $deployment->saveRemoteStatus(false);
+            throw $ex;
         }
         finally {
             $deployment->saveRemoteLog();
@@ -57,6 +58,7 @@ class Deployment extends Base
         }
         catch (Exception $ex) {
             $configuration->saveRemoteStatus(false);
+            throw $ex;
         }
         finally {
             $configuration->saveRemoteLog();
