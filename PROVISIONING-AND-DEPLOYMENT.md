@@ -176,7 +176,8 @@ Deployed environments must keep enough metadata to determine what projects the b
     "blue": {
       "lastDeployment": "datetime",
       "buildTag": "string"
-    }
+    },
+    ...
   },
   "deploymentLog": {
     [

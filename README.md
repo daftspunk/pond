@@ -152,7 +152,7 @@ All other possible risks are out of our responsibility. Users will manage their 
 ## UX notes
 
 * Do not use animation without purpose (for decoration).
-* Use Icomoon icon set.
+* Use Icomoon icon set or Font Awesome.
 * Avoid half-pixels in icons.
 
 ## Target system requirements
