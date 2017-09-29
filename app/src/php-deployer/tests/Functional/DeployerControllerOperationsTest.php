@@ -229,6 +229,26 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertTrue(isset($statusContents['deploymentEnvironments']['blue']));
     }
 
+    /**
+     * @depends testNewDeploymentPartialProjectNoErrors
+     */
+    public function testUpdateDeployment($input)
+    {
+        extract($input);
+
+        $params['params']['update'] = true;
+        $params['params']['updateComponents'] = ['core'];
+
+        $response = $this->runDeploymentRequest($params);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertTrue(is_link($environmentDirectory.'/current'));
+        $this->assertEquals($environmentDirectory.'/green', readlink($environmentDirectory.'/current'));
+
+        // Deploy from another source directory and check files were added.
+        // Make sure the INACTIVE environment was updated.
+    }
+
     public function testConfigurationOperationNoTemplates()
     {
         $params = $this->makeValidDeploymentConfig();
@@ -349,5 +369,129 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertNotNull($responseBody);
         $this->assertEquals('http', $responseBody->type);
         $this->assertContains('must be a string', $responseBody->error);
+    }
+
+    public function testUpdateNoProjectDirectory()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+
+        $response = $this->runDeploymentRequest($params, '/deploy');
+        $this->assertEquals(500, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('general', $responseBody->type);
+        $this->assertContains('The project directory does not exist', $responseBody->error);
+    }
+
+    public function testUpdateNoEnvironmentDirectory()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+
+        $pondRoot = DeployerConfiguration::POND_ROOT;
+        $projectDirectory = $pondRoot.'/'.$params['params']['projectDirectoryName'];
+
+        $this->assertDirectoryNotExists($projectDirectory);
+        $this->makeDir($projectDirectory);
+
+        $response = $this->runDeploymentRequest($params, '/deploy');
+        $this->assertEquals(500, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('general', $responseBody->type);
+        $this->assertContains('project environment directory', $responseBody->error);
+    }
+
+    public function testUpdateNoDeploymentEnvironmentDirectory()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+
+        $pondRoot = DeployerConfiguration::POND_ROOT;
+        $projectDirectory = $pondRoot.'/'.$params['params']['projectDirectoryName'];
+
+        $this->assertDirectoryNotExists($projectDirectory);
+        $this->makeDir($projectDirectory);
+
+        $environmentDirectory = $projectDirectory.'/'.$params['params']['environmentDirectoryName'];
+        $this->makeDir($environmentDirectory);
+
+        $response = $this->runDeploymentRequest($params, '/deploy');
+        $this->assertEquals(500, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('general', $responseBody->type);
+        $this->assertContains('The deployment environment directory does not exist', $responseBody->error);
+
+        $blueDirectory = $environmentDirectory.'/blue';
+        $this->makeDir($blueDirectory);
+
+        $response = $this->runDeploymentRequest($params, '/deploy');
+        $this->assertEquals(500, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('general', $responseBody->type);
+        $this->assertContains('The deployment environment directory does not exist', $responseBody->error);
+    }
+
+    public function testUpdateNoCurrentLink()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+
+        $pondRoot = DeployerConfiguration::POND_ROOT;
+        $projectDirectory = $pondRoot.'/'.$params['params']['projectDirectoryName'];
+
+        $this->assertDirectoryNotExists($projectDirectory);
+        $this->makeDir($projectDirectory);
+
+        $environmentDirectory = $projectDirectory.'/'.$params['params']['environmentDirectoryName'];
+        $this->makeDir($environmentDirectory);
+
+        $blueDirectory = $environmentDirectory.'/blue';
+        $this->makeDir($blueDirectory);
+
+        $greenDirectory = $environmentDirectory.'/green';
+        $this->makeDir($greenDirectory);
+
+        $response = $this->runDeploymentRequest($params, '/deploy');
+        $this->assertEquals(500, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('general', $responseBody->type);
+        $this->assertContains('The "current" symbolic link does not exist', $responseBody->error);
+    }
+
+    public function testUpdateCurrentInvalidTarget()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+
+        $pondRoot = DeployerConfiguration::POND_ROOT;
+        $projectDirectory = $pondRoot.'/'.$params['params']['projectDirectoryName'];
+
+        $this->assertDirectoryNotExists($projectDirectory);
+        $this->makeDir($projectDirectory);
+
+        $environmentDirectory = $projectDirectory.'/'.$params['params']['environmentDirectoryName'];
+        $this->makeDir($environmentDirectory);
+
+        $blueDirectory = $environmentDirectory.'/blue';
+        $this->makeDir($blueDirectory);
+
+        $greenDirectory = $environmentDirectory.'/green';
+        $this->makeDir($greenDirectory);
+
+        $currentPath = $environmentDirectory.'/current';
+        symlink('/var/php-deployer', $currentPath);
+
+        $response = $this->runDeploymentRequest($params, '/deploy');
+        $this->assertEquals(500, $response->getStatusCode());
+
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('general', $responseBody->type);
+        $this->assertContains('symbolic link has invalid target', $responseBody->error);
     }
 }

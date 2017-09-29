@@ -248,6 +248,13 @@ class Connection
         return $this->runCommand('if [ -f "'.$fileName.'" ]; then echo "exists"; fi') === 'exists';
     }
 
+    public function linkExists($fileName)
+    {
+        ValidationUtil::filePath($fileName);
+
+        return $this->runCommand('if [ -L "'.$fileName.'" ]; then echo "exists"; fi') === 'exists';
+    }
+
     public function getClientIp()
     {
         return $this->runCommand('echo $SSH_CONNECTION | awk \'{print $1}\'');

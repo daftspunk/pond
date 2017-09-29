@@ -199,4 +199,32 @@ class DeployerControllerValidationTest extends BaseCase
             $this->assertContains('be a valid permission value', $responseBody->error);
         }
     }
+
+    public function testNoUpdateComponentsProvided()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+        unset($params['params']['updateComponents']);
+
+        $response = $this->runDeploymentRequest($params);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('updateComponents not found in the request', $responseBody->error);
+    }
+
+    public function testUpdateComponentsNotArray()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+        $params['params']['updateComponents'] = 10;
+
+        $response = $this->runDeploymentRequest($params);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('updateComponents parameter should be an array', $responseBody->error);
+    }
 }

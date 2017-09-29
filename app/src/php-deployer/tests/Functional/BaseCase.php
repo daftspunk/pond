@@ -129,12 +129,12 @@ class BaseCase extends TestCase
         return $name;
     }
 
-    protected function makeValidDeploymentConfig()
+    protected function makeValidDeploymentConfig($updateRequest = false)
     {
         $config = self::getConfig('connection');
         $projectName = $this->generateUniqueProjectName();
 
-        return [
+        $result = [
             'privateKeyPath' => $config['privateKey'],
             'publicKeyPath' => $config['publicKey'],
             'ip' => $config['host'],
@@ -152,6 +152,19 @@ class BaseCase extends TestCase
                 'configTemplates' => []
             ]
         ];
+
+        if ($updateRequest) {
+            $result['params']['update'] = true;
+            $result['params']['updateComponents'] = [
+                'core'=>true, 
+                'media'=>true,
+                'uploads'=>true,
+                'plugins'=>true,
+                'themes'=>true,
+            ];
+        }
+
+        return $result;
     }
 
     protected function makeDir($path)

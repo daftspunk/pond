@@ -69,7 +69,7 @@ Parameters explained:
     * `plugins` - boolean or array, whether to update all plugins or names of plugins to update.
     * `themes` - boolean or array, whether to update all themes or names of themes to update.
     * `media` - boolean, whether to update media files.
-* `configTemplates` - JSON object, required for new deployments. See the `/configure` operation below.
+* `configTemplates` - JSON object, required for new deployments, ignored for updates. See the `/configure` operation below.
 * `buildTag` - string, optional. Build tag to associate with the deployment, max len: 50.
 
 ## POST /configure

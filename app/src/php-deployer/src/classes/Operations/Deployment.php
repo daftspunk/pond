@@ -53,6 +53,7 @@ class Deployment extends Base
     private $localProjectPath;
     private $configurationOperation;
     private $buildTag;
+    private $updateComponents;
 
     public function setDeploymentParameters($parameters)
     {
@@ -82,7 +83,7 @@ class Deployment extends Base
             throw new HttpException('Configuration templates must be provided for the new deployment', 400);
         }
 
-        if ($configTemplatesProvided) {
+        if (!$this->update) {
             // Create the configuration operation early to detect possible
             // problems with templates before deployment.
 
@@ -92,20 +93,27 @@ class Deployment extends Base
 
             $this->configurationOperation->setConfigurationParameters($parameters);
         }
+        else {
+            $this->updateComponents = $this->getParameterValue($parameters, 'updateComponents');
+
+            // Note - more validation is done inside ProjectArchiver
+            //
+            if (!Validator::arrayType()->validate($this->updateComponents)) {
+                throw new HttpException('The updateComponents parameter should be an array', 400);
+            }
+        }
     }
 
     public function run()
     {
         if ($this->update) {
             $this->validateEnvironmentDirectories();
-            $this->loadMetadata();
+            $deploymentEnvironment = $this->getInactiveDeploymentEnvironment();
+            $this->archiveUploadAndExtract($deploymentEnvironment, $this->updateComponents);
         }
         else {
             $this->initDirectories();
             $this->archiveUploadAndExtract(['blue', 'green']);
-        }
-
-        if ($this->configurationOperation) {
             $this->configurationOperation->run();
         }
     }
@@ -142,9 +150,6 @@ class Deployment extends Base
         if (!$connection->directoryExists(DeployerConfiguration::POND_ROOT)) {
             throw new Exception(sprintf('%s directory not found on the server $pondRoot', DeployerConfiguration::POND_ROOT));
         }
-
-        // If we are creating the environment, make sure the 
-        // environment's directory does not exist.
 
         $projectDirectory = $this->getProjectDirectoryRemotePath();
         $envDirectory = $this->getEnvironmentDirectoryRemotePath();
@@ -190,11 +195,11 @@ class Deployment extends Base
         $connection->runMultipleCommands($commands, 10, $variables);
     }
 
-    private function archiveUploadAndExtract($deploymentEnvironmentNames)
+    private function archiveUploadAndExtract($deploymentEnvironmentNames, $components = null)
     {
         $deploymentEnvironmentNames = (array)$deploymentEnvironmentNames;
         $archiver = new ProjectArchiver($this->localProjectPath);
-        $zipPath = $archiver->make();
+        $zipPath = $archiver->make($components);
 
         $this->updatedDeploymentEnvironments = $deploymentEnvironmentNames;
         $this->updatedComponents = $archiver->getArchivedComponents();
@@ -258,7 +263,49 @@ class Deployment extends Base
 
     private function validateEnvironmentDirectories()
     {
-        // If we are updating the environment make sure the
-        // project and environment directories exist.
+        $connection = $this->getConnection();
+        $projectDirectory = $this->getProjectDirectoryRemotePath();
+        $envDirectory = $this->getEnvironmentDirectoryRemotePath();
+
+        if (!$connection->directoryExists($projectDirectory)) {
+            throw new Exception(sprintf('The project directory does not exist: %s', $projectDirectory));
+        }
+
+        if (!$connection->directoryExists($envDirectory)) {
+            throw new Exception(sprintf('The project environment directory does not exist: %s', $envDirectory));
+        }
+
+        foreach (['blue', 'green'] as $deploymentEnvironment) {
+            $deploymentEnvironmentDirectory = $envDirectory.'/'.$deploymentEnvironment;
+            if (!$connection->directoryExists($deploymentEnvironmentDirectory)) {
+                throw new Exception(sprintf('The deployment environment directory does not exist: %s', $deploymentEnvironmentDirectory));
+            }
+        }
+
+        $linkPath = $envDirectory.'/current';
+        if (!$connection->linkExists($linkPath)) {
+            throw new Exception(sprintf('The "current" symbolic link does not exist: %s', $linkPath));
+        }
+    }
+
+    private function getInactiveDeploymentEnvironment()
+    {
+        $connection = $this->getConnection();
+        $envDirectory = $this->getEnvironmentDirectoryRemotePath();
+        $linkPath = $envDirectory.'/current';
+
+        $path = $connection->runCommand('readlink "{{$linkPath}}"', 10, ['linkPath'=>$linkPath]);
+        $isBlue = preg_match('/blue$/', $path);
+        $isGreen = preg_match('/green$/', $path);
+
+        if (!$isBlue && !$isGreen) {
+            throw new Exception('The "current" symbolic link has invalid target.');
+        }
+
+        if ($isBlue) {
+            return 'green';
+        }
+
+        return 'blue';
     }
 }
