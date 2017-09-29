@@ -1,8 +1,8 @@
 <?php namespace PhpDeployer\Operations;
 
 use PhpDeployer\Exceptions\Http as HttpException;
-use PhpDeployer\Util\Configuration as DeployerConfiguration;
 use PhpDeployer\ConfigurationTemplate\View as ConfigurationTemplateView;
+use PhpDeployer\Operations\Misc\RemoteStatusManager;
 use Respect\Validation\Validator as Validator;
 use Exception;
 
@@ -20,6 +20,8 @@ class Configuration extends Base
 
     public function setConfigurationParameters($parameters)
     {
+        parent::loadPermissionData($parameters);
+
         $this->setProjectDirectoryName($this->getParameterValue($parameters, 'projectDirectoryName'));
         $this->setEnvironmentDirectoryName($this->getParameterValue($parameters, 'environmentDirectoryName'));
         $this->templates = $this->getParameterValue($parameters, 'configTemplates');
@@ -100,9 +102,9 @@ class Configuration extends Base
             }
 
             $destRemotePath = $configDirectory.'/'.$templateName;
-            $this->getScpConnection()->upload($tempFilePath, $destRemotePath);
+            $this->getScpConnection()->upload($tempFilePath, $destRemotePath, 'configuration file '.$templateName);
             $this->getConnection()->runCommand('chmod {{$mask}} "{{$path}}"', 10, [
-                'mask' => DeployerConfiguration::getUnixConfigFileMask(),
+                'mask' => $this->getPermissionData()->getConfigMask(),
                 'path' => $destRemotePath
             ]);
         }

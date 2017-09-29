@@ -170,20 +170,20 @@ class Connection
         return trim($command);
     }
 
-    public function upload($from, $to)
+    public function upload($from, $to, $fileTitle)
     {
         if ($this->singleCommandHasRun) {
             throw new Exception('Cannot use a same SSH connection for running commands and uploading files.');
         }
 
-        $this->addToLog(sprintf('Uploading "%s"...', $to));
+        $this->addToLog(sprintf('Uploading %s...', $fileTitle));
 
         if (!@ssh2_scp_send($this->session, $from, $to)) {
             throw new Exception($this->addToLog('Error uploading file to the server'));
         }
     }
 
-    public function uploadFromString($commandSshConnection, $contents, $to, $remoteTmpDir, $permissionMask)
+    public function uploadFromString($commandSshConnection, $contents, $to, $remoteTmpDir, $permissionMask, $fileTitle)
     {
         if ($this->singleCommandHasRun) {
             throw new Exception('Cannot use a same SSH connection for running commands and uploading files.');
@@ -198,7 +198,7 @@ class Connection
                 throw new Exception('Cannot create a local temporary file');
             }
 
-            $this->upload($localTmpPath, $destRemotePath);
+            $this->upload($localTmpPath, $destRemotePath, $fileTitle);
 
             $params = [
                 'tmpPath' => $destRemotePath,

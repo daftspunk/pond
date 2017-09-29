@@ -113,7 +113,7 @@ TODO: package PHP Deployer to phar.
 
 ## Coding standards
 
-Coding standards are usual (no semicolons) with some additions.
+Coding standards are usual (no semicolons) with some additions described below.
 
 ### Imports for scripts
 
@@ -140,7 +140,7 @@ import Welcome from './welcome.vue'
 
 Pond is created to be as simple as possible. In order to achieve this some features must be hidden or limited, even although they could be wanted by advanced users. It's not impossible to fine-tune October installation by editing configuration files, so those users have options. In particular:
 
-* File and folder permission modes are not presented in the installer Advanced Options, because Pond is a local installation manager. Files and folders are created with 777 mode, making its possible for user to edit and remove files if needed.
+* File and folder permission modes are not presented in the installer Advanced Options, because Pond is a local installation manager. Files and folders are created with `777` permission mask, making its possible for user to edit and remove files if needed.
 * The back-end URL is always /backend.
 
 ## Protecting the code

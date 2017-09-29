@@ -2,8 +2,10 @@
 
 use PhpDeployer\Ssh\Connection;
 use PhpDeployer\Exceptions\Http as HttpException;
-use Respect\Validation\Validator as Validator;
 use PhpDeployer\Util\Configuration as DeployerConfiguration;
+use PhpDeployer\Operations\Misc\RemoteStatusManager;
+use PhpDeployer\Operations\Misc\RequestPermissionData;
+use Respect\Validation\Validator as Validator;
 use Exception;
 
 /**
@@ -28,6 +30,7 @@ abstract class Base
 
     private $projectDirectoryName;
     private $environmentDirectoryName;
+    private $permissionData;
 
     public function __construct(Connection $connection = null, Connection $scpConnection = null)
     {
@@ -37,6 +40,9 @@ abstract class Base
         $this->connection = $connection;
         $this->scpConnection = $scpConnection;
     }
+
+    abstract public function run();
+    abstract public function saveRemoteStatus($success);
 
     /**
      * Sets the common connection parameters.
@@ -67,9 +73,6 @@ abstract class Base
             $this->handleConnectionLogEntry(sprintf('Error creating log file on the server. %s', $ex->getMessage()));
         }
     }
-
-    abstract public function run();
-    abstract public function saveRemoteStatus($success);
 
     protected function getConnection()
     {
@@ -166,7 +169,7 @@ abstract class Base
     protected function updateRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails)
     {
         try {
-            $statusManager = new RemoteStatusManager($this->getConnection(), $this->getScpConnection());
+            $statusManager = new RemoteStatusManager($this->getConnection(), $this->getScpConnection(), $this->getPermissionData());
             $statusManager->updateStatus(
                 $this->getEnvironmentDirectoryRemotePath(),
                 $logRecordDetails,
@@ -177,6 +180,36 @@ abstract class Base
             // This will push the message to the client
             $this->handleConnectionLogEntry(sprintf('Error updating environment status file on the server. %s', $ex->getMessage()));
         }
+    }
+
+    protected function loadPermissionData($parameters)
+    {
+        $permissions = $this->getParameterValue($parameters, 'permissions');
+
+        if (!Validator::arrayType()->validate($permissions)) {
+            throw new HttpException('The permissions parameter should be an array', 400);
+        }
+
+        foreach (['directory', 'file', 'config'] as $permissionParameter) {
+            if (!array_key_exists($permissionParameter, $permissions)) {
+                throw new HttpException(sprintf('The %s property is not found for permissions request parameter', $permissionParameter), 400);
+            }
+        }
+
+        $this->permissionData = new RequestPermissionData(
+            $permissions['directory'],
+            $permissions['config'],
+            $permissions['file']
+        );
+    }
+
+    protected function getPermissionData()
+    {
+        if (!$this->permissionData) {
+            throw new Exception('Permission data is not initialized');
+        }
+
+        return $this->permissionData;
     }
 
     private function handleConnectionLogEntry($string)
@@ -205,7 +238,8 @@ abstract class Base
             $contents, 
             $finalLogPath, 
             $remoteTmpDir, 
-            DeployerConfiguration::UNIX_FILE_MASK
+            $this->getPermissionData()->getFileMask(),
+            'log file'
         );
     }
 }

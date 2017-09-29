@@ -3,8 +3,9 @@
 use PhpDeployer\Exceptions\Http as HttpException;
 use PhpDeployer\Operations\Configuration as ConfigurationOperation;
 use PhpDeployer\Util\Configuration as DeployerConfiguration;
-use Respect\Validation\Validator as Validator;
+use PhpDeployer\Operations\Misc\RemoteStatusManager;
 use PhpDeployer\Archiver\ProjectArchiver;
+use Respect\Validation\Validator as Validator;
 use Exception;
 
 /**
@@ -55,6 +56,8 @@ class Deployment extends Base
 
     public function setDeploymentParameters($parameters)
     {
+        parent::loadPermissionData($parameters);
+
         $this->update = $this->getParameterValue($parameters, 'update');
         $this->localProjectPath = $this->getParameterValue($parameters, 'localProjectPath');
 
@@ -178,7 +181,7 @@ class Deployment extends Base
         ];
 
         $variables = [
-            'dirMask' => DeployerConfiguration::UNIX_DIRECTORY_MASK,
+            'dirMask' => $this->getPermissionData()->getDirectoryMask(),
             'envDirectory' => $envDirectory,
             'projDirectory' => $projectDirectory,
             'currentEnv' => self::DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT
@@ -202,7 +205,7 @@ class Deployment extends Base
             $destRemotePath = $envDirectory.'/pond-tmp/'.$tmpFileName;
             $connection = $this->getConnection();
 
-            $this->getScpConnection()->upload($zipPath, $destRemotePath);
+            $this->getScpConnection()->upload($zipPath, $destRemotePath, 'archive');
 
             if (!$connection->fileExists($destRemotePath)) {
                 throw new Exception('Error uploading the archive');
@@ -234,11 +237,13 @@ class Deployment extends Base
     {
         $connection = $this->getConnection();
         $archivedPaths = $archiver->getArchivedComponentPaths();
+        $permissionsData = $this->getPermissionData();
+
         foreach ($archivedPaths as $path) {
             $params = [
                 'path' => $directory.'/'.$path,
-                'fileMask' => DeployerConfiguration::UNIX_FILE_MASK,
-                'dirMask' => DeployerConfiguration::UNIX_DIRECTORY_MASK
+                'fileMask' => $permissionsData->getFileMask(),
+                'dirMask' => $permissionsData->getDirectoryMask()
             ];
 
             if ($path != 'config') {

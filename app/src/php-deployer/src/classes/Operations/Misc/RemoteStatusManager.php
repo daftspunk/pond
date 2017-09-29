@@ -1,6 +1,4 @@
-<?php namespace PhpDeployer\Operations;
-
-use PhpDeployer\Util\Configuration as DeployerConfiguration;
+<?php namespace PhpDeployer\Operations\Misc;
 
 class RemoteStatusManager
 {
@@ -8,11 +6,13 @@ class RemoteStatusManager
 
     private $connection;
     private $scpConnection;
+    private $permissionData;
 
-    public function __construct($connection, $scpConnection)
+    public function __construct($connection, $scpConnection, $permissionData)
     {
         $this->connection = $connection;
         $this->scpConnection = $scpConnection;
+        $this->permissionData = $permissionData;
     }
 
     public function updateStatus($envDirectory, $logRecordDetails, $deploymentEnvironmentsDetails)
@@ -31,7 +31,8 @@ class RemoteStatusManager
             $jsonString, 
             $remoteFilePath, 
             $remoteTmpDir, 
-            DeployerConfiguration::UNIX_FILE_MASK
+            $this->permissionData->getFileMask(),
+            'status file'
         );
     }
 

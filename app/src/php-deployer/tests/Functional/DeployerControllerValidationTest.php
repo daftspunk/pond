@@ -121,4 +121,82 @@ class DeployerControllerValidationTest extends BaseCase
         $this->assertEquals('http', $responseBody->type);
         $this->assertEquals('The project directory name can contain only alphanumeric, dash and underscore characters', $responseBody->error);
     }
+
+    public function testNoPermissions()
+    {
+        $params = $this->makeValidDeploymentConfig();
+        unset($params['params']['permissions']);
+
+        $response = $this->runDeploymentRequest($params);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('permissions not found in the request', $responseBody->error);
+    }
+
+    public function testNoPermissionProperty()
+    {
+        $allParams = $this->makeValidDeploymentConfig();
+        $properties = ['file', 'directory', 'config'];
+
+        foreach ($properties as $property)
+        {
+            $params = $allParams;
+
+            unset($params['params']['permissions'][$property]);
+
+            $response = $this->runDeploymentRequest($params);
+
+            $this->assertEquals(400, $response->getStatusCode());
+            $responseBody = json_decode((string)$response->getBody());
+            $this->assertNotNull($responseBody);
+            $this->assertEquals('http', $responseBody->type);
+            $this->assertContains($property.' property is not found', $responseBody->error);
+        }
+    }
+
+    public function testPermissionPropertyEmpty()
+    {
+        $allParams = $this->makeValidDeploymentConfig();
+        $properties = ['file', 'directory', 'config'];
+
+        foreach ($properties as $property)
+        {
+            $params = $allParams;
+
+            $params['params']['permissions'][$property] = '';
+
+            $response = $this->runDeploymentRequest($params);
+
+            $this->assertEquals(400, $response->getStatusCode());
+            $responseBody = json_decode((string)$response->getBody());
+            $this->assertNotNull($responseBody);
+            $this->assertEquals('http', $responseBody->type);
+            $this->assertContains($property.' permission mask should not be empty', $responseBody->error);
+        }
+    }
+
+    public function testPermissionPropertyInvalidValue()
+    {
+        $allParams = $this->makeValidDeploymentConfig();
+        $properties = ['file', 'directory', 'config'];
+
+        foreach ($properties as $property)
+        {
+            $params = $allParams;
+
+            $params['params']['permissions'][$property] = 'abc';
+
+            $response = $this->runDeploymentRequest($params);
+
+            $this->assertEquals(400, $response->getStatusCode());
+            $responseBody = json_decode((string)$response->getBody());
+            $this->assertNotNull($responseBody);
+            $this->assertEquals('http', $responseBody->type);
+            $this->assertContains($property, $responseBody->error);
+            $this->assertContains('be a valid permission value', $responseBody->error);
+        }
+    }
 }

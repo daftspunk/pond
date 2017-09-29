@@ -10,7 +10,7 @@ TODO: this should be fully automated with `config.vm.provision "shell", path: pa
 
 TODO: the provision script should also create an available and enabled virtual host dev-latest-deployed-environment.com pointing to `/var/www/latest-deployment-environment/current`
 
-```
+```sh
 sudo adduser --disabled-password --gecos "" deploy
 sudo chown -R deploy:deploy /var/www
 sudo chmod 777 /var/www

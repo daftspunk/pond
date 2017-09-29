@@ -4,7 +4,7 @@
 
 Initially, we have two options - implement a server-based service like Forge, or have just a desktop client. With our goals of having a life style business and a low level of real-time responsibility, the desktop option is much more appealing, although there're trade offs, see below.
 
-**Problems with the server options**
+### Problems with the server-based service
 
 1. **Security.** We would need to either use a special user(s) with a key pair for accessing clients' servers, or transmit the client's private key from Pond to our server in order to work with the client's server. Keeping private keys is risky - if we get hacked, the hacker could obtain access to all customer's servers and we won't even be able to fix it promptly.
 2. **Reliability.** If our server is overloaded, everybodys experience latency. If our server is down, nobody can deploy.
@@ -127,9 +127,9 @@ There should be an ability to unbind Pond project from a droplet and start the d
 
 The only case when Pond deployer removes files from the server is when we deploy a plugin. The plugin's directory is removed from the server before it's replaced from the archive.
 
-### .pondignore
+## .pondignore
 
-.pondignore is a text file with patterns for excluding from the deployment archives. One pattern per line. Allows comments starting with #
+`.pondignore` is a text file with patterns for excluding from the deployment archives. One pattern per line. Allows comments starting with `#`.
 
 ## Deploying themes
 
@@ -168,7 +168,7 @@ Pond projects should be able to request and show the server environment status: 
 
 ## Keeping some data on the could servers
 
-Deployed environments must keep enough metadata to determine what projects the belong to, just for convenience of administrators. Droplets will use tags matching project names. Metadata structure (/metadata/status.json):
+Deployed environments must keep enough metadata to determine what projects the belong to, just for convenience of administrators. Droplets will use tags matching project names. Metadata structure (`/metadata/status.json`):
 
 ```
 {
@@ -197,6 +197,8 @@ Deployed environments must keep enough metadata to determine what projects the b
 The `deploymentLog` part keeps information only about X days of latest deployments.
 
 ## Billing
+
+* [ ] **TODO** - review
 
 There will be 2 points when we contact our server - when the deployment starts to check if the account has positive balance and when the deployment is almost finished, just before we report to the user that the deployment is done, when it's know that it was successful. We can measure the number of pre and post deployment events for a contacts to estimate whether it could be an abuse.
 

@@ -97,9 +97,9 @@ class DeployerControllerOperationTest extends BaseCase
         $fileContents = $connection->runCommand('cat "{{$path}}"', 10, ['path'=>$environmentDirectory.'/config/view.php']);
         $this->assertEquals('<?php return [\'param2\' => "string"];', $fileContents);
 
-        $this->assertEquals(DeployerConfiguration::getUnixConfigFileMask(), substr(sprintf('%o', fileperms($environmentDirectory.'/config/app.php')), -3));
-        $this->assertEquals(DeployerConfiguration::UNIX_FILE_MASK, substr(sprintf('%o', fileperms($environmentDirectory.'/blue/index.php')), -3));
-        $this->assertEquals(DeployerConfiguration::UNIX_DIRECTORY_MASK, substr(sprintf('%o', fileperms($environmentDirectory.'/blue/plugins/october')), -3));
+        $this->assertEquals($params['params']['permissions']['config'], substr(sprintf('%o', fileperms($environmentDirectory.'/config/app.php')), -3));
+        $this->assertEquals($params['params']['permissions']['file'], substr(sprintf('%o', fileperms($environmentDirectory.'/blue/index.php')), -3));
+        $this->assertEquals($params['params']['permissions']['directory'], substr(sprintf('%o', fileperms($environmentDirectory.'/blue/plugins/october')), -3));
 
         $this->assertFileExists($environmentDirectory.'/metadata/status.json');
         $statusContents = json_decode(file_get_contents($environmentDirectory.'/metadata/status.json'), true);
@@ -209,8 +209,7 @@ class DeployerControllerOperationTest extends BaseCase
 
         $fileContents = $connection->runCommand('cat "{{$path}}"', 10, ['path'=>$environmentDirectory.'/config/session.php']);
         $this->assertEquals('<?php return [\'param3\' => false];', $fileContents);
-
-        $this->assertEquals(DeployerConfiguration::getUnixConfigFileMask(), substr(sprintf('%o', fileperms($environmentDirectory.'/config/app.php')), -3));
+        $this->assertEquals($params['params']['permissions']['config'], substr(sprintf('%o', fileperms($environmentDirectory.'/config/app.php')), -3));
 
         $this->assertFileExists($environmentDirectory.'/metadata/status.json');
         $statusContents = json_decode(file_get_contents($environmentDirectory.'/metadata/status.json'), true);

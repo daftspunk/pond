@@ -8,7 +8,6 @@ use Slim\Http\Environment;
 use PHPUnit\Framework\TestCase;
 use PhpDeployer\Ssh\Connection;
 use PhpDeployer\Util\Configuration as DeployerConfiguration;
-
 use PhpDeployer\Operations\Deployment as DeploymentOperation;
 
 use Exception;
@@ -145,6 +144,11 @@ class BaseCase extends TestCase
                 'projectDirectoryName' => $projectName,
                 'environmentDirectoryName' => $this->generateUniqueEnvironmentName($projectName),
                 'localProjectPath' => __DIR__.'/../fixtures/test-project',
+                'permissions' => [
+                    'directory' => '755',
+                    'file' => '664',
+                    'config' => '660'
+                ],
                 'configTemplates' => []
             ]
         ];

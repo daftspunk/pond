@@ -316,11 +316,11 @@ class SshConnectionTest extends BaseCase
     {
         $connection = $this->makeValidConnection();
         $remoteFilePath = '/var/www/'.microtime().'.tmp';
-        $connection->upload(__DIR__.'/../fixtures/test-dir/README.md', $remoteFilePath);
+        $connection->upload(__DIR__.'/../fixtures/test-dir/README.md', $remoteFilePath, 'log file');
 
         $logArray = $connection->getLogAsArray();
         $this->assertCount(1, $logArray);
-        $this->assertEquals('Uploading...', $logArray[0]);
+        $this->assertEquals('Uploading log file...', $logArray[0]);
 
         $result = $connection->runCommand('ls "'.$remoteFilePath.'"');
         $this->assertContains($remoteFilePath, $result);
@@ -336,7 +336,7 @@ class SshConnectionTest extends BaseCase
         $contents = 'Test contents';
         $remoteFilePath = '/var/www/'.microtime().'.tmp';
 
-        $scpConnection->uploadFromString($commandConnection, $contents, $remoteFilePath, '/var/www/', '664');
+        $scpConnection->uploadFromString($commandConnection, $contents, $remoteFilePath, '/var/www/', '664', 'test file');
         $this->assertFileExists($remoteFilePath);
         $this->assertEquals('664', substr(sprintf('%o', fileperms($remoteFilePath)), -3));
         $this->assertStringEqualsFile($remoteFilePath, $contents);
@@ -348,7 +348,7 @@ class SshConnectionTest extends BaseCase
         $remoteFilePath = '/var/www/'.microtime().'.tmp';
 
         try {
-            $connection->upload(__DIR__.'/../fixtures/test-dir/not-a-file', $remoteFilePath);
+            $connection->upload(__DIR__.'/../fixtures/test-dir/not-a-file', $remoteFilePath, 'not a file');
             $this->assertTrue(false, 'Invalid upload must fail');
         }
         catch (Exception $ex) {
@@ -356,7 +356,7 @@ class SshConnectionTest extends BaseCase
 
             $logArray = $connection->getLogAsArray();
             $this->assertCount(2, $logArray);
-            $this->assertEquals('Uploading...', $logArray[0]);
+            $this->assertEquals('Uploading not a file...', $logArray[0]);
             $this->assertEquals('Error uploading file to the server', $logArray[1]);
         }
     }

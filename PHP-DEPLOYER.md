@@ -37,6 +37,11 @@ Request JSON parameters (must include the `common arguments` listed above):
         "projectDirectoryName": "my-project-one",
         "environmentDirectoryName": "production",
         "localProjectPath": "/users/elf/pond-projects/my-project-one",
+        "permissions": {
+            "directory": "755",
+            "file": "664",
+            "config": "660"
+        },
         "updateComponents": [
             "core": true,
             "plugins": true|["rainlab/users"],
@@ -51,17 +56,21 @@ Request JSON parameters (must include the `common arguments` listed above):
 
 Parameters explained:
 
-* `update` - boolean, required, determines whether it's a create or update operation.
-* `projectDirectoryName` - string, required, project directory name on the server.
-* `environmentDirectoryName` - string, required, environment directory name on the server.
-* `localProjectPath` - string, required, path to the local project directory.
-* `updateComponents` - array, required for updates, ignored for new deployments.
+* `update` - boolean, required. Determines whether it's a create or update operation.
+* `projectDirectoryName` - string, required. Project directory name on the server.
+* `environmentDirectoryName` - string, required. Environment directory name on the server.
+* `localProjectPath` - string, required. Path to the local project directory.
+* `permissions` - object, required. Contains permission masks. Must have the following properties:
+    * `directory` - string, required. Directory permission mask.
+    * `file` - string, required. Files permission mask.
+    * `config` - string, required. Configuration files permission mask.
+* `updateComponents` - array, required for updates, ignored for new deployments. Lists components to deploy.
     * `core` - boolean, whether to update the core.
     * `plugins` - boolean or array, whether to update all plugins or names of plugins to update.
     * `themes` - boolean or array, whether to update all themes or names of themes to update.
     * `media` - boolean, whether to update media files.
 * `configTemplates` - JSON object, required for new deployments. See the `/configure` operation below.
-* `buildTag` - string, optional build tag string to associate with the deployment, max len: 50.
+* `buildTag` - string, optional. Build tag to associate with the deployment, max len: 50.
 
 ## POST /configure
 
@@ -74,6 +83,11 @@ Request JSON parameters (must include the `common arguments` listed above):
     "params": {
         "projectDirectoryName": "my-project-one",
         "environmentDirectoryName": "production",
+        "permissions": {
+            "directory": "755",
+            "file": "664",
+            "config": "660"
+        },
         "configTemplates": {
             "app.php": {
                 "template": "configuration template contents",
@@ -90,11 +104,15 @@ Request JSON parameters (must include the `common arguments` listed above):
 
 Parameters explained:
 
-* `projectDirectoryName` - string, required, project directory name on the server.
-* `environmentDirectoryName` - string, required, environment directory name on the server.
-* `configTemplates` - JSON object defining names, content and variables for configuration files. Object keys correspond the configuration file names (`app.php`, `sms.php`, etc.). Each configuration object must have these properties:
+* `projectDirectoryName` - string, required. Project directory name on the server.
+* `environmentDirectoryName` - string, required. Environment directory name on the server.
+* `permissions` - object, required. Contains permission masks. Must have the following properties:
+    * `directory` - string, required. Directory permission mask.
+    * `file` - string, required. Files permission mask.
+    * `config` - string, required. Configuration files permission mask.
+* `configTemplates` - object, required. Defines names, content and variables for configuration files. Object keys correspond the configuration file names (`app.php`, `sms.php`, etc.). Each configuration object must have these properties:
     * `template` - text content of the configuration file with variable placeholders, see below.
-    * `vars` - JSON object containng variable names and values.
+    * `vars` - object containng variable names and values.
 
 Configuration files use Twig engine for rendering:
 
@@ -109,6 +127,8 @@ return [
 The configuration file templates are provided by the NW.js part of the application. In the beginning they will be fixed, but it's possible to make them editable so that each project has its own configuration file templates.
 
 ## Security of the Pond server environments
+
+* [ ] **TODO** - review this section
 
 There will be a special user user with configurable name, responsible for deploying the application and running Apache (this is TBD, it's also possible Apache and the special user to share a same group instead). Project files and directories will have permissions limited to that user (or its group, TBD).
 
