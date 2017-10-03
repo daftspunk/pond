@@ -126,6 +126,22 @@ return [
 
 The configuration file templates are provided by the NW.js part of the application. In the beginning they will be fixed, but it's possible to make them editable so that each project has its own configuration file templates.
 
+## POST /swap
+
+Swaps active deployment environments (`blue`/`green`). The request parameters include a name of the environment which is supposed to become active, however if it is already active at the moment of the request, the request will return an error. This is done for safety, to make sure that the user UI corresponds to the server state (user sees what's really going on the server).
+
+Request JSON parameters (must include the `common arguments` listed above):
+
+```json
+{
+    "params": {
+        "projectDirectoryName": "my-project-one",
+        "environmentDirectoryName": "production",
+        "activate": "blue|green"
+    }
+}
+```
+
 ## Security of the Pond server environments
 
 * [ ] **TODO** - review this section

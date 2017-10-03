@@ -65,6 +65,32 @@ class Deployment extends Base
         }
     }
 
+    public function swapEnvironments()
+    {
+        $this->validateDeployParamsArgument();
+
+        $swap = new SwapOperation();
+        $swap->setConnectionParameters(
+            $this->getRequestArgument('privateKeyPath'),
+            $this->getRequestArgument('publicKeyPath'),
+            $this->getRequestArgument('ip'),
+            $this->getRequestArgument('user'));
+
+        $swap->setConfigurationParameters($this->getRequestArgument('params'));
+
+        try {
+            $swap->run();
+            $swap->saveRemoteStatus(true);
+        }
+        catch (Exception $ex) {
+            $swap->saveRemoteStatus(false);
+            throw $ex;
+        }
+        finally {
+            $swap->saveRemoteLog();
+        }
+    }
+
     private function validateDeployParamsArgument()
     {
         $this->validateArgumentsExist(['params']);
