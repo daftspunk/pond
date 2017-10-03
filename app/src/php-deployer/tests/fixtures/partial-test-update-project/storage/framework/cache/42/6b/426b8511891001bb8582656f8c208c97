@@ -1,0 +1,53 @@
+1500344734a:1:{s:11:"plugins.htm";a:9:{s:8:"fileName";s:11:"plugins.htm";s:7:"content";s:784:"title = "Plugin components"
+url = "/demo/plugins"
+layout = "default"
+
+[demoTodo]
+max = 3
+==
+<div class="jumbotron title-js">
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <h1>Plugin components</h1>
+                <p>Plugins can provide components, simple building blocks that enrich any page or layout. Check out the todo example below.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% component 'demoTodo' %}
+</div>
+
+<!-- Page Explanation -->
+<div class="container">{% partial "explain/plugins.htm" %}</div>
+
+<br />
+
+<div class="text-center">
+    <p><a target="_blank" href="http://octobercms.com/docs" class="btn btn-lg btn-default">Learn more at October's Documentation</a></p>
+</div>
+";s:5:"mtime";i:1500344128;s:6:"markup";s:691:"<div class="jumbotron title-js">
+    <div class="container">
+        <div class="row">
+            <div class="col-8">
+                <h1>Plugin components</h1>
+                <p>Plugins can provide components, simple building blocks that enrich any page or layout. Check out the todo example below.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% component 'demoTodo' %}
+</div>
+
+<!-- Page Explanation -->
+<div class="container">{% partial "explain/plugins.htm" %}</div>
+
+<br />
+
+<div class="text-center">
+    <p><a target="_blank" href="http://octobercms.com/docs" class="btn btn-lg btn-default">Learn more at October's Documentation</a></p>
+</div>";s:4:"code";N;s:5:"title";s:17:"Plugin components";s:3:"url";s:13:"/demo/plugins";s:6:"layout";s:7:"default";s:8:"demoTodo";a:1:{s:3:"max";s:1:"3";}}}

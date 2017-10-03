@@ -100,6 +100,7 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertEquals($params['params']['permissions']['config'], substr(sprintf('%o', fileperms($environmentDirectory.'/config/app.php')), -3));
         $this->assertEquals($params['params']['permissions']['file'], substr(sprintf('%o', fileperms($environmentDirectory.'/blue/index.php')), -3));
         $this->assertEquals($params['params']['permissions']['directory'], substr(sprintf('%o', fileperms($environmentDirectory.'/blue/plugins/october')), -3));
+        $this->assertEquals($params['params']['permissions']['directory'], substr(sprintf('%o', fileperms($environmentDirectory.'/config')), -3));
 
         $this->assertFileExists($environmentDirectory.'/metadata/status.json');
         $statusContents = json_decode(file_get_contents($environmentDirectory.'/metadata/status.json'), true);
@@ -237,7 +238,12 @@ class DeployerControllerOperationTest extends BaseCase
         extract($input);
 
         $params['params']['update'] = true;
-        $params['params']['updateComponents'] = ['core'];
+        $params['params']['localProjectPath'] = __DIR__.'/../fixtures/partial-test-update-project';
+        $params['params']['updateComponents'] = [
+            'core' => true,
+            'plugins' => ['october/demo2'],
+            'themes' => true
+        ];
 
         $response = $this->runDeploymentRequest($params);
         $this->assertEquals(200, $response->getStatusCode());
@@ -245,8 +251,17 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertTrue(is_link($environmentDirectory.'/current'));
         $this->assertEquals($environmentDirectory.'/green', readlink($environmentDirectory.'/current'));
 
-        // Deploy from another source directory and check files were added.
-        // Make sure the INACTIVE environment was updated.
+        // Green is active, the updated files should be in blue
+
+        $this->assertFileExists($environmentDirectory.'/blue/plugins/october/demo2/Plugin.php');
+        $this->assertFileExists($environmentDirectory.'/blue/themes/demo2/theme.yaml');
+        $this->assertEquals($params['params']['permissions']['file'], substr(sprintf('%o', fileperms($environmentDirectory.'/blue/plugins/october/demo2/Plugin.php')), -3));
+        $this->assertEquals($params['params']['permissions']['directory'], substr(sprintf('%o', fileperms($environmentDirectory.'/blue/plugins/october/demo2')), -3));
+
+        // And there should be no updated files in green
+
+        $this->assertFileNotExists($environmentDirectory.'/green/plugins/october/demo2/Plugin.php');
+        $this->assertFileNotExists($environmentDirectory.'/green/themes/demo2/theme.yaml');
     }
 
     public function testConfigurationOperationNoTemplates()

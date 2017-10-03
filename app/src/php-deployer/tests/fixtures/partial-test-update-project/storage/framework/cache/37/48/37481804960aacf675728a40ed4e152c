@@ -1,0 +1,15 @@
+1500344734a:1:{s:9:"error.htm";a:8:{s:8:"fileName";s:9:"error.htm";s:7:"content";s:243:"title = "Error page (500)"
+url = "/error"
+layout = "default"
+==
+<div class="jumbotron">
+    <div class="container">
+        <h1>Error</h1>
+        <p>We're sorry, but something went wrong and the page cannot be displayed.</p>
+    </div>
+</div>";s:5:"mtime";i:1500344128;s:6:"markup";s:179:"<div class="jumbotron">
+    <div class="container">
+        <h1>Error</h1>
+        <p>We're sorry, but something went wrong and the page cannot be displayed.</p>
+    </div>
+</div>";s:4:"code";N;s:5:"title";s:16:"Error page (500)";s:3:"url";s:6:"/error";s:6:"layout";s:7:"default";}}
