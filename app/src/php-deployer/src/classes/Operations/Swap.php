@@ -1,7 +1,6 @@
 <?php namespace PhpDeployer\Operations;
 
 use PhpDeployer\Exceptions\Http as HttpException;
-use PhpDeployer\ConfigurationTemplate\View as ConfigurationTemplateView;
 use PhpDeployer\Operations\Misc\RemoteStatusManager;
 use PhpDeployer\Operations\Misc\DeploymentEnvironment;
 use Respect\Validation\Validator as Validator;

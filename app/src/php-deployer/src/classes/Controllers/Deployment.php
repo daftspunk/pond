@@ -2,6 +2,7 @@
 
 use PhpDeployer\Operations\Deployment as DeploymentOperation;
 use PhpDeployer\Operations\Configuration as ConfigurationOperation;
+use PhpDeployer\Operations\Status as StatusOperation;
 use PhpDeployer\Operations\Swap as SwapOperation;
 use PhpDeployer\Exceptions\Http as HttpException;
 use Respect\Validation\Validator as Validator;
@@ -90,6 +91,24 @@ class Deployment extends Base
         finally {
             $swap->saveRemoteLog();
         }
+    }
+
+    public function getStatus()
+    {
+        $this->validateDeployParamsArgument();
+
+        $status = new StatusOperation();
+        $status->setConnectionParameters(
+            $this->getRequestArgument('privateKeyPath'),
+            $this->getRequestArgument('publicKeyPath'),
+            $this->getRequestArgument('ip'),
+            $this->getRequestArgument('user'));
+
+        $status->setConfigurationParameters($this->getRequestArgument('params'));
+
+        $data = $status->run();
+
+        return $this->response->withJson($data, 200);
     }
 
     private function validateDeployParamsArgument()

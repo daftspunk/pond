@@ -19,3 +19,9 @@ $app->post('/swap', function ($request, $response, $args) use ($app) {
 
     return $controller->swapEnvironments();
 });
+
+$app->post('/status', function ($request, $response, $args) use ($app) {
+    $controller = new Deployment($app, $request, $response, $args);
+
+    return $controller->getStatus();
+});

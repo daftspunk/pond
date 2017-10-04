@@ -618,4 +618,83 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertEquals('swap', $statusContents['deploymentLog'][4]['type']);
         $this->assertEquals('fail', $statusContents['deploymentLog'][4]['status']);
     }
+
+    public function testGetStatusNoEnvironmentDirectory()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+        $params['params']['projectDirectoryName'] = uniqid();
+
+        $pondRoot = DeployerConfiguration::POND_ROOT;
+        $projectDirectory = $pondRoot.'/'.$params['params']['projectDirectoryName'];
+        $this->assertDirectoryNotExists($projectDirectory);
+
+        $response = $this->runDeploymentRequest($params, '/status');
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('environment directory is not found', $responseBody->error);
+    }
+
+    public function testGetStatusNoStatusFileOrEmptyOrInvalid()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+        $params['params']['projectDirectoryName'] = uniqid();
+
+        $pondRoot = DeployerConfiguration::POND_ROOT;
+        $projectDirectory = $pondRoot.'/'.$params['params']['projectDirectoryName'];
+
+        $this->assertDirectoryNotExists($projectDirectory);
+        $this->makeDir($projectDirectory);
+
+        $environmentDirectory = $projectDirectory.'/'.$params['params']['environmentDirectoryName'];
+        $this->makeDir($environmentDirectory);
+
+        $response = $this->runDeploymentRequest($params, '/status');
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('environment status file is not found', $responseBody->error);
+
+        $filePath = $environmentDirectory.'/metadata/status.json';
+        $this->makeDir(dirname($filePath));
+        $this->assertDirectoryExists(dirname($filePath));
+
+        file_put_contents($filePath, '');
+
+        $response = $this->runDeploymentRequest($params, '/status');
+        $this->assertEquals(500, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertEquals('general', $responseBody->type);
+        $this->assertContains('is empty', $responseBody->error);
+
+        file_put_contents($filePath, '@');
+
+        $response = $this->runDeploymentRequest($params, '/status');
+        $this->assertEquals(500, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertEquals('general', $responseBody->type);
+        $this->assertContains('Error parsing', $responseBody->error);
+    }
+
+    /**
+     * @depends testSwap
+     */
+    public function testGetStatus($input)
+    {
+        extract($input);
+
+        $this->assertEquals($environmentDirectory.'/blue', readlink($environmentDirectory.'/current'));
+
+        $response = $this->runDeploymentRequest($params, '/status');
+        $statusObject = json_decode((string)$response->getBody(), true);
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $this->assertNotNull($statusObject);
+        $this->assertArrayHasKey('status', $statusObject);
+        $this->assertCount(5, $statusObject['status']['deploymentLog']);
+        $this->assertArrayHasKey('active', $statusObject);
+        $this->assertEquals('blue', $statusObject['active']);
+    }
 }

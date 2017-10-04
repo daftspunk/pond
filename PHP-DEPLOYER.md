@@ -2,6 +2,8 @@
 
 This part is written in PHP and executed using the built-in PHP server. We need PHP, because SSH2 class from Node.js doesn't work in browser context (in NW.js, see DEVNOTES.md).
 
+All requests are `POST`, regardless of whether they change the server state or not. This is done just for coding simplicity.
+
 ## Common request arguments
 
 All methods accept arguments as JSON in the request body. These common arguments are required for all calls:
@@ -139,6 +141,28 @@ Request JSON parameters (must include the `common arguments` listed above):
         "environmentDirectoryName": "production",
         "activate": "blue|green"
     }
+}
+```
+
+## POST /status
+
+Returns status file (`/metadata/status.json`) from a project environment (see PROVISIONING-AND-DEPLOYMENT.md). Request JSON parameters (must include the `common arguments` listed above):
+
+```json
+{
+    "params": {
+        "projectDirectoryName": "my-project-one",
+        "environmentDirectoryName": "production"
+    }
+}
+```
+
+The response is a JSON object string with two properties:
+
+```json
+{
+    "status" => { ... status.json contents ...  },
+    "active" => "blue|green"
 }
 ```
 

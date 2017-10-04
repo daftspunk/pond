@@ -38,6 +38,17 @@ class DeploymentEnvironment
         return self::DPE_BLUE;
     }
 
+    public function getActive()
+    {
+        $inactive = $this->getInactive();
+
+        if ($inactive == self::DPE_BLUE) {
+            return self::DPE_GREEN;
+        }
+
+        return self::DPE_BLUE;
+    }
+
     public function makeActive($environment)
     {
         if (!in_array($environment, self::DPE_BOTH)) {
