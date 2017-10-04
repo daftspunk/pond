@@ -4,6 +4,10 @@ class RemoteStatusManager
 {
     const LOG_DAYS_TO_KEEP = 30;
 
+    const TYPE_SWAP = 'swap';
+    const TYPE_DEPLOY = 'deploy';
+    const TYPE_CONFIG = 'config';
+
     private $connection;
     private $scpConnection;
     private $permissionData;
@@ -36,12 +40,13 @@ class RemoteStatusManager
         );
     }
 
-    public static function makeLogRecordArray(bool $success, array $components, array $environments)
+    public static function makeLogRecordArray(bool $success, array $components, array $environments, string $type)
     {
         return [
             'status' => $success ? 'success' : 'fail',
             'components' => $components,
             'environment' => $environments,
+            'type' => $type
         ];
     }
 

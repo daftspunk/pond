@@ -4,6 +4,7 @@ use PhpDeployer\Exceptions\Http as HttpException;
 use PhpDeployer\Operations\Configuration as ConfigurationOperation;
 use PhpDeployer\Util\Configuration as DeployerConfiguration;
 use PhpDeployer\Operations\Misc\RemoteStatusManager;
+use PhpDeployer\Operations\Misc\DeploymentEnvironment;
 use PhpDeployer\Archiver\ProjectArchiver;
 use Respect\Validation\Validator as Validator;
 use Exception;
@@ -40,7 +41,7 @@ use Exception;
  */
 class Deployment extends Base
 {
-    const DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT = 'green';
+    const DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT = DeploymentEnvironment::DPE_GREEN;
 
     private $updatedDeploymentEnvironments = [];
     private $updatedComponents = [];
@@ -113,7 +114,7 @@ class Deployment extends Base
         }
         else {
             $this->initDirectories();
-            $this->archiveUploadAndExtract(['blue', 'green']);
+            $this->archiveUploadAndExtract(DeploymentEnvironment::DPE_BOTH);
             $this->configurationOperation->run();
         }
     }
@@ -138,7 +139,9 @@ class Deployment extends Base
         $logRecordDetails = RemoteStatusManager::makeLogRecordArray(
             $success, 
             $this->updatedComponents, 
-            $this->updatedDeploymentEnvironments);
+            $this->updatedDeploymentEnvironments,
+            RemoteStatusManager::TYPE_DEPLOY
+        );
 
         $this->updateRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails);
     }
@@ -189,7 +192,7 @@ class Deployment extends Base
             'dirMask' => $this->getPermissionData()->getDirectoryMask(),
             'envDirectory' => $envDirectory,
             'projDirectory' => $projectDirectory,
-            'currentEnv' => self::DEFAULT_NEW_DEPLOYMENT_ENVIRONMENT
+            'currentEnv' => DeploymentEnvironment::DPE_INITIAL
         ];
 
         $connection->runMultipleCommands($commands, 10, $variables);
@@ -276,7 +279,7 @@ class Deployment extends Base
             throw new Exception(sprintf('The project environment directory does not exist: %s', $envDirectory));
         }
 
-        foreach (['blue', 'green'] as $deploymentEnvironment) {
+        foreach (DeploymentEnvironment::DPE_BOTH as $deploymentEnvironment) {
             $deploymentEnvironmentDirectory = $envDirectory.'/'.$deploymentEnvironment;
             if (!$connection->directoryExists($deploymentEnvironmentDirectory)) {
                 throw new Exception(sprintf('The deployment environment directory does not exist: %s', $deploymentEnvironmentDirectory));
@@ -291,22 +294,10 @@ class Deployment extends Base
 
     private function getInactiveDeploymentEnvironment()
     {
-        $connection = $this->getConnection();
-        $envDirectory = $this->getEnvironmentDirectoryRemotePath();
-        $linkPath = $envDirectory.'/current';
+        $deploymentEnvironment = new DeploymentEnvironment(
+            $this->getConnection(),
+            $this->getEnvironmentDirectoryRemotePath());
 
-        $path = $connection->runCommand('readlink "{{$linkPath}}"', 10, ['linkPath'=>$linkPath]);
-        $isBlue = preg_match('/blue$/', $path);
-        $isGreen = preg_match('/green$/', $path);
-
-        if (!$isBlue && !$isGreen) {
-            throw new Exception('The "current" symbolic link has invalid target.');
-        }
-
-        if ($isBlue) {
-            return 'green';
-        }
-
-        return 'blue';
+        return $deploymentEnvironment->getInactive();
     }
 }

@@ -114,9 +114,11 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertTrue(isset($statusContents['deploymentEnvironments']['green']['buildTag']));
         $this->assertTrue(isset($statusContents['deploymentLog'][0]['status']));
         $this->assertTrue(isset($statusContents['deploymentLog'][0]['components']));
+        $this->assertTrue(isset($statusContents['deploymentLog'][0]['type']));
         $this->assertInternalType('array', $statusContents['deploymentLog'][0]['components']);
         $this->assertEquals('first-build', $statusContents['deploymentEnvironments']['green']['buildTag']);
         $this->assertEquals('success', $statusContents['deploymentLog'][0]['status']);
+        $this->assertEquals('deploy', $statusContents['deploymentLog'][0]['type']);
 
         $this->assertContains('core', $statusContents['deploymentLog'][0]['components']);
         $this->assertContains('media', $statusContents['deploymentLog'][0]['components']);
@@ -223,9 +225,11 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertInternalType('array', $statusContents['deploymentLog'][1]);
         $this->assertTrue(isset($statusContents['deploymentLog'][1]['components']));
         $this->assertTrue(isset($statusContents['deploymentLog'][1]['environment']));
+        $this->assertTrue(isset($statusContents['deploymentLog'][1]['type']));
         $this->assertCount(1, $statusContents['deploymentLog'][1]['components']);
         $this->assertCount(2, $statusContents['deploymentLog'][1]['environment']);
         $this->assertContains('config', $statusContents['deploymentLog'][1]['components']);
+        $this->assertEquals('config', $statusContents['deploymentLog'][1]['type']);
 
         $this->assertTrue(isset($statusContents['deploymentEnvironments']['blue']));
     }
@@ -236,7 +240,7 @@ class DeployerControllerOperationTest extends BaseCase
     public function testUpdateDeployment($input)
     {
         extract($input);
-
+ 
         $params['params']['update'] = true;
         $params['params']['localProjectPath'] = __DIR__.'/../fixtures/partial-test-update-project';
         $params['params']['updateComponents'] = [
@@ -508,5 +512,110 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertNotNull($responseBody);
         $this->assertEquals('general', $responseBody->type);
         $this->assertContains('symbolic link has invalid target', $responseBody->error);
+    }
+
+    /**
+     * @depends testNewDeploymentPartialProjectNoErrors
+     */
+    public function testSwap($input)
+    {
+        extract($input);
+
+        $params['params']['activate'] = 'blue';
+
+        $response = $this->runDeploymentRequest($params, '/swap');
+        // print_r((string)$response->getBody());
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals($environmentDirectory.'/blue', readlink($environmentDirectory.'/current'));
+
+        $this->assertFileExists($environmentDirectory.'/metadata/status.json');
+        $statusContents = json_decode(file_get_contents($environmentDirectory.'/metadata/status.json'), true);
+        $this->assertNotNull($statusContents);
+        $this->assertInternalType('array', $statusContents);
+        $this->assertArrayHasKey('deploymentEnvironments', $statusContents);
+        $this->assertArrayHasKey('deploymentLog', $statusContents);
+        $this->assertInternalType('array', $statusContents['deploymentLog']);
+        $this->assertCount(4, $statusContents['deploymentLog']);
+        $this->assertInternalType('array', $statusContents['deploymentLog'][3]);
+        $this->assertTrue(isset($statusContents['deploymentLog'][3]['components']));
+        $this->assertTrue(isset($statusContents['deploymentLog'][3]['environment']));
+        $this->assertTrue(isset($statusContents['deploymentLog'][3]['type']));
+        $this->assertEquals('swap', $statusContents['deploymentLog'][3]['type']);
+        $this->assertEquals('success', $statusContents['deploymentLog'][3]['status']);
+
+        return $input;
+    }
+
+    public function testSwapNoEnvironmentDirectory()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+        $params['params']['projectDirectoryName'] = uniqid();
+        $params['params']['activate'] = 'blue';
+
+        $pondRoot = DeployerConfiguration::POND_ROOT;
+        $projectDirectory = $pondRoot.'/'.$params['params']['projectDirectoryName'];
+        $this->assertDirectoryNotExists($projectDirectory);
+
+        $response = $this->runDeploymentRequest($params, '/swap');
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('e environment directory is not found on the server', $responseBody->error);
+    }
+
+    public function testSwapNoActivateParameter()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+
+        $response = $this->runDeploymentRequest($params, '/swap');
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('activate not found in the request', $responseBody->error);
+    }
+
+    public function testSwapActivateParameterInvalid()
+    {
+        $params = $this->makeValidDeploymentConfig(true);
+        $params['params']['activate'] = 'test';
+
+        $response = $this->runDeploymentRequest($params, '/swap');
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('must "blue" or "green"', $responseBody->error);
+    }
+
+    /**
+     * @depends testSwap
+     */
+    public function testSwapAlreadyActive($input)
+    {
+        extract($input);
+
+        $params['params']['activate'] = 'blue';
+
+        $response = $this->runDeploymentRequest($params, '/swap');
+        // print_r((string)$response->getBody());
+        $this->assertEquals(400, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('http', $responseBody->type);
+        $this->assertContains('already active', $responseBody->error);
+
+        $this->assertFileExists($environmentDirectory.'/metadata/status.json');
+        $statusContents = json_decode(file_get_contents($environmentDirectory.'/metadata/status.json'), true);
+        $this->assertNotNull($statusContents);
+        $this->assertInternalType('array', $statusContents);
+        $this->assertArrayHasKey('deploymentEnvironments', $statusContents);
+        $this->assertArrayHasKey('deploymentLog', $statusContents);
+        $this->assertInternalType('array', $statusContents['deploymentLog']);
+        $this->assertCount(5, $statusContents['deploymentLog']);
+        $this->assertInternalType('array', $statusContents['deploymentLog'][4]);
+        $this->assertTrue(isset($statusContents['deploymentLog'][4]['type']));
+        $this->assertEquals('swap', $statusContents['deploymentLog'][4]['type']);
+        $this->assertEquals('fail', $statusContents['deploymentLog'][4]['status']);
     }
 }

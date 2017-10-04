@@ -3,6 +3,7 @@
 use PhpDeployer\Exceptions\Http as HttpException;
 use PhpDeployer\ConfigurationTemplate\View as ConfigurationTemplateView;
 use PhpDeployer\Operations\Misc\RemoteStatusManager;
+use PhpDeployer\Operations\Misc\DeploymentEnvironment;
 use Respect\Validation\Validator as Validator;
 use Exception;
 
@@ -29,7 +30,7 @@ class Swap extends Base
             throw new HttpException('The activate parameter must be a string.', 400);
         }
 
-        if (!in_array($this->activate, ['blue', 'green'])) {
+        if (!in_array($this->activate, DeploymentEnvironment::DPE_BOTH)) {
             throw new HttpException('The activate parameter value must "blue" or "green".', 400);
         }
     }
@@ -38,21 +39,32 @@ class Swap extends Base
     {
         $connection = $this->getConnection();
 
-        // Get the active deployment environment (factor out code from the deployment operation).
-        // Check if the activate parameter is correct.
-        // Change the active environment
-        // Save remote status
+        $environmentDirectory = $this->getEnvironmentDirectoryRemotePath();
+        if (!$connection->directoryExists($environmentDirectory)) {
+            throw new HttpException(sprintf('The environment directory is not found on the server: %s', $environmentDirectory), 400);
+        }
+
+        $deploymentEnvironment = new DeploymentEnvironment(
+            $this->getConnection(),
+            $this->getEnvironmentDirectoryRemotePath());
+
+        $inactiveEnvironment = $deploymentEnvironment->getInactive();
+        if ($inactiveEnvironment != $this->activate) {
+            throw new HttpException(sprintf('The %s environment is already active.', $this->activate), 400);
+        }
+
+        $deploymentEnvironment->makeActive($this->activate);
     }
 
     public function saveRemoteStatus($success)
     {
-        //TODO
+        $logRecordDetails = RemoteStatusManager::makeLogRecordArray(
+            $success, 
+            [], 
+            [$this->activate],
+            RemoteStatusManager::TYPE_SWAP
+        );
 
-        // $logRecordDetails = RemoteStatusManager::makeLogRecordArray(
-        //     $success, 
-        //     ['config'], 
-        //     ['blue', 'green']);
-
-        // $this->updateRemoteStatus($logRecordDetails, null);
+        $this->updateRemoteStatus($logRecordDetails, null);
     }
 }

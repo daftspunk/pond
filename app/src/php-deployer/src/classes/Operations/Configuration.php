@@ -2,6 +2,7 @@
 
 use PhpDeployer\Exceptions\Http as HttpException;
 use PhpDeployer\ConfigurationTemplate\View as ConfigurationTemplateView;
+use PhpDeployer\Operations\Misc\DeploymentEnvironment;
 use PhpDeployer\Operations\Misc\RemoteStatusManager;
 use Respect\Validation\Validator as Validator;
 use Exception;
@@ -82,7 +83,9 @@ class Configuration extends Base
         $logRecordDetails = RemoteStatusManager::makeLogRecordArray(
             $success, 
             ['config'], 
-            ['blue', 'green']);
+            DeploymentEnvironment::DPE_BOTH,
+            RemoteStatusManager::TYPE_CONFIG
+        );
 
         $this->updateRemoteStatus($logRecordDetails, null);
     }

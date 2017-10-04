@@ -184,6 +184,7 @@ Deployed environments must keep enough metadata to determine what projects the b
       {
         "datetime": "datetime",
         "status": "success|fail",
+        "type": "deploy|swap",
         "components": ["core", "config", ...],
         "environment": ["blue"],
         "ip": "1.2.3.4"
