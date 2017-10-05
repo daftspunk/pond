@@ -5,6 +5,7 @@ use PhpDeployer\Operations\Configuration as ConfigurationOperation;
 use PhpDeployer\Util\Configuration as DeployerConfiguration;
 use PhpDeployer\Operations\Misc\RemoteStatusManager;
 use PhpDeployer\Operations\Misc\DeploymentEnvironment;
+use PhpDeployer\Operations\Misc\DatabaseInitializer;
 use PhpDeployer\Archiver\ProjectArchiver;
 use Respect\Validation\Validator as Validator;
 use Exception;
@@ -55,6 +56,7 @@ class Deployment extends Base
     private $configurationOperation;
     private $buildTag;
     private $updateComponents;
+    private $databaseInitializer;
 
     public function setDeploymentParameters($parameters)
     {
@@ -85,14 +87,21 @@ class Deployment extends Base
         }
 
         if (!$this->update) {
-            // Create the configuration operation early to detect possible
+            // Create the extra operations early to detect possible
             // problems with templates before deployment.
+
+            // TODO: call setLogCallable for the configurationOperation
 
             $this->configurationOperation = new ConfigurationOperation(
                 $this->getConnection(), 
                 $this->getScpConnection());
 
             $this->configurationOperation->setConfigurationParameters($parameters);
+
+            $this->databaseInitializer = new DatabaseInitializer(
+                $this->getConnection(), 
+                $this->getScpConnection(),
+                $this->getParameterValue($parameters, 'databaseInit'));
         }
         else {
             $this->updateComponents = $this->getParameterValue($parameters, 'updateComponents');

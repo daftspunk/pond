@@ -8,6 +8,10 @@ class RemoteStatusManager
     const TYPE_DEPLOY = 'deploy';
     const TYPE_CONFIG = 'config';
 
+    // The following properties must stay private.
+    // If they're set from external sources, their
+    // values must be validated.
+
     private $connection;
     private $scpConnection;
     private $permissionData;

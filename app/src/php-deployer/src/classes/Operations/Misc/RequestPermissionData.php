@@ -6,6 +6,8 @@ use Respect\Validation\Validator as Validator;
 class RequestPermissionData
 {
     // The following properties must stay private.
+    // If they're set from external sources, their
+    // values must be validated.
 
     private $directoryMask;
     private $configMask;

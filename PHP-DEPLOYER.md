@@ -50,6 +50,18 @@ Request JSON parameters (must include the `common arguments` listed above):
             "themes": true|["website-final"],
             "media": true
         ],
+        "databaseInit": {
+            "initDatabase": true,
+            "engine": "mysql",
+            "dumpPath": "/path/to/database/dump.sql",
+            "connection": {
+                "host": "localhost",
+                "user": "username",
+                "password": "password",
+                "port": 3306,
+                "name": "my-database"
+            }
+        },
         "configTemplates": {},
         "buildTag": "1.1.0"
     }
@@ -71,6 +83,16 @@ Parameters explained:
     * `plugins` - boolean or array, whether to update all plugins or names of plugins to update.
     * `themes` - boolean or array, whether to update all themes or names of themes to update.
     * `media` - boolean, whether to update media files.
+* `databaseInit` - object, required for new deployments, ingored for updates. Defines parameters for the database initialization.
+    * `initDatabase` - boolean, required. Determines whether the database should be initialized with the supplied dump.
+    * `engine` - string, required if `initDatabase` is `true`. Specifies the database engine. Only MySQL is supported for the database initialization at the moment.
+    * `dumpPath` - string, required if `initDatabase` is `true`. Path to the SQL dump file.
+    * `connection` - object, required if `initDatabase` is `true`. Defines the database connection parameters.
+        * `host` - string, reguired. Database server host name or IP.
+        * `user` - string, required. Database user name.
+        * `password` - string, required. Database password.
+        * `port` - integer, required. Database server port number.
+        * `name` - string, required. Specifies the database name.
 * `configTemplates` - JSON object, required for new deployments, ignored for updates. See the `/configure` operation below.
 * `buildTag` - string, optional. Build tag to associate with the deployment, max len: 50.
 

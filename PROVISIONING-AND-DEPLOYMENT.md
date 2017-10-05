@@ -107,7 +107,7 @@ Requirements for the server - web server and database server. Not necessary Apac
 Code deployment steps on first deployment:
 
 * Make a complete copy of the October installation in the blue and green directories, excluding configuration files and with applying the .pondignore file.
-* If requested - upload files and database.
+* If requested - upload files and database. At this point we only support database initialization for MySQL.
 * Populate the /config directory using templates and user-provided variables.
 * Create the configuration files in the blue and green directories.
 * Run post-deployment bash scripts
@@ -170,7 +170,7 @@ Pond projects should be able to request and show the server environment status: 
 
 Deployed environments must keep enough metadata to determine what projects the belong to, just for convenience of administrators. Droplets will use tags matching project names. Metadata structure (`/metadata/status.json`):
 
-```
+```json
 {
   "deploymentEnvironments": {
     "blue": {
