@@ -18,7 +18,8 @@
         "slim/php-view": "^2.0",
         "monolog/monolog": "^1.17",
         "respect/validation": "^1.1",
-        "twig/twig": "^2.4"
+        "twig/twig": "^2.4",
+        "justinrainbow/json-schema": "^5.2"
     },
     "autoload-dev": {
         "psr-4": {

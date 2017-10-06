@@ -2,6 +2,9 @@
 
 use PhpDeployer\Exceptions\Http as HttpException;
 use Respect\Validation\Validator as Validator;
+use JsonSchema\Validator as JsonSchemaValidator;
+use JsonSchema\SchemaStorage;
+use JsonSchema\Constraints\Factory as ConstraintsFactory;
 
 class Base
 {
@@ -46,27 +49,73 @@ class Base
             throw new HttpException('JSON expected', 400);
         }
 
-        $this->validateArgumentsExist([
-            'privateKeyPath',
-            'publicKeyPath',
-            'ip',
-            'user'
-        ]);
+        $jsonSchema = <<<'JSON'
+        {
+            "type": "object",
+            "properties": {
+                "privateKeyPath": {
+                    "type": "string"
+                },
+                "publicKeyPath": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string",
+                    "format": "ipv4"
+                },
+                "user": {
+                    "type": "string",
+                    "pattern": "^[a-z_][a-z0-9_]{0,30}$"
+                }
+            },
+            "required": [
+                "privateKeyPath",
+                "publicKeyPath",
+                "ip",
+                "user"
+            ]
+        }
+JSON;
+        $jsonSchemaObject = json_decode($jsonSchema);
+        $schemaStorage = new SchemaStorage();
 
-        if (!Validator::notEmpty()->validate($this->getRequestArgument('privateKeyPath'))) {
-            throw new HttpException('Private key path expected', 400);
+        $schemaStorage->addSchema('file://mySchema', $jsonSchemaObject);
+
+        $jsonValidator = new JsonSchemaValidator(new ConstraintsFactory($schemaStorage));
+
+        $jsonToValidateObject = (object)json_decode($this->request->getBody());
+
+        $jsonValidator->validate($jsonToValidateObject, $jsonSchemaObject);
+
+        if (!$jsonValidator->isValid()) {
+            foreach ($jsonValidator->getErrors() as $error) { print_r($error);
+                throw new HttpException(sprintf("[%s] %s\n", $error['property'], $error['message']), 400);
+            }
         }
 
-        if (!Validator::notEmpty()->validate($this->getRequestArgument('publicKeyPath'))) {
-            throw new HttpException('Public key path expected', 400);
-        }
+        // $this->validateArgumentsExist([
+        //     'privateKeyPath',
+        //     'publicKeyPath',
+        //     'ip',
+        //     'user'
+        // ]);
 
-        if (!Validator::notEmpty()->ip()->validate($this->getRequestArgument('ip'))) {
-            throw new HttpException('Invalid IP address', 400);
-        }
 
-        if (!Validator::notEmpty()->regex('/^[a-z_][a-z0-9_]{0,30}$/i')->validate($this->getRequestArgument('user'))) {
-            throw new HttpException('Invalid user name', 400);
-        }
+
+        // if (!Validator::notEmpty()->validate($this->getRequestArgument('privateKeyPath'))) {
+        //     throw new HttpException('Private key path expected', 400);
+        // }
+
+        // if (!Validator::notEmpty()->validate($this->getRequestArgument('publicKeyPath'))) {
+        //     throw new HttpException('Public key path expected', 400);
+        // }
+
+        // if (!Validator::notEmpty()->ip()->validate($this->getRequestArgument('ip'))) {
+        //     throw new HttpException('Invalid IP address', 400);
+        // }
+
+        // if (!Validator::notEmpty()->regex('/^[a-z_][a-z0-9_]{0,30}$/i')->validate($this->getRequestArgument('user'))) {
+        //     throw new HttpException('Invalid user name', 400);
+        // }
     }
 }

@@ -19,3 +19,7 @@ Updated Scotch box in target-server-dev-enviroment to v.3, because it supports P
 ## 2017-09-05
 
 Instead of replacing the blue or green directories completely, as I was planning from the beginning, we actually should replace only parts of it, e.g. - a specific plugin, core or theme.
+
+## 2017-10-04
+
+Switching the request parameter manual validation to JSON schema validation. This will take time, but should be very beneficial and time saving later. Less tests will be required, less code will have to be written to validate different requests. It will be easy to update validation rules with editing JSON schema strings.

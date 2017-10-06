@@ -35,7 +35,7 @@ class DeployerControllerValidationTest extends BaseCase
         $responseBody = json_decode((string)$response->getBody());
         $this->assertNotNull($responseBody);
         $this->assertEquals('http', $responseBody->type);
-        $this->assertEquals('Invalid IP address', $responseBody->error);
+        $this->assertContains('Invalid IP address', $responseBody->error);
     }
 
     public function testDeployNoUser()
