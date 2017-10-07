@@ -1,10 +1,7 @@
 <?php namespace PhpDeployer\Controllers;
 
 use PhpDeployer\Exceptions\Http as HttpException;
-use Respect\Validation\Validator as Validator;
-use JsonSchema\Validator as JsonSchemaValidator;
-use JsonSchema\SchemaStorage;
-use JsonSchema\Constraints\Factory as ConstraintsFactory;
+use PhpDeployer\Util\RequestContainer;
 
 class Base
 {
@@ -14,6 +11,8 @@ class Base
     protected $response;
     protected $args;
 
+    private $requestContainer;
+
     public function __construct($app, $request, $response, $args)
     {
         $this->app = $app;
@@ -21,9 +20,23 @@ class Base
         $this->response = $response;
         $this->args = $args;
 
-        $this->validateCommonRequestArguments();
+        $this->initRequestContainer();
+
+        // $this->validateCommonRequestArguments();
     }
 
+    private function initRequestContainer()
+    {
+        $this->requestContainer = new RequestContainer($this->request->getBody());
+    }
+
+    protected function getRequestContainer()
+    {
+        return $this->requestContainer;
+    }
+
+
+    /*
     protected function getRequestArgument($argument)
     {
         $body = json_decode($this->request->getBody(), true);
@@ -118,4 +131,5 @@ JSON;
         //     throw new HttpException('Invalid user name', 400);
         // }
     }
+    */
 }

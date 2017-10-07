@@ -5,6 +5,16 @@ use Exception;
 
 class RequestContainerTest extends BaseCase
 {
+    private $customSchema = '{
+        "type": "object",
+        "properties": {
+            "identifier": {
+                "type": "string"
+            }
+        },
+        "required": ["identifier"]
+    }';
+
     public function testValidateBasicParameters()
     {
         $container = new RequestContainer('{
@@ -58,19 +68,19 @@ class RequestContainerTest extends BaseCase
             }
         }');
 
-        $this->assertEquals(10, $container->getValue('topLevelInt'));
-        $this->assertInternalType('array', $container->getValue('topLevelArray'));
-        $this->assertCount(3, $container->getValue('topLevelArray'));
-        $this->assertContains(2, $container->getValue('topLevelArray'));
-        $this->assertEquals(3, $container->getValue('topLevelArray.2'));
+        $this->assertEquals(10, $container->get('topLevelInt'));
+        $this->assertInternalType('array', $container->get('topLevelArray'));
+        $this->assertCount(3, $container->get('topLevelArray'));
+        $this->assertContains(2, $container->get('topLevelArray'));
+        $this->assertEquals(3, $container->get('topLevelArray.2'));
 
-        $this->assertInternalType('object', $container->getValue('topLevelObject'));
-        $this->assertEquals(10, $container->getValue('topLevelObject')->propertyInt);
-        $this->assertEquals("15", $container->getValue('topLevelObject')->propertyString);
-        $this->assertInternalType('array', $container->getValue('topLevelObject')->propertyArray);
-        $this->assertInternalType('object', $container->getValue('topLevelObject')->propertyObject);
-        $this->assertEquals('44', $container->getValue('topLevelObject.propertyObject.propertyInt'));
-        $this->assertEquals('7', $container->getValue('topLevelObject.propertyArray.1.id'));
+        $this->assertInternalType('object', $container->get('topLevelObject'));
+        $this->assertEquals(10, $container->get('topLevelObject')->propertyInt);
+        $this->assertEquals("15", $container->get('topLevelObject')->propertyString);
+        $this->assertInternalType('array', $container->get('topLevelObject')->propertyArray);
+        $this->assertInternalType('object', $container->get('topLevelObject')->propertyObject);
+        $this->assertEquals('44', $container->get('topLevelObject.propertyObject.propertyInt'));
+        $this->assertEquals('7', $container->get('topLevelObject.propertyArray.1.id'));
     }
 
     public function testInvalidProperties()
@@ -89,32 +99,412 @@ class RequestContainerTest extends BaseCase
         }');
 
         try {
-            $this->assertEquals(10, $container->getValue('invalidTopLevel'));
+            $this->assertEquals(10, $container->get('invalidTopLevel'));
             $this->assertFalse(true, 'Must fail');
         } catch (Exception $ex) {
-            $this->assertTrue(true);
+            $this->assertContains('parameter does not exist', $ex->getMessage());
         }
 
         try {
-            $this->assertEquals(10, $container->getValue('topLevelObject.invalid'));
+            $this->assertEquals(10, $container->get('topLevelObject.invalid'));
             $this->assertFalse(true, 'Must fail');
         } catch (Exception $ex) {
-            $this->assertTrue(true);
+            $this->assertContains('parameter does not exist', $ex->getMessage());
         }
 
         try {
-            $this->assertEquals(10, $container->getValue('topLevelObject.propertyArray.10'));
+            $this->assertEquals(10, $container->get('topLevelObject.propertyArray.10'));
             $this->assertFalse(true, 'Must fail');
         } catch (Exception $ex) {
-            $this->assertTrue(true);
+            $this->assertContains('parameter does not exist', $ex->getMessage());
         }
     }
 
+    public function testCustomSchemaNoCustomProperty()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy"
+        }');
 
+        try {
+            $container->validateCustomSchema($this->customSchema, 'custom');
+            $this->assertFalse(true, 'Must fail');
+        }
+        catch (Exception $ex) {
+            $this->assertContains('identifier is required', $ex->getMessage());
+        }
 
-    // Todo - test property, array index does not exist
-    
+        $this->assertTrue($container->validate('COMMON_ARGUMENTS'));
+    }
 
+    public function testCustomSchemaNoCommonProperty()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "identifier": "some"
+        }');
 
-    // TODO - dependent testGetBasicParameters
+        try {
+            $container->validateCustomSchema($this->customSchema, 'custom');
+            $this->assertFalse(true, 'Must fail');
+        }
+        catch (Exception $ex) {
+            $this->assertContains('user is required', $ex->getMessage());
+        }
+    }
+
+    public function testCustomSchemaValid()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "identifier": "some"
+        }');
+
+        $this->assertTrue($container->validateCustomSchema($this->customSchema, 'custom'));
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage params is required
+     */
+    public function testDeploymentRequiredArgumentsNoParams()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy"
+        }');
+
+        $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage update is required
+     */
+    public function testDeploymentRequiredArgumentsNoUpdate()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage boolean is required
+     */
+    public function testDeploymentRequiredArgumentsUpdateNotBoolean()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": "string",
+                "projectDirectoryName": "string",
+                "environmentDirectoryName": "string",
+                "localProjectPath": "string",
+                "permissions": "string"
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage directory is required
+     */
+    public function testDeploymentRequiredArgumentsNoDirectoryPermissions()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "string",
+                "environmentDirectoryName": "string",
+                "localProjectPath": "string",
+                "permissions": {
+                    "file": "777",
+                    "config": "777"
+                }
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage [params.permissions.directory] Has invalid format
+     */
+    public function testDeploymentRequiredArgumentsInvalidDirectoryPermissions()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "string",
+                "environmentDirectoryName": "string",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "1234",
+                    "file": "777",
+                    "config": "777"
+                }
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage at most 50 characters
+     */
+    public function testDeploymentRequiredArgumentsBuildTagTooLong()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "string",
+                "environmentDirectoryName": "string",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "777",
+                    "file": "777",
+                    "config": "777"
+                },
+                "buildTag": "1234567890123456789012345678901234567890123456789012345678901234567890"
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage [params.updateComponents.plugins] String value found
+     */
+    public function testDeploymentUpdateComponentsInvalidPlugins()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "updateComponents": {
+                    "core": true,
+                    "plugins": "none",
+                    "themes": ["website-final"],
+                    "media": true
+                }
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_UPDATE_COMPONENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage [params.updateComponents.themes[0]] Has invalid format
+     */
+    public function testDeploymentUpdateComponentsInvalidTheme()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "updateComponents": {
+                    "core": true,
+                    "plugins": false,
+                    "themes": ["website@final"],
+                    "media": true
+                }
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_UPDATE_COMPONENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage file is required
+     */
+    public function testDeploymentConfigTemplatesNoFile()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "configTemplates": [
+                    {
+                        "template": "some string",
+                        "vars": []
+                    }
+                ]
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_CONFIG_TEMPLATES');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage Has invalid format
+     */
+    public function testDeploymentConfigTemplatesFileInvalid()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "configTemplates": [
+                    {
+                        "file": "some",
+                        "template": "some string",
+                        "vars": []
+                    }
+                ]
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_CONFIG_TEMPLATES');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage name is required
+     */
+    public function testDeploymentConfigTemplatesVarsNoName()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "configTemplates": [
+                    {
+                        "file": "some.php",
+                        "template": "some string",
+                        "vars": [
+                            {
+                                "value": 12
+                            }
+                        ]
+                    }
+                ]
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_CONFIG_TEMPLATES');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage engine is required
+     */
+    public function testDeploymentDatabaseInitNoEngine()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "databaseInit": {
+                    "initDatabase": true
+                }
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_DATABASE_INIT');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage Does not have a value in the enumeration
+     */
+    public function testDeploymentDatabaseInitInvalidEngine()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "databaseInit": {
+                    "initDatabase": true,
+                    "engine": "oracle"
+                }
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_DATABASE_INIT');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage host is required
+     */
+    public function testDeploymentDatabaseInitNoHost()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "databaseInit": {
+                    "initDatabase": true,
+                    "dump": "dump-string",
+                    "engine": "oracle",
+                    "connection": {
+                        "user": "deploy",
+                        "password": "1234",
+                        "port": 123,
+                        "name": "database"
+                    }
+                }
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_DATABASE_INIT_PARAMETERS');
+    }
 }

@@ -44,16 +44,16 @@ Request JSON parameters (must include the `common arguments` listed above):
             "file": "664",
             "config": "660"
         },
-        "updateComponents": [
+        "updateComponents": {
             "core": true,
             "plugins": true|["rainlab/users"],
             "themes": true|["website-final"],
             "media": true
-        ],
+        },
         "databaseInit": {
             "initDatabase": true,
             "engine": "mysql",
-            "dumpPath": "/path/to/database/dump.sql",
+            "dump": "SQL dump string",
             "connection": {
                 "host": "localhost",
                 "user": "username",
@@ -62,7 +62,7 @@ Request JSON parameters (must include the `common arguments` listed above):
                 "name": "my-database"
             }
         },
-        "configTemplates": {},
+        "configTemplates": [],
         "buildTag": "1.1.0"
     }
 }
@@ -86,15 +86,15 @@ Parameters explained:
 * `databaseInit` - object, required for new deployments, ingored for updates. Defines parameters for the database initialization.
     * `initDatabase` - boolean, required. Determines whether the database should be initialized with the supplied dump.
     * `engine` - string, required if `initDatabase` is `true`. Specifies the database engine. Only MySQL is supported for the database initialization at the moment.
-    * `dumpPath` - string, required if `initDatabase` is `true`. Path to the SQL dump file.
+    * `dump` - string, required if `initDatabase` is `true`. Contains the SQL dump.
     * `connection` - object, required if `initDatabase` is `true`. Defines the database connection parameters.
         * `host` - string, reguired. Database server host name or IP.
         * `user` - string, required. Database user name.
         * `password` - string, required. Database password.
         * `port` - integer, required. Database server port number.
         * `name` - string, required. Specifies the database name.
-* `configTemplates` - JSON object, required for new deployments, ignored for updates. See the `/configure` operation below.
-* `buildTag` - string, optional. Build tag to associate with the deployment, max len: 50.
+* `configTemplates` - array, required for new deployments, ignored for updates. See the `/configure` operation below.
+* `buildTag` - string, optional. 50 characters max. Build tag to associate with the deployment, max len: 50.
 
 ## POST /configure
 
@@ -112,16 +112,20 @@ Request JSON parameters (must include the `common arguments` listed above):
             "file": "664",
             "config": "660"
         },
-        "configTemplates": {
-            "app.php": {
+        "configTemplates": [
+            {
+                "file": "app.php",
                 "template": "configuration template contents",
-                "vars": {
-                    "var1": "value1",
+                "vars": [
+                    {
+                        "name": "var1",
+                        "value": "value1"
+                    }
                     ...
-                }
+                ]
             },
             ...
-        }
+        ]
     }
 }
 ```
@@ -136,7 +140,7 @@ Parameters explained:
     * `config` - string, required. Configuration files permission mask.
 * `configTemplates` - object, required. Defines names, content and variables for configuration files. Object keys correspond the configuration file names (`app.php`, `sms.php`, etc.). Each configuration object must have these properties:
     * `template` - text content of the configuration file with variable placeholders, see below.
-    * `vars` - object containng variable names and values.
+    * `vars` - array containng variable names and values.
 
 Configuration files use Twig engine for rendering:
 

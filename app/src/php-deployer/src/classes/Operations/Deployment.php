@@ -51,15 +51,17 @@ class Deployment extends Base
     // If they're set from external sources, their
     // values must be validated.
 
-    private $update;
-    private $localProjectPath;
-    private $configurationOperation;
-    private $buildTag;
-    private $updateComponents;
-    private $databaseInitializer;
+    // private $update;
+    // private $localProjectPath;
+    // private $configurationOperation;
+    // private $buildTag;
+    // private $updateComponents;
+    // private $databaseInitializer;
 
     public function setDeploymentParameters($parameters)
     {
+        throw new Exception('Remove - should not be used');
+
         parent::loadPermissionData($parameters);
 
         $this->update = $this->getParameterValue($parameters, 'update');
@@ -153,6 +155,27 @@ class Deployment extends Base
         );
 
         $this->updateRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails);
+    }
+
+    protected function validateRequest()
+    {
+        $this->requestContainer->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+
+        if (!Validator::directory()->validate($this->get('params.localProjectPath'))) {
+            throw new HttpException('The local project directory not found', 400);
+        }
+
+        if ($this->get('params.update')) {
+            $this->requestContainer->validate('DEPLOYMENT_UPDATE_COMPONENTS');
+        }
+        else {
+            $this->requestContainer->validate('DEPLOYMENT_CONFIG_TEMPLATES');
+            $this->requestContainer->validate('DEPLOYMENT_DATABASE_INIT');
+
+            if ($this->get('params.databaseInit.initDatabase')) {
+                $this->requestContainer->validate('DEPLOYMENT_DATABASE_INIT_PARAMETERS');
+            }
+        }
     }
 
     private function initDirectories()

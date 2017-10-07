@@ -14,14 +14,15 @@ class Deployment extends Base
     {
         $this->validateDeployParamsArgument();
 
-        $deployment = new DeploymentOperation();
-        $deployment->setConnectionParameters(
-            $this->getRequestArgument('privateKeyPath'),
-            $this->getRequestArgument('publicKeyPath'),
-            $this->getRequestArgument('ip'),
-            $this->getRequestArgument('user'));
+        $deployment = new DeploymentOperation($this->getRequestContainer());
 
-        $deployment->setDeploymentParameters($this->getRequestArgument('params'));
+        // $deployment->setConnectionParameters(
+        //     $this->getRequestArgument('privateKeyPath'),
+        //     $this->getRequestArgument('publicKeyPath'),
+        //     $this->getRequestArgument('ip'),
+        //     $this->getRequestArgument('user'));
+
+        // $deployment->setDeploymentParameters($this->getRequestArgument('params'));
 
         // We call saveRemoteLog() and saveRemoteStatus() in the controller
         // and not inside the run() method, because

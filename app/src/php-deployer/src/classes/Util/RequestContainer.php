@@ -28,7 +28,26 @@ class RequestContainer
 
     public function validate($schemaName)
     {
-        $targetSchemaObject = $this->makeTargetSchemaObject($schemaName);
+        $schemaString = $this->getSchemaByName($schemaName);
+
+        return $this->validateWithSchemaString($schemaString, $schemaName);
+    }
+
+    public function validateCustomSchema($schemaString, $schemaName)
+    {
+        return $this->validateWithSchemaString($schemaString, $schemaName);
+    }
+
+    public function get($path)
+    {
+        $parts = explode('.', $path);
+
+        return $this->getValueByPath($parts, $this->requestJsonObject, $path);
+    }
+
+    private function validateWithSchemaString($schemaString, $schemaName)
+    {
+        $targetSchemaObject = $this->makeTargetSchemaObject($schemaString, $schemaName);
 
         $schemaStorage = new SchemaStorage();
         $schemaStorage->addSchema('file://pond', $targetSchemaObject);
@@ -41,18 +60,11 @@ class RequestContainer
         if (!$jsonValidator->isValid()) {
             foreach ($jsonValidator->getErrors() as $error) {
                 $message = $this->normalizeErrorMessage($error['message']);
-                throw new HttpException(sprintf("[%s] %s\n", $error['property'], $message), 400);
+                throw new HttpException(sprintf("[%s] %s", $error['property'], $message), 400);
             }
         }
 
         return true;
-    }
-
-    public function getValue($path)
-    {
-        $parts = explode('.', $path);
-
-        return $this->getValueByPath($parts, $this->requestJsonObject, $path);
     }
 
     private function getValueByPath($parts, $object, $path)
@@ -67,7 +79,7 @@ class RequestContainer
             $object = $object->$first;
         }
         else if (is_array($object)) {
-            if (!array_key_exists($object, $first)) {
+            if (!array_key_exists($first, $object)) {
                 throw new Exception(sprintf('Request parameter does not exist: %s', $path));
             }
 
@@ -90,23 +102,45 @@ class RequestContainer
         return $message;
     }
 
-    private function makeTargetSchemaObject($schemaName)
+    private function makeTargetSchemaObject($schemaString, $schemaName)
     {
-        $commonRequired = $this->getSchemaByName('COMMON_ARGUMENT_REQUIRED');
+        $commonRequired = $this->getSchemaByName('COMMON_ARGUMENTS_REQUIRED');
 
-        $commonProperties = @json_decode($this->getSchemaByName('COMMON_ARGUMENT_PROPERTIES'));
+        $commonProperties = @json_decode($this->getSchemaByName('COMMON_ARGUMENTS_PROPERTIES'));
         if ($commonProperties === null) {
-            throw new Exception('Cannot decode JSON schema: COMMON_ARGUMENT_PROPERTIES');
+            throw new Exception('Cannot decode JSON schema: COMMON_ARGUMENTS_PROPERTIES');
         }
 
-        $targetSchemaObject = @json_decode($this->getSchemaByName($schemaName));
+        $commonDefinitions = @json_decode($this->getSchemaByName('COMMON_DEFINITIONS'));
+        if ($commonDefinitions === null) {
+            throw new Exception('Cannot decode JSON schema: COMMON_DEFINITIONS');
+        }
+
+        $targetSchemaObject = @json_decode($schemaString);
         if ($targetSchemaObject === null) {
             throw new Exception(sprintf('Cannot decode JSON schema: %s', $schemaName));
         }
 
         $commonProperties = (array)$commonProperties;
+        if (!property_exists($targetSchemaObject, 'properties')) {
+            $targetSchemaObject->properties = new \stdClass();
+        }
+
         foreach ($commonProperties as $property=>$definition) {
             $targetSchemaObject->properties->$property = $definition;
+        }
+
+        $commonDefinitions = (array)$commonDefinitions;
+        if (!property_exists($targetSchemaObject, 'definitions')) {
+            $targetSchemaObject->definitions = new \stdClass();
+        }
+
+        foreach ($commonDefinitions as $definition=>$params) {
+            $targetSchemaObject->definitions->$definition = $params;
+        }
+
+        if (!property_exists($targetSchemaObject, 'required')) {
+            $targetSchemaObject->definitions = [];
         }
 
         foreach ($commonRequired as $property) {

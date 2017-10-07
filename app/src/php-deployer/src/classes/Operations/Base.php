@@ -6,6 +6,7 @@ use PhpDeployer\Util\Configuration as DeployerConfiguration;
 use PhpDeployer\Operations\Misc\RemoteStatusManager;
 use PhpDeployer\Operations\Misc\RequestPermissionData;
 use Respect\Validation\Validator as Validator;
+use PhpDeployer\Util\RequestContainer;
 use Exception;
 
 /**
@@ -16,10 +17,12 @@ abstract class Base
     private $connection;
     private $scpConnection;
 
-    protected $privateKeyPath;
-    protected $publicKeyPath;
-    protected $ip;
-    protected $user;
+    protected $requestContainer;
+
+    // protected $privateKeyPath;
+    // protected $publicKeyPath;
+    // protected $ip;
+    // protected $user;
 
     private $logCallable;
     private $combinedLog = [];
@@ -28,19 +31,24 @@ abstract class Base
     // If they're set from external sources, their
     // values must be validated.
 
-    private $projectDirectoryName;
-    private $environmentDirectoryName;
-    private $permissionData;
+    // private $projectDirectoryName;
+    // private $environmentDirectoryName;
+    // private $permissionData;
 
-    public function __construct(Connection $connection = null, Connection $scpConnection = null)
+    public function __construct(RequestContainer $requestContainer, Connection $connection = null, Connection $scpConnection = null)
     {
+        $this->requestContainer = $requestContainer;
+
         // This allows to reuse an existing connection when
         // the operation is used from inside of another 
         // operation.
         $this->connection = $connection;
         $this->scpConnection = $scpConnection;
+
+        $this->validateRequest();
     }
 
+    abstract protected function validateRequest();
     abstract public function run();
     abstract public function saveRemoteStatus($success);
 
@@ -50,13 +58,13 @@ abstract class Base
      * All the parameters should be validated by the calling code.
      * For HTTP requests it's done in ControllerBase.
      */
-    public function setConnectionParameters($privateKeyPath, $publicKeyPath, $ip, $user)
-    {
-        $this->privateKeyPath = $privateKeyPath;
-        $this->publicKeyPath = $publicKeyPath;
-        $this->ip = $ip;
-        $this->user = $user;
-    }
+    // public function setConnectionParameters($privateKeyPath, $publicKeyPath, $ip, $user)
+    // {
+    //     $this->privateKeyPath = $privateKeyPath;
+    //     $this->publicKeyPath = $publicKeyPath;
+    //     $this->ip = $ip;
+    //     $this->user = $user;
+    // }
 
     public function setLogCallable(callable $logCallable)
     {
@@ -72,6 +80,11 @@ abstract class Base
             // This will push the message to the client
             $this->handleConnectionLogEntry(sprintf('Error creating log file on the server. %s', $ex->getMessage()));
         }
+    }
+
+    protected function get($param)
+    {
+        return $this->requestContainer->get($param);
     }
 
     protected function getConnection()
@@ -108,44 +121,46 @@ abstract class Base
         return $this->scpConnection;
     }
 
-    protected function getParameterValue($params, $key, $required = true, $default = null)
-    {
-        if (!array_key_exists($key, $params)) {
-            if ($required) {
-                throw new HttpException(sprintf('Required parameter %s not found in the request', $key), 400);
-            }
+    // protected function getParameterValue($params, $key, $required = true, $default = null)
+    // {
+    //     if (!array_key_exists($key, $params)) {
+    //         if ($required) {
+    //             throw new HttpException(sprintf('Required parameter %s not found in the request', $key), 400);
+    //         }
 
-            return $default;
-        }
+    //         return $default;
+    //     }
 
-        return $params[$key];
-    }
+    //     return $params[$key];
+    // }
 
-    protected function setProjectDirectoryName($value)
-    {
-        if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($value)) {
-            throw new HttpException('The project directory name can contain only alphanumeric, dash and underscore characters', 400);
-        }
+    // protected function setProjectDirectoryName($value)
+    // {
+    //     if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($value)) {
+    //         throw new HttpException('The project directory name can contain only alphanumeric, dash and underscore characters', 400);
+    //     }
 
-        $this->projectDirectoryName = $value;
-    }
+    //     $this->projectDirectoryName = $value;
+    // }
 
     protected function getProjectDirectoryName()
     {
+        throw Exception('Rewrite');
         return $this->projectDirectoryName;
     }
 
-    protected function setEnvironmentDirectoryName($value)
-    {
-        if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($value)) {
-            throw new HttpException('The environment directory name can contain only alphanumeric, dash and underscore characters', 400);
-        }
+    // protected function setEnvironmentDirectoryName($value)
+    // {
+    //     if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($value)) {
+    //         throw new HttpException('The environment directory name can contain only alphanumeric, dash and underscore characters', 400);
+    //     }
 
-        $this->environmentDirectoryName = $value;
-    }
+    //     $this->environmentDirectoryName = $value;
+    // }
 
     protected function getEnvironmentDirectoryName()
     {
+        throw Exception('Rewrite');
         return $this->environmentDirectoryName;
     }
 
@@ -184,6 +199,8 @@ abstract class Base
 
     protected function loadPermissionData($parameters)
     {
+        throw Exception('Rewrite');
+
         $permissions = $this->getParameterValue($parameters, 'permissions');
 
         if (!Validator::arrayType()->validate($permissions)) {
@@ -205,6 +222,8 @@ abstract class Base
 
     protected function getPermissionData()
     {
+        throw Exception('Rewrite');
+
         if (!$this->permissionData) {
             throw new Exception('Permission data is not initialized');
         }
