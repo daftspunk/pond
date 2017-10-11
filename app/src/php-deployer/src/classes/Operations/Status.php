@@ -12,8 +12,15 @@ class Status extends Base
 {
     public function setConfigurationParameters($parameters)
     {
+        throw new Exception('Remove - should not be used');
+
         $this->setProjectDirectoryName($this->getParameterValue($parameters, 'projectDirectoryName'));
         $this->setEnvironmentDirectoryName($this->getParameterValue($parameters, 'environmentDirectoryName'));
+    }
+
+    protected function validateRequest()
+    {
+        $this->requestContainer->validate('STATUS_REQUIRED_ARGUMENTS');
     }
 
     public function run()

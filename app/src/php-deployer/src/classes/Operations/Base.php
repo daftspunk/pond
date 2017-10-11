@@ -91,10 +91,11 @@ abstract class Base
     {
         if (!$this->connection) {
             $this->connection = new Connection(
-                $this->ip, 
-                $this->publicKeyPath,
-                $this->privateKeyPath,
-                $this->user);
+                $this->get('ip'), 
+                $this->get('publicKeyPath'),
+                $this->get('privateKeyPath'),
+                $this->get('user')
+            );
 
             $this->connection->setLogCallable(function($string) {
                 $this->handleConnectionLogEntry($string);
@@ -108,10 +109,11 @@ abstract class Base
     {
         if (!$this->scpConnection) {
             $this->scpConnection = new Connection(
-                $this->ip, 
-                $this->publicKeyPath,
-                $this->privateKeyPath,
-                $this->user);
+                $this->get('ip'), 
+                $this->get('publicKeyPath'),
+                $this->get('privateKeyPath'),
+                $this->get('user')
+            );
 
             $this->scpConnection->setLogCallable(function($string) {
                 $this->handleConnectionLogEntry($string);
@@ -121,47 +123,14 @@ abstract class Base
         return $this->scpConnection;
     }
 
-    // protected function getParameterValue($params, $key, $required = true, $default = null)
-    // {
-    //     if (!array_key_exists($key, $params)) {
-    //         if ($required) {
-    //             throw new HttpException(sprintf('Required parameter %s not found in the request', $key), 400);
-    //         }
-
-    //         return $default;
-    //     }
-
-    //     return $params[$key];
-    // }
-
-    // protected function setProjectDirectoryName($value)
-    // {
-    //     if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($value)) {
-    //         throw new HttpException('The project directory name can contain only alphanumeric, dash and underscore characters', 400);
-    //     }
-
-    //     $this->projectDirectoryName = $value;
-    // }
-
     protected function getProjectDirectoryName()
     {
-        throw Exception('Rewrite');
-        return $this->projectDirectoryName;
+        return $this->this.get('params.projectDirectoryName');
     }
-
-    // protected function setEnvironmentDirectoryName($value)
-    // {
-    //     if (!Validator::notEmpty()->alnum('-_')->noWhitespace()->validate($value)) {
-    //         throw new HttpException('The environment directory name can contain only alphanumeric, dash and underscore characters', 400);
-    //     }
-
-    //     $this->environmentDirectoryName = $value;
-    // }
 
     protected function getEnvironmentDirectoryName()
     {
-        throw Exception('Rewrite');
-        return $this->environmentDirectoryName;
+        return $this->this.get('params.environmentDirectoryName');
     }
 
     protected function getProjectDirectoryRemotePath()
@@ -184,7 +153,7 @@ abstract class Base
     protected function updateRemoteStatus($logRecordDetails, $deploymentEnvironmentsDetails)
     {
         try {
-            $statusManager = new RemoteStatusManager($this->getConnection(), $this->getScpConnection(), $this->getPermissionData());
+            $statusManager = new RemoteStatusManager($this->getConnection(), $this->getScpConnection(), $this->requestContainer);
             $statusManager->updateStatus(
                 $this->getEnvironmentDirectoryRemotePath(),
                 $logRecordDetails,
@@ -197,39 +166,39 @@ abstract class Base
         }
     }
 
-    protected function loadPermissionData($parameters)
-    {
-        throw Exception('Rewrite');
+    // protected function loadPermissionData($parameters)
+    // {
+    //     throw Exception('Rewrite');
 
-        $permissions = $this->getParameterValue($parameters, 'permissions');
+    //     $permissions = $this->getParameterValue($parameters, 'permissions');
 
-        if (!Validator::arrayType()->validate($permissions)) {
-            throw new HttpException('The permissions parameter should be an array', 400);
-        }
+    //     if (!Validator::arrayType()->validate($permissions)) {
+    //         throw new HttpException('The permissions parameter should be an array', 400);
+    //     }
 
-        foreach (['directory', 'file', 'config'] as $permissionParameter) {
-            if (!array_key_exists($permissionParameter, $permissions)) {
-                throw new HttpException(sprintf('The %s property is not found for permissions request parameter', $permissionParameter), 400);
-            }
-        }
+    //     foreach (['directory', 'file', 'config'] as $permissionParameter) {
+    //         if (!array_key_exists($permissionParameter, $permissions)) {
+    //             throw new HttpException(sprintf('The %s property is not found for permissions request parameter', $permissionParameter), 400);
+    //         }
+    //     }
 
-        $this->permissionData = new RequestPermissionData(
-            $permissions['directory'],
-            $permissions['config'],
-            $permissions['file']
-        );
-    }
+    //     $this->permissionData = new RequestPermissionData(
+    //         $permissions['directory'],
+    //         $permissions['config'],
+    //         $permissions['file']
+    //     );
+    // }
 
-    protected function getPermissionData()
-    {
-        throw Exception('Rewrite');
+    // protected function getPermissionData()
+    // {
+    //     throw Exception('Rewrite');
 
-        if (!$this->permissionData) {
-            throw new Exception('Permission data is not initialized');
-        }
+    //     if (!$this->permissionData) {
+    //         throw new Exception('Permission data is not initialized');
+    //     }
 
-        return $this->permissionData;
-    }
+    //     return $this->permissionData;
+    // }
 
     private function handleConnectionLogEntry($string)
     {
@@ -257,7 +226,7 @@ abstract class Base
             $contents, 
             $finalLogPath, 
             $remoteTmpDir, 
-            $this->getPermissionData()->getFileMask(),
+            $this->get('params.permissions.file'),
             'log file'
         );
     }

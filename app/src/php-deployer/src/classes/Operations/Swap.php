@@ -15,23 +15,32 @@ class Swap extends Base
     // If they're set from external sources, their
     // values must be validated.
 
-    private $activate;
+   private $activate;
 
-    public function setConfigurationParameters($parameters)
+    // public function setConfigurationParameters($parameters)
+    // {
+    //     throw new Exception('Remove - should not be used');
+
+    //     parent::loadPermissionData($parameters);
+
+    //     $this->setProjectDirectoryName($this->getParameterValue($parameters, 'projectDirectoryName'));
+    //     $this->setEnvironmentDirectoryName($this->getParameterValue($parameters, 'environmentDirectoryName'));
+    //     $this->activate = $this->getParameterValue($parameters, 'activate');
+
+    //     if (!Validator::stringType()->validate($this->activate)) {
+    //         throw new HttpException('The activate parameter must be a string.', 400);
+    //     }
+
+    //     if (!in_array($this->activate, DeploymentEnvironment::DPE_BOTH)) {
+    //         throw new HttpException('The activate parameter value must "blue" or "green".', 400);
+    //     }
+    // }
+
+    protected function validateRequest()
     {
-        parent::loadPermissionData($parameters);
+        $this->requestContainer->validate('SWAP_REQUIRED_ARGUMENTS');
 
-        $this->setProjectDirectoryName($this->getParameterValue($parameters, 'projectDirectoryName'));
-        $this->setEnvironmentDirectoryName($this->getParameterValue($parameters, 'environmentDirectoryName'));
-        $this->activate = $this->getParameterValue($parameters, 'activate');
-
-        if (!Validator::stringType()->validate($this->activate)) {
-            throw new HttpException('The activate parameter must be a string.', 400);
-        }
-
-        if (!in_array($this->activate, DeploymentEnvironment::DPE_BOTH)) {
-            throw new HttpException('The activate parameter value must "blue" or "green".', 400);
-        }
+        $this->activate = $this->get('params.activate');
     }
 
     public function run()

@@ -20,11 +20,10 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertDirectoryExists($environmentDirectory);
 
         $response = $this->runDeploymentRequest($params);
-
-        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
         $this->assertNotNull($responseBody);
-        $this->assertEquals('general', $responseBody->type);
+        $this->assertEquals('http', $responseBody->type);
         $this->assertContains('directory already exists', $responseBody->error);
     }
 
@@ -52,7 +51,7 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertDirectoryNotExists($environmentDirectory);
 
         $response = $this->runDeploymentRequest($params);
-        // print_r((string)$response->getBody());
+    print_r((string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
         // $this->assertNotNull($responseBody); Should not be null, should return the actual log of commands and responses

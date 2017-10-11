@@ -12,7 +12,7 @@ class Deployment extends Base
 {
     public function deployProject()
     {
-        $this->validateDeployParamsArgument();
+        // $this->validateDeployParamsArgument();
 
         $deployment = new DeploymentOperation($this->getRequestContainer());
 
@@ -44,16 +44,16 @@ class Deployment extends Base
 
     public function configureProject()
     {
-        $this->validateDeployParamsArgument();
+        // $this->validateDeployParamsArgument();
 
-        $configuration = new ConfigurationOperation();
-        $configuration->setConnectionParameters(
-            $this->getRequestArgument('privateKeyPath'),
-            $this->getRequestArgument('publicKeyPath'),
-            $this->getRequestArgument('ip'),
-            $this->getRequestArgument('user'));
+        $configuration = new ConfigurationOperation($this->getRequestContainer());
+        // $configuration->setConnectionParameters(
+        //     $this->getRequestArgument('privateKeyPath'),
+        //     $this->getRequestArgument('publicKeyPath'),
+        //     $this->getRequestArgument('ip'),
+        //     $this->getRequestArgument('user'));
 
-        $configuration->setConfigurationParameters($this->getRequestArgument('params'));
+        // $configuration->setConfigurationParameters($this->getRequestArgument('params'));
 
         try {
             $configuration->run();
@@ -70,16 +70,16 @@ class Deployment extends Base
 
     public function swapEnvironments()
     {
-        $this->validateDeployParamsArgument();
+        // $this->validateDeployParamsArgument();
 
-        $swap = new SwapOperation();
-        $swap->setConnectionParameters(
-            $this->getRequestArgument('privateKeyPath'),
-            $this->getRequestArgument('publicKeyPath'),
-            $this->getRequestArgument('ip'),
-            $this->getRequestArgument('user'));
+        $swap = new SwapOperation($this->getRequestContainer());
+        // $swap->setConnectionParameters(
+        //     $this->getRequestArgument('privateKeyPath'),
+        //     $this->getRequestArgument('publicKeyPath'),
+        //     $this->getRequestArgument('ip'),
+        //     $this->getRequestArgument('user'));
 
-        $swap->setConfigurationParameters($this->getRequestArgument('params'));
+        // $swap->setConfigurationParameters($this->getRequestArgument('params'));
 
         try {
             $swap->run();
@@ -96,16 +96,16 @@ class Deployment extends Base
 
     public function getStatus()
     {
-        $this->validateDeployParamsArgument();
+        // $this->validateDeployParamsArgument();
 
-        $status = new StatusOperation();
-        $status->setConnectionParameters(
-            $this->getRequestArgument('privateKeyPath'),
-            $this->getRequestArgument('publicKeyPath'),
-            $this->getRequestArgument('ip'),
-            $this->getRequestArgument('user'));
+        $status = new StatusOperation($this->getRequestContainer());
+        // $status->setConnectionParameters(
+        //     $this->getRequestArgument('privateKeyPath'),
+        //     $this->getRequestArgument('publicKeyPath'),
+        //     $this->getRequestArgument('ip'),
+        //     $this->getRequestArgument('user'));
 
-        $status->setConfigurationParameters($this->getRequestArgument('params'));
+        // $status->setConfigurationParameters($this->getRequestArgument('params'));
 
         $data = $status->run();
 

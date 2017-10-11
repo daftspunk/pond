@@ -133,6 +133,10 @@ class JsonSchemaStrings
                     "vars"
                 ]
             }
+        },
+        "directoryNameString": {
+            "type": "string",
+            "pattern": "^[0-9a-zA-Z\\\-_]+$"
         }
     }';
 
@@ -146,12 +150,10 @@ class JsonSchemaStrings
                         "type": "boolean"
                     },
                     "projectDirectoryName": {
-                        "type": "string",
-                        "pattern": "^[0-9a-zA-Z\\\-_]+$"
+                        "$ref": "#/definitions/directoryNameString"
                     },
                     "environmentDirectoryName": {
-                        "type": "string",
-                        "pattern": "^[0-9a-zA-Z\\\-_]+$"
+                        "$ref": "#/definitions/directoryNameString"
                     },
                     "localProjectPath": {
                         "type": "string"
@@ -315,6 +317,92 @@ class JsonSchemaStrings
                 },
                 "required": [
                     "databaseInit"
+                ]
+            }
+        },
+        "required": [
+            "params"
+        ]
+    }';
+
+    const CONFIGURATION_REQUIRED_ARGUMENTS = '{
+        "type": "object",
+        "properties": {
+            "params": {
+                "type": "object",
+                "properties": {
+                    "projectDirectoryName": {
+                        "$ref": "#/definitions/directoryNameString"
+                    },
+                    "environmentDirectoryName": {
+                        "$ref": "#/definitions/directoryNameString"
+                    },
+                    "configTemplates": {
+                        "$ref": "#/definitions/configTemplates"
+                    },
+                    "permissions": {
+                        "$ref": "#/definitions/permissions"
+                    }
+                },
+                "required": [
+                    "configTemplates",
+                    "projectDirectoryName",
+                    "environmentDirectoryName",
+                    "localProjectPath"
+                ]
+            }
+        },
+        "required": [
+            "params"
+        ]
+    }';
+
+    const SWAP_REQUIRED_ARGUMENTS = '{
+        "type": "object",
+        "properties": {
+            "params": {
+                "type": "object",
+                "properties": {
+                    "projectDirectoryName": {
+                        "$ref": "#/definitions/directoryNameString"
+                    },
+                    "environmentDirectoryName": {
+                        "$ref": "#/definitions/directoryNameString"
+                    },
+                    "activate": {
+                        "type": {
+                            "enum": ["blue", "green"]
+                        }
+                    }
+                },
+                "required": [
+                    "projectDirectoryName",
+                    "environmentDirectoryName",
+                    "activate"
+                ]
+            }
+        },
+        "required": [
+            "params"
+        ]
+    }';
+
+    const STATUS_REQUIRED_ARGUMENTS = '{
+        "type": "object",
+        "properties": {
+            "params": {
+                "type": "object",
+                "properties": {
+                    "projectDirectoryName": {
+                        "$ref": "#/definitions/directoryNameString"
+                    },
+                    "environmentDirectoryName": {
+                        "$ref": "#/definitions/directoryNameString"
+                    }
+                },
+                "required": [
+                    "projectDirectoryName",
+                    "environmentDirectoryName"
                 ]
             }
         },

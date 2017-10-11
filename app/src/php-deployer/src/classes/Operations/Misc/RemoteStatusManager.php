@@ -14,13 +14,13 @@ class RemoteStatusManager
 
     private $connection;
     private $scpConnection;
-    private $permissionData;
+    private $requestContainer;
 
-    public function __construct($connection, $scpConnection, $permissionData)
+    public function __construct($connection, $scpConnection, $requestContainer)
     {
         $this->connection = $connection;
         $this->scpConnection = $scpConnection;
-        $this->permissionData = $permissionData;
+        $this->requestContainer = $requestContainer;
     }
 
     public function updateStatus($envDirectory, $logRecordDetails, $deploymentEnvironmentsDetails)
@@ -39,7 +39,7 @@ class RemoteStatusManager
             $jsonString, 
             $remoteFilePath, 
             $remoteTmpDir, 
-            $this->permissionData->getFileMask(),
+            $this->requestContainer->get('params.permissions.file'),
             'status file'
         );
     }

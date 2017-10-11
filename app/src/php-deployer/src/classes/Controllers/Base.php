@@ -27,7 +27,7 @@ class Base
 
     private function initRequestContainer()
     {
-        $this->requestContainer = new RequestContainer($this->request->getBody());
+        $this->requestContainer = new RequestContainer((string)$this->request->getBody());
     }
 
     protected function getRequestContainer()

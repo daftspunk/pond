@@ -47,17 +47,7 @@ class Deployment extends Base
     private $updatedDeploymentEnvironments = [];
     private $updatedComponents = [];
 
-    // The following properties must stay private.
-    // If they're set from external sources, their
-    // values must be validated.
-
-    // private $update;
-    // private $localProjectPath;
-    // private $configurationOperation;
-    // private $buildTag;
-    // private $updateComponents;
-    // private $databaseInitializer;
-
+    /*
     public function setDeploymentParameters($parameters)
     {
         throw new Exception('Remove - should not be used');
@@ -115,13 +105,14 @@ class Deployment extends Base
             }
         }
     }
+    */
 
     public function run()
     {
         if ($this->update) {
             $this->validateEnvironmentDirectories();
             $deploymentEnvironment = $this->getInactiveDeploymentEnvironment();
-            $this->archiveUploadAndExtract($deploymentEnvironment, $this->updateComponents);
+            $this->archiveUploadAndExtract($deploymentEnvironment, $this->get('params.updateComponents'));
         }
         else {
             $this->initDirectories();
@@ -138,7 +129,7 @@ class Deployment extends Base
 
             foreach ($this->updatedDeploymentEnvironments as $name) {
                 $deploymentEnvironmentsDetails[$name] = [
-                    'buildTag' => $this->buildTag,
+                    'buildTag' => $this->get('params.buildTag'),
                     'lastDeployment' => $remoteDateTime
                 ];
             }
@@ -175,6 +166,16 @@ class Deployment extends Base
             if ($this->get('params.databaseInit.initDatabase')) {
                 $this->requestContainer->validate('DEPLOYMENT_DATABASE_INIT_PARAMETERS');
             }
+
+            $this->configurationOperation = new ConfigurationOperation(
+                $this->requestContainer,
+                $this->getConnection(), 
+                $this->getScpConnection());
+
+            // $this->databaseInitializer = new DatabaseInitializer(
+            //     $this->getConnection(), 
+            //     $this->getScpConnection(),
+            //     $this->getParameterValue($parameters, 'databaseInit'));
         }
     }
 
@@ -221,7 +222,7 @@ class Deployment extends Base
         ];
 
         $variables = [
-            'dirMask' => $this->getPermissionData()->getDirectoryMask(),
+            'dirMask' => $this->get('params.permissions.directory'),
             'envDirectory' => $envDirectory,
             'projDirectory' => $projectDirectory,
             'currentEnv' => DeploymentEnvironment::DPE_INITIAL
@@ -233,7 +234,7 @@ class Deployment extends Base
     private function archiveUploadAndExtract($deploymentEnvironmentNames, $components = null)
     {
         $deploymentEnvironmentNames = (array)$deploymentEnvironmentNames;
-        $archiver = new ProjectArchiver($this->localProjectPath);
+        $archiver = new ProjectArchiver($this->get('params.localProjectPath'));
         $zipPath = $archiver->make($components);
 
         $this->updatedDeploymentEnvironments = $deploymentEnvironmentNames;
@@ -277,13 +278,12 @@ class Deployment extends Base
     {
         $connection = $this->getConnection();
         $archivedPaths = $archiver->getArchivedComponentPaths();
-        $permissionsData = $this->getPermissionData();
 
         foreach ($archivedPaths as $path) {
             $params = [
                 'path' => $directory.'/'.$path,
-                'fileMask' => $permissionsData->getFileMask(),
-                'dirMask' => $permissionsData->getDirectoryMask()
+                'fileMask' => $this->get('params.permissions.file'),
+                'dirMask' => $this->get('params.permissions.directory')
             ];
 
             if ($path != 'config') {

@@ -163,6 +163,20 @@ class BaseCase extends TestCase
                 'themes'=>true,
             ];
         }
+        else {
+            $result['params']['databaseInit'] = [
+                "initDatabase" => true,
+                "engine" => "mysql",
+                "dump" => "SQL dump string",
+                "connection" => [
+                    "host" => "localhost",
+                    "user" => "username",
+                    "password" => "password",
+                    "port" => 3306,
+                    "name"=> "my-database"
+                ]
+            ];
+        }
 
         return $result;
     }
@@ -178,6 +192,7 @@ class BaseCase extends TestCase
     {
         return $this->runApp('POST', $operation, function($request) use ($params) {
             $request->withHeader('Content-Type', 'application/json');
+
             $request->getBody()->write(json_encode($params));
         });
     }
@@ -193,9 +208,18 @@ class BaseCase extends TestCase
                 throw new Exception(sprintf('Error loading fixture configuration file: %s', $path));
             }
 
-            $result[$name] = [
+            $paramsArray = [];
+            foreach ($parameters as $paramName=>$paramValue) {
+                $paramsArray[] = [
+                    'name' => $paramName,
+                    'value' => $paramValue
+                ];
+            }
+
+            $result[] = [
+                'file' => $name,
                 'template' => $contents,
-                'vars' => $parameters
+                'vars' => $paramsArray
             ];
         }
 

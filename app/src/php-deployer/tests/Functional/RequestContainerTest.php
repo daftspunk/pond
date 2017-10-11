@@ -231,6 +231,56 @@ class RequestContainerTest extends BaseCase
 
     /**
      * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage [params.projectDirectoryName] Has invalid format
+     */
+    public function testDeploymentRequiredArgumentsDirectoryNameInvalidFormat()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "@",
+                "environmentDirectoryName": "string",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "1234",
+                    "file": "777",
+                    "config": "777"
+                }
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    public function testDeploymentRequiredArgumentsValidDirectoryName()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "project",
+                "environmentDirectoryName": "environment",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "777",
+                    "file": "777",
+                    "config": "777"
+                }
+            }
+        }');
+
+        $this->assertTrue($container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS'));
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
      * @expectedExceptionMessage directory is required
      */
     public function testDeploymentRequiredArgumentsNoDirectoryPermissions()
@@ -507,4 +557,119 @@ class RequestContainerTest extends BaseCase
 
         $container->validate('DEPLOYMENT_DATABASE_INIT_PARAMETERS');
     }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage [params.projectDirectoryName] Has invalid format
+     */
+    public function testConfigurationDirectoryNameInvalidFormat()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "@",
+                "environmentDirectoryName": "string",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "123",
+                    "file": "777",
+                    "config": "777"
+                },
+                "configTemplates": [
+                    {
+                        "file": "some.php",
+                        "template": "some string",
+                        "vars": [
+                            {
+                                "value": 12
+                            }
+                        ]
+                    }
+                ]
+            }
+        }');
+
+        $container->validate('CONFIGURATION_REQUIRED_ARGUMENTS');
+    }
+
+    public function testConfigurationValid()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "project",
+                "environmentDirectoryName": "environment",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "123",
+                    "file": "777",
+                    "config": "777"
+                },
+                "configTemplates": [
+                    {
+                        "file": "some.php",
+                        "template": "some string",
+                        "vars": [
+                            {
+                                "value": "12",
+                                "name": "name"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }');
+
+        $this->assertTrue($container->validate('CONFIGURATION_REQUIRED_ARGUMENTS'));
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage activate is required
+     */
+    public function testSwapNoActivateValue()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "projectDirectoryName": "directory",
+                "environmentDirectoryName": "string"
+            }
+        }');
+
+        $container->validate('SWAP_REQUIRED_ARGUMENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage value in the enumeration ["blue","green"]
+     */
+    public function testSwapActivateNotBlueGreenValue()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "projectDirectoryName": "directory",
+                "environmentDirectoryName": "string",
+                "activate": "yellow"
+            }
+        }');
+
+        $container->validate('SWAP_REQUIRED_ARGUMENTS');
+    }
+    
 }

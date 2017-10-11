@@ -16,16 +16,18 @@ class Configuration extends Base
     // If they're set from external sources, their
     // values must be validated.
 
-    private $templates;
-    private $localProjectPath;
+    // private $templates;
+    // private $localProjectPath;
 
     public function setConfigurationParameters($parameters)
     {
+        throw new Exception('Remove - should not be used');
+
         parent::loadPermissionData($parameters);
 
         $this->setProjectDirectoryName($this->getParameterValue($parameters, 'projectDirectoryName'));
         $this->setEnvironmentDirectoryName($this->getParameterValue($parameters, 'environmentDirectoryName'));
-        $this->templates = $this->getParameterValue($parameters, 'configTemplates');
+        // $this->templates = $this->getParameterValue($parameters, 'configTemplates');
 
         if (!Validator::arrayType()->validate($this->templates)) {
             throw new HttpException('The configTemplates parameter should be an array', 400);
@@ -58,6 +60,17 @@ class Configuration extends Base
         }
     }
 
+    protected function validateRequest()
+    {
+        $this->requestContainer->validate('CONFIGURATION_REQUIRED_ARGUMENTS');
+
+        foreach ($this->get('params.configTemplates') as $templateName=>$templateConfiguration) {
+            // Do this to fail early if there are syntax errors,
+            // undefined variables or other issues in the templates.
+            $this->renderTemplate($templateName, $templateConfiguration['template'], $templateConfiguration['vars']);
+        }
+    }
+
     private function renderTemplate($name, $source, $variables)
     {
         $view = new ConfigurationTemplateView();
@@ -73,7 +86,7 @@ class Configuration extends Base
             throw new Exception(sprintf('The environment configuration directory is not found on the server: %s', $configDirectory));
         }
 
-        foreach ($this->templates as $templateName=>$templateConfiguration) {
+        foreach ($this->get('params.configTemplates') as $templateName=>$templateConfiguration) {
             $this->renderAndUpload($templateName, $templateConfiguration, $configDirectory);
         }
     }
@@ -92,6 +105,7 @@ class Configuration extends Base
 
     private function renderAndUpload($templateName, $templateConfiguration, $configDirectory)
     {
+// TODO - use uploadFromString here
         $tempFilePath = tempnam(sys_get_temp_dir(), 'pond_');
 
         if ($tempFilePath == false) {
@@ -107,7 +121,7 @@ class Configuration extends Base
             $destRemotePath = $configDirectory.'/'.$templateName;
             $this->getScpConnection()->upload($tempFilePath, $destRemotePath, 'configuration file '.$templateName);
             $this->getConnection()->runCommand('chmod {{$mask}} "{{$path}}"', 10, [
-                'mask' => $this->getPermissionData()->getConfigMask(),
+                'mask' => $this->get('params.permissions.config'),
                 'path' => $destRemotePath
             ]);
         }
