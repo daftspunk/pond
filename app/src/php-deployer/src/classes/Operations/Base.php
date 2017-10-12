@@ -19,21 +19,8 @@ abstract class Base
 
     protected $requestContainer;
 
-    // protected $privateKeyPath;
-    // protected $publicKeyPath;
-    // protected $ip;
-    // protected $user;
-
     private $logCallable;
     private $combinedLog = [];
-
-    // The following properties must stay private.
-    // If they're set from external sources, their
-    // values must be validated.
-
-    // private $projectDirectoryName;
-    // private $environmentDirectoryName;
-    // private $permissionData;
 
     public function __construct(RequestContainer $requestContainer, Connection $connection = null, Connection $scpConnection = null)
     {
@@ -52,20 +39,6 @@ abstract class Base
     abstract public function run();
     abstract public function saveRemoteStatus($success);
 
-    /**
-     * Sets the common connection parameters.
-     *
-     * All the parameters should be validated by the calling code.
-     * For HTTP requests it's done in ControllerBase.
-     */
-    // public function setConnectionParameters($privateKeyPath, $publicKeyPath, $ip, $user)
-    // {
-    //     $this->privateKeyPath = $privateKeyPath;
-    //     $this->publicKeyPath = $publicKeyPath;
-    //     $this->ip = $ip;
-    //     $this->user = $user;
-    // }
-
     public function setLogCallable(callable $logCallable)
     {
         $this->logCallable = $logCallable;
@@ -82,9 +55,9 @@ abstract class Base
         }
     }
 
-    protected function get($param)
+    protected function get($param, $optional = false, $default = null)
     {
-        return $this->requestContainer->get($param);
+        return $this->requestContainer->get($param, $optional, $default);
     }
 
     protected function getConnection()
@@ -125,12 +98,12 @@ abstract class Base
 
     protected function getProjectDirectoryName()
     {
-        return $this->this.get('params.projectDirectoryName');
+        return $this->get('params.projectDirectoryName');
     }
 
     protected function getEnvironmentDirectoryName()
     {
-        return $this->this.get('params.environmentDirectoryName');
+        return $this->get('params.environmentDirectoryName');
     }
 
     protected function getProjectDirectoryRemotePath()
@@ -165,40 +138,6 @@ abstract class Base
             $this->handleConnectionLogEntry(sprintf('Error updating environment status file on the server. %s', $ex->getMessage()));
         }
     }
-
-    // protected function loadPermissionData($parameters)
-    // {
-    //     throw Exception('Rewrite');
-
-    //     $permissions = $this->getParameterValue($parameters, 'permissions');
-
-    //     if (!Validator::arrayType()->validate($permissions)) {
-    //         throw new HttpException('The permissions parameter should be an array', 400);
-    //     }
-
-    //     foreach (['directory', 'file', 'config'] as $permissionParameter) {
-    //         if (!array_key_exists($permissionParameter, $permissions)) {
-    //             throw new HttpException(sprintf('The %s property is not found for permissions request parameter', $permissionParameter), 400);
-    //         }
-    //     }
-
-    //     $this->permissionData = new RequestPermissionData(
-    //         $permissions['directory'],
-    //         $permissions['config'],
-    //         $permissions['file']
-    //     );
-    // }
-
-    // protected function getPermissionData()
-    // {
-    //     throw Exception('Rewrite');
-
-    //     if (!$this->permissionData) {
-    //         throw new Exception('Permission data is not initialized');
-    //     }
-
-    //     return $this->permissionData;
-    // }
 
     private function handleConnectionLogEntry($string)
     {

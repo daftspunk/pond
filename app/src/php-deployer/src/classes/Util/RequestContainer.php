@@ -38,11 +38,11 @@ class RequestContainer
         return $this->validateWithSchemaString($schemaString, $schemaName);
     }
 
-    public function get($path)
+    public function get($path, $optional = false, $default = null)
     {
         $parts = explode('.', $path);
 
-        return $this->getValueByPath($parts, $this->requestJsonObject, $path);
+        return $this->getValueByPath($parts, $this->requestJsonObject, $path, $optional, $default);
     }
 
     private function validateWithSchemaString($schemaString, $schemaName)
@@ -67,20 +67,28 @@ class RequestContainer
         return true;
     }
 
-    private function getValueByPath($parts, $object, $path)
+    private function getValueByPath($parts, $object, $path, $optional, $default)
     {
         $first = array_shift($parts);
 
         if (is_object($object)) {
             if (!property_exists($object, $first)) {
-                throw new Exception(sprintf('Request parameter does not exist: %s', $path));
+                if (!$optional) {
+                    throw new Exception(sprintf('Request parameter does not exist: %s', $path));
+                }
+
+                return $default;
             }
 
             $object = $object->$first;
         }
         else if (is_array($object)) {
             if (!array_key_exists($first, $object)) {
-                throw new Exception(sprintf('Request parameter does not exist: %s', $path));
+                if (!$optional) {
+                    throw new Exception(sprintf('Request parameter does not exist: %s', $path));
+                }
+
+                return $default;
             }
 
             $object = $object[$first];
@@ -90,7 +98,7 @@ class RequestContainer
             return $object;
         }
 
-        return $this->getValueByPath($parts, $object, $path);
+        return $this->getValueByPath($parts, $object, $path, $optional, $default);
     }
 
     private function normalizeErrorMessage($message)

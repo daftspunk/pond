@@ -18,11 +18,24 @@ class View
         try {
             $this->getLoader()->setTemplate($name, $source);
 
+            $variables = $this->varsToTwigVariables($variables);
+
             return $this->getTwig()->render($name, $variables);
         }
         catch (Exception $ex) {
-            throw new Exception(sprintf('Error processing configuration file template: %s', $ex->getMessage()));
+            throw new Exception(sprintf('Error processing configuration file %s: %s', $name, $ex->getMessage()));
         }
+    }
+
+    private function varsToTwigVariables($variables)
+    {
+        $result = [];
+
+        foreach ($variables as $configuration) {
+            $result[$configuration->name] = $configuration->value;
+        }
+
+        return $result;
     }
 
     private function getTwig()

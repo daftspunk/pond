@@ -83,6 +83,17 @@ class RequestContainerTest extends BaseCase
         $this->assertEquals('7', $container->get('topLevelObject.propertyArray.1.id'));
     }
 
+    public function testGetDefaultValue()
+    {
+        $container = new RequestContainer('{
+            "topLevelInt": 10
+        }');
+
+        $this->assertEquals(10, $container->get('topLevelInt'));
+        $this->assertNull($container->get('noProperty', true));
+        $this->assertEquals('value', $container->get('noProperty', true, 'value'));
+    }
+
     public function testInvalidProperties()
     {
         $container = new RequestContainer('{
@@ -631,6 +642,29 @@ class RequestContainerTest extends BaseCase
         $this->assertTrue($container->validate('CONFIGURATION_REQUIRED_ARGUMENTS'));
     }
 
+    public function testConfigurationNoTemplatesValid()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "project",
+                "environmentDirectoryName": "environment",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "123",
+                    "file": "777",
+                    "config": "777"
+                },
+                "configTemplates": []
+            }
+        }');
+
+        $this->assertTrue($container->validate('CONFIGURATION_REQUIRED_ARGUMENTS'));
+    }
     /**
      * @expectedException        PhpDeployer\Exceptions\Http
      * @expectedExceptionMessage activate is required

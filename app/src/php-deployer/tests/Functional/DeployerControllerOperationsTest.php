@@ -20,10 +20,10 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertDirectoryExists($environmentDirectory);
 
         $response = $this->runDeploymentRequest($params);
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(500, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
         $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
+        $this->assertEquals('general', $responseBody->type);
         $this->assertContains('directory already exists', $responseBody->error);
     }
 
@@ -51,7 +51,7 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertDirectoryNotExists($environmentDirectory);
 
         $response = $this->runDeploymentRequest($params);
-    print_r((string)$response->getBody());
+print_r((string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
         // $this->assertNotNull($responseBody); Should not be null, should return the actual log of commands and responses
@@ -267,128 +267,6 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertFileNotExists($environmentDirectory.'/green/themes/demo2/theme.yaml');
     }
 
-    public function testConfigurationOperationNoTemplates()
-    {
-        $params = $this->makeValidDeploymentConfig();
-        unset($params['params']['configTemplates']);
-
-        $response = $this->runDeploymentRequest($params, '/configure');
-        $this->assertEquals(400, $response->getStatusCode());
-
-        $responseBody = json_decode((string)$response->getBody());
-        $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('configTemplates not found in the request', $responseBody->error);
-    }
-
-    public function testConfigurationOperationInvalidTemplateNames()
-    {
-        $params = $this->makeValidDeploymentConfig();
-        $params['params']['configTemplates'] = [
-            'something.sh' => ['template' => '', 'vars' => []]
-        ];
-
-        $response = $this->runDeploymentRequest($params, '/configure');
-        $this->assertEquals(400, $response->getStatusCode());
-
-        $responseBody = json_decode((string)$response->getBody());
-        $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('Invalid configuration template name', $responseBody->error);
-    }
-
-    public function testConfigurationOperationTemplateSourceNotFound()
-    {
-        $params = $this->makeValidDeploymentConfig();
-        $params['params']['configTemplates'] = [
-            'app.php' => ['vars' => []]
-        ];
-
-        $response = $this->runDeploymentRequest($params, '/configure');
-        $this->assertEquals(400, $response->getStatusCode());
-
-        $responseBody = json_decode((string)$response->getBody());
-        $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('template parameter is not found', $responseBody->error);
-    }
-
-    public function testConfigurationOperationTemplateVarsNotFound()
-    {
-        $params = $this->makeValidDeploymentConfig();
-        $params['params']['configTemplates'] = [
-            'app.php' => ['template' => '']
-        ];
-
-        $response = $this->runDeploymentRequest($params, '/configure');
-        $this->assertEquals(400, $response->getStatusCode());
-
-        $responseBody = json_decode((string)$response->getBody());
-        $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('vars parameter is not found', $responseBody->error);
-    }
-
-    public function testConfigurationOperationTemplateVarsNotArray()
-    {
-        $params = $this->makeValidDeploymentConfig();
-        $params['params']['configTemplates'] = [
-            'app.php' => ['template' => '', 'vars' => true]
-        ];
-
-        $response = $this->runDeploymentRequest($params, '/configure');
-        $this->assertEquals(400, $response->getStatusCode());
-
-        $responseBody = json_decode((string)$response->getBody());
-        $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('must be an array', $responseBody->error);
-    }
-
-    public function testConfigurationOperationTemplateNotString()
-    {
-        $params = $this->makeValidDeploymentConfig();
-        $params['params']['configTemplates'] = [
-            'app.php' => ['template' => true, 'vars' => []]
-        ];
-
-        $response = $this->runDeploymentRequest($params, '/configure');
-        $this->assertEquals(400, $response->getStatusCode());
-
-        $responseBody = json_decode((string)$response->getBody());
-        $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('must be a string', $responseBody->error);
-    }
-
-    public function testNotStringBuildTag()
-    {
-        $params = $this->makeValidDeploymentConfig();
-        $params['params']['buildTag'] = 10;
-
-        $response = $this->runDeploymentRequest($params, '/deploy');
-        $this->assertEquals(400, $response->getStatusCode());
-
-        $responseBody = json_decode((string)$response->getBody());
-        $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('must be a string', $responseBody->error);
-    }
-
-    public function testTooLongBuildTag()
-    {
-        $params = $this->makeValidDeploymentConfig();
-        $params['params']['buildTag'] = str_repeat('x', 51);
-
-        $response = $this->runDeploymentRequest($params, '/deploy');
-        $this->assertEquals(400, $response->getStatusCode());
-
-        $responseBody = json_decode((string)$response->getBody());
-        $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('must be a string', $responseBody->error);
-    }
-
     public function testUpdateNoProjectDirectory()
     {
         $params = $this->makeValidDeploymentConfig(true);
@@ -560,31 +438,6 @@ class DeployerControllerOperationTest extends BaseCase
         $responseBody = json_decode((string)$response->getBody());
         $this->assertEquals('http', $responseBody->type);
         $this->assertContains('e environment directory is not found on the server', $responseBody->error);
-    }
-
-    public function testSwapNoActivateParameter()
-    {
-        $params = $this->makeValidDeploymentConfig(true);
-
-        $response = $this->runDeploymentRequest($params, '/swap');
-        $this->assertEquals(400, $response->getStatusCode());
-        $responseBody = json_decode((string)$response->getBody());
-        $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('activate not found in the request', $responseBody->error);
-    }
-
-    public function testSwapActivateParameterInvalid()
-    {
-        $params = $this->makeValidDeploymentConfig(true);
-        $params['params']['activate'] = 'test';
-
-        $response = $this->runDeploymentRequest($params, '/swap');
-        $this->assertEquals(400, $response->getStatusCode());
-        $responseBody = json_decode((string)$response->getBody());
-        $this->assertNotNull($responseBody);
-        $this->assertEquals('http', $responseBody->type);
-        $this->assertContains('must "blue" or "green"', $responseBody->error);
     }
 
     /**

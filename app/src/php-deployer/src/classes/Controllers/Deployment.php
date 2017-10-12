@@ -12,17 +12,7 @@ class Deployment extends Base
 {
     public function deployProject()
     {
-        // $this->validateDeployParamsArgument();
-
         $deployment = new DeploymentOperation($this->getRequestContainer());
-
-        // $deployment->setConnectionParameters(
-        //     $this->getRequestArgument('privateKeyPath'),
-        //     $this->getRequestArgument('publicKeyPath'),
-        //     $this->getRequestArgument('ip'),
-        //     $this->getRequestArgument('user'));
-
-        // $deployment->setDeploymentParameters($this->getRequestArgument('params'));
 
         // We call saveRemoteLog() and saveRemoteStatus() in the controller
         // and not inside the run() method, because
@@ -44,16 +34,7 @@ class Deployment extends Base
 
     public function configureProject()
     {
-        // $this->validateDeployParamsArgument();
-
         $configuration = new ConfigurationOperation($this->getRequestContainer());
-        // $configuration->setConnectionParameters(
-        //     $this->getRequestArgument('privateKeyPath'),
-        //     $this->getRequestArgument('publicKeyPath'),
-        //     $this->getRequestArgument('ip'),
-        //     $this->getRequestArgument('user'));
-
-        // $configuration->setConfigurationParameters($this->getRequestArgument('params'));
 
         try {
             $configuration->run();
@@ -70,16 +51,7 @@ class Deployment extends Base
 
     public function swapEnvironments()
     {
-        // $this->validateDeployParamsArgument();
-
         $swap = new SwapOperation($this->getRequestContainer());
-        // $swap->setConnectionParameters(
-        //     $this->getRequestArgument('privateKeyPath'),
-        //     $this->getRequestArgument('publicKeyPath'),
-        //     $this->getRequestArgument('ip'),
-        //     $this->getRequestArgument('user'));
-
-        // $swap->setConfigurationParameters($this->getRequestArgument('params'));
 
         try {
             $swap->run();
@@ -96,17 +68,7 @@ class Deployment extends Base
 
     public function getStatus()
     {
-        // $this->validateDeployParamsArgument();
-
         $status = new StatusOperation($this->getRequestContainer());
-        // $status->setConnectionParameters(
-        //     $this->getRequestArgument('privateKeyPath'),
-        //     $this->getRequestArgument('publicKeyPath'),
-        //     $this->getRequestArgument('ip'),
-        //     $this->getRequestArgument('user'));
-
-        // $status->setConfigurationParameters($this->getRequestArgument('params'));
-
         $data = $status->run();
 
         return $this->response->withJson($data, 200);

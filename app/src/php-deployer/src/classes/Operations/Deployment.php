@@ -47,72 +47,12 @@ class Deployment extends Base
     private $updatedDeploymentEnvironments = [];
     private $updatedComponents = [];
 
-    /*
-    public function setDeploymentParameters($parameters)
-    {
-        throw new Exception('Remove - should not be used');
-
-        parent::loadPermissionData($parameters);
-
-        $this->update = $this->getParameterValue($parameters, 'update');
-        $this->localProjectPath = $this->getParameterValue($parameters, 'localProjectPath');
-
-        $this->setProjectDirectoryName($this->getParameterValue($parameters, 'projectDirectoryName'));
-        $this->setEnvironmentDirectoryName($this->getParameterValue($parameters, 'environmentDirectoryName'));
-
-        if (!Validator::boolType()->validate($this->update)) {
-            throw new HttpException('The update parameter should be of boolean type', 400);
-        }
-
-        if (!Validator::directory()->validate($this->localProjectPath)) {
-            throw new HttpException('The local project directory not found', 400);
-        }
-
-        $this->buildTag = $this->getParameterValue($parameters, 'buildTag', false, '');
-        if (!Validator::stringType()->length(null, 50)->validate($this->buildTag)) {
-            throw new HttpException('The build tag must be a string of at most 50 characters length.', 400);
-        }
-
-        $configTemplatesProvided = $this->getParameterValue($parameters, 'configTemplates', false) !== null;
-        if (!$this->update && !$configTemplatesProvided) {
-            throw new HttpException('Configuration templates must be provided for the new deployment', 400);
-        }
-
-        if (!$this->update) {
-            // Create the extra operations early to detect possible
-            // problems with templates before deployment.
-
-            // TODO: call setLogCallable for the configurationOperation
-
-            $this->configurationOperation = new ConfigurationOperation(
-                $this->getConnection(), 
-                $this->getScpConnection());
-
-            $this->configurationOperation->setConfigurationParameters($parameters);
-
-            $this->databaseInitializer = new DatabaseInitializer(
-                $this->getConnection(), 
-                $this->getScpConnection(),
-                $this->getParameterValue($parameters, 'databaseInit'));
-        }
-        else {
-            $this->updateComponents = $this->getParameterValue($parameters, 'updateComponents');
-
-            // Note - more validation is done inside ProjectArchiver
-            //
-            if (!Validator::arrayType()->validate($this->updateComponents)) {
-                throw new HttpException('The updateComponents parameter should be an array', 400);
-            }
-        }
-    }
-    */
-
     public function run()
     {
-        if ($this->update) {
+        if ($this->get('params.update')) {
             $this->validateEnvironmentDirectories();
             $deploymentEnvironment = $this->getInactiveDeploymentEnvironment();
-            $this->archiveUploadAndExtract($deploymentEnvironment, $this->get('params.updateComponents'));
+            $this->archiveUploadAndExtract($deploymentEnvironment, (array)$this->get('params.updateComponents'));
         }
         else {
             $this->initDirectories();
@@ -129,7 +69,7 @@ class Deployment extends Base
 
             foreach ($this->updatedDeploymentEnvironments as $name) {
                 $deploymentEnvironmentsDetails[$name] = [
-                    'buildTag' => $this->get('params.buildTag'),
+                    'buildTag' => $this->get('params.buildTag', true, ''),
                     'lastDeployment' => $remoteDateTime
                 ];
             }
@@ -171,11 +111,6 @@ class Deployment extends Base
                 $this->requestContainer,
                 $this->getConnection(), 
                 $this->getScpConnection());
-
-            // $this->databaseInitializer = new DatabaseInitializer(
-            //     $this->getConnection(), 
-            //     $this->getScpConnection(),
-            //     $this->getParameterValue($parameters, 'databaseInit'));
         }
     }
 
