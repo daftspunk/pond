@@ -501,7 +501,7 @@ class RequestContainerTest extends BaseCase
      * @expectedException        PhpDeployer\Exceptions\Http
      * @expectedExceptionMessage engine is required
      */
-    public function testDeploymentDatabaseInitNoEngine()
+    public function testDeploymentDatabaseInitParametersNoEngine()
     {
         $container = new RequestContainer('{
             "privateKeyPath": "/path/to/private-key",
@@ -515,14 +515,14 @@ class RequestContainerTest extends BaseCase
             }
         }');
 
-        $container->validate('DEPLOYMENT_DATABASE_INIT');
+        $container->validate('DEPLOYMENT_DATABASE_INIT_PARAMETERS');
     }
 
     /**
      * @expectedException        PhpDeployer\Exceptions\Http
      * @expectedExceptionMessage Does not have a value in the enumeration
      */
-    public function testDeploymentDatabaseInitInvalidEngine()
+    public function testDeploymentDatabaseInitParametersInvalidEngine()
     {
         $container = new RequestContainer('{
             "privateKeyPath": "/path/to/private-key",
@@ -532,19 +532,27 @@ class RequestContainerTest extends BaseCase
             "params": {
                 "databaseInit": {
                     "initDatabase": true,
-                    "engine": "oracle"
+                    "engine": "oracle",
+                    "dump": "string",
+                    "connection": {
+                        "host": "127.0.0.1",
+                        "user": "deploy",
+                        "password": "1234",
+                        "port": 123,
+                        "name": "database"
+                    }
                 }
             }
         }');
 
-        $container->validate('DEPLOYMENT_DATABASE_INIT');
+        $container->validate('DEPLOYMENT_DATABASE_INIT_PARAMETERS');
     }
 
     /**
      * @expectedException        PhpDeployer\Exceptions\Http
      * @expectedExceptionMessage host is required
      */
-    public function testDeploymentDatabaseInitNoHost()
+    public function testDeploymentDatabaseInitParametersNoHost()
     {
         $container = new RequestContainer('{
             "privateKeyPath": "/path/to/private-key",
@@ -555,7 +563,7 @@ class RequestContainerTest extends BaseCase
                 "databaseInit": {
                     "initDatabase": true,
                     "dump": "dump-string",
-                    "engine": "oracle",
+                    "engine": "mysql",
                     "connection": {
                         "user": "deploy",
                         "password": "1234",
@@ -567,6 +575,32 @@ class RequestContainerTest extends BaseCase
         }');
 
         $container->validate('DEPLOYMENT_DATABASE_INIT_PARAMETERS');
+    }
+
+    public function testDeploymentDatabaseInitParametersValid()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "databaseInit": {
+                    "initDatabase": true,
+                    "dump": "dump-string",
+                    "engine": "mysql",
+                    "connection": {
+                        "host": "127.0.0.1",
+                        "user": "deploy",
+                        "password": "1234",
+                        "port": 123,
+                        "name": "database"
+                    }
+                }
+            }
+        }');
+
+        $this->assertTrue($container->validate('DEPLOYMENT_DATABASE_INIT_PARAMETERS'));
     }
 
     /**

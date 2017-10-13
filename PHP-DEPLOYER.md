@@ -25,10 +25,12 @@ Runs deployment steps:
 * Initializes Pond directories on the server.
 * Packs and uploads the source code from the source machine to the server.
 * Uploads the configuration files.
-* Applies file and directory permissions .
+* Applies file and directory permissions.
 * Runs post-deployment bash scripts.
-* Makes one of the environments active.
+* Initializes database from a dump, if requested.
 * Saves logs and environment status file.
+
+The deployment step does not create a database and does not configure Apache virtual hosts. This is done in another operation.
 
 Request JSON parameters (must include the `common arguments` listed above):
 

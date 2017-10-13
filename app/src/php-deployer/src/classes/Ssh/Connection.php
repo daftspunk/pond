@@ -170,6 +170,11 @@ class Connection
         return trim($command);
     }
 
+    public function escapeStringArgument($value)
+    {
+        return str_replace('"', '\"', $value);
+    }
+
     public function upload($from, $to, $fileTitle)
     {
         if ($this->singleCommandHasRun) {
@@ -263,6 +268,11 @@ class Connection
     public function getRemoteDateTime()
     {
         return $this->runCommand('date +"%Y-%m-%d %T"');
+    }
+
+    public function addStringMask($string)
+    {
+        $this->makeMasks([$string]);
     }
 
     private function readUntilTerm($stream, $result, $timeout = 1)

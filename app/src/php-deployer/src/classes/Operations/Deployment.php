@@ -5,7 +5,6 @@ use PhpDeployer\Operations\Configuration as ConfigurationOperation;
 use PhpDeployer\Util\Configuration as DeployerConfiguration;
 use PhpDeployer\Operations\Misc\RemoteStatusManager;
 use PhpDeployer\Operations\Misc\DeploymentEnvironment;
-use PhpDeployer\Operations\Misc\DatabaseInitializer;
 use PhpDeployer\Archiver\ProjectArchiver;
 use Respect\Validation\Validator as Validator;
 use Exception;
@@ -47,6 +46,9 @@ class Deployment extends Base
     private $updatedDeploymentEnvironments = [];
     private $updatedComponents = [];
 
+    private $configurationOperation;
+    private $databaseInitializer;
+
     public function run()
     {
         if ($this->get('params.update')) {
@@ -58,6 +60,10 @@ class Deployment extends Base
             $this->initDirectories();
             $this->archiveUploadAndExtract(DeploymentEnvironment::DPE_BOTH);
             $this->configurationOperation->run();
+
+            if ($this->get('params.databaseInit.initDatabase')) {
+                $this->databaseInitializer->run();
+            }
         }
     }
 
@@ -104,7 +110,10 @@ class Deployment extends Base
             $this->requestContainer->validate('DEPLOYMENT_DATABASE_INIT');
 
             if ($this->get('params.databaseInit.initDatabase')) {
-                $this->requestContainer->validate('DEPLOYMENT_DATABASE_INIT_PARAMETERS');
+                $this->databaseInitializer = new DatabaseInitializer(
+                    $this->requestContainer,
+                    $this->getConnection(), 
+                    $this->getScpConnection());
             }
 
             $this->configurationOperation = new ConfigurationOperation(

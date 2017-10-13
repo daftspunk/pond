@@ -245,16 +245,10 @@ class JsonSchemaStrings
                         "properties": {
                             "initDatabase": {
                                 "type": "boolean"
-                            },
-                            "engine": {
-                                "type": {
-                                    "enum": ["mysql"]
-                                }
                             }
                         },
                         "required": [
-                            "initDatabase",
-                            "engine"
+                            "initDatabase"
                         ]
                     }
                 },
@@ -277,6 +271,11 @@ class JsonSchemaStrings
                     "databaseInit": {
                         "type": "object",
                         "properties": {
+                            "engine": {
+                                "type": {
+                                    "enum": ["mysql"]
+                                }
+                            },
                             "dump": {
                                 "type": "string"
                             },
@@ -310,6 +309,7 @@ class JsonSchemaStrings
                             }
                         },
                         "required": [
+                            "engine",
                             "dump",
                             "connection"
                         ]

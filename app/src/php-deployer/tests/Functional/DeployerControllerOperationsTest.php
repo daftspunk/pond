@@ -51,7 +51,7 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertDirectoryNotExists($environmentDirectory);
 
         $response = $this->runDeploymentRequest($params);
-print_r((string)$response->getBody());
+        // print_r((string)$response->getBody());
         $this->assertEquals(200, $response->getStatusCode());
         $responseBody = json_decode((string)$response->getBody());
         // $this->assertNotNull($responseBody); Should not be null, should return the actual log of commands and responses
@@ -63,6 +63,7 @@ print_r((string)$response->getBody());
         $this->assertDirectoryExists($environmentDirectory.'/metadata/log');
         $this->assertDirectoryExists($environmentDirectory.'/storage');
         $this->assertDirectoryExists($environmentDirectory.'/storage/app');
+        $this->assertDirectoryExists($environmentDirectory.'/pond-tmp');
 
         $connection = $this->makeValidConnection();
         $fileCount = $connection->runCommand('ls "{{$path}}" -1 | wc -l', 10, ['path'=>$environmentDirectory.'/metadata/log']);
@@ -126,11 +127,42 @@ print_r((string)$response->getBody());
         $this->assertContains('themes', $statusContents['deploymentLog'][0]['components']);
         $this->assertContains('config', $statusContents['deploymentLog'][0]['components']);
 
+        $this->assertEmpty(array_diff(scandir($environmentDirectory.'/pond-tmp'), ['.', '..']));
+
         return [
             'params'=>$params, 
             'environmentDirectory'=>$environmentDirectory
         ];
     }
+
+    public function testNewDeploymentNoDatabaseExist()
+    {
+        $params = $this->makeValidDeploymentConfig();
+        $params['params']['localProjectPath'] = __DIR__.'/../fixtures/partial-test-project';
+        $params['params']['buildTag'] = 'first-build';
+        $params['params']['databaseInit'] = $this->makeDatabaseInitParams();
+        $params['params']['databaseInit']['connection']['database'] = 'no-database';
+
+        $pondRoot = DeployerConfiguration::POND_ROOT;
+
+        $environmentDirectory = $pondRoot.'/'.
+            $params['params']['projectDirectoryName'].'/'.
+            $params['params']['environmentDirectoryName'];
+
+        $this->assertDirectoryNotExists($environmentDirectory);
+        $response = $this->runDeploymentRequest($params);
+        // print_r((string)$response->getBody());
+
+        $this->assertEquals(500, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('command', $responseBody->type);
+        $this->assertContains('Unknown database ', $responseBody->error);
+    }
+
+    
+    // Test database is not empty
+    // Test the temp directory is empty
 
     public function testFullDeployment()
     {
@@ -231,6 +263,7 @@ print_r((string)$response->getBody());
         $this->assertEquals('config', $statusContents['deploymentLog'][1]['type']);
 
         $this->assertTrue(isset($statusContents['deploymentEnvironments']['blue']));
+        $this->assertEmpty(array_diff(scandir($environmentDirectory.'/pond-tmp'), ['.', '..']));
     }
 
     /**

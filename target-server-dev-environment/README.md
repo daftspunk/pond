@@ -32,6 +32,10 @@ sudo apt-get -y install php7.1-xml
 sudo apt-get -y install php7.1-mbstring
 sudo apt-get update
 sudo apt-get -y install php7.1-zip
+mysql
+   GRANT ALL PRIVILEGES ON *.* TO 'app'@'localhost' IDENTIFIED BY 'password';
+   FLUSH PRIVILEGES;
+   exit
 exit
 ```
 

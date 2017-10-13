@@ -165,20 +165,27 @@ class BaseCase extends TestCase
         }
         else {
             $result['params']['databaseInit'] = [
-                "initDatabase" => true,
-                "engine" => "mysql",
-                "dump" => "SQL dump string",
-                "connection" => [
-                    "host" => "localhost",
-                    "user" => "username",
-                    "password" => "password",
-                    "port" => 3306,
-                    "name"=> "my-database"
-                ]
+                "initDatabase" => false
             ];
         }
 
         return $result;
+    }
+
+    protected function makeDatabaseInitParams()
+    {
+        return [
+            "initDatabase" => true,
+            "dump" => "dump-string",
+            "engine" => "mysql",
+            "connection" => [
+                "host" => "127.0.0.1",
+                "user" => "app",
+                "password" => "password",
+                "port" => 3306,
+                "name" => "database"
+            ]
+        ];
     }
 
     protected function makeDir($path)
