@@ -26,10 +26,7 @@ class ProjectArchiver
             'storage/app/uploads'
         ],
         'plugins' => 'plugins',
-        'themes' => 'themes',
-        'config' => [
-            'config'
-        ]
+        'themes' => 'themes'
     ];
 
     private $allComponents = [
@@ -37,8 +34,7 @@ class ProjectArchiver
         'media'=>true,
         'uploads'=>true,
         'plugins'=>true,
-        'themes'=>true,
-        'config'=>true
+        'themes'=>true
     ];
 
     private $archivedComponentPaths;

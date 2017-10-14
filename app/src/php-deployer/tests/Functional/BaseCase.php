@@ -11,6 +11,7 @@ use PhpDeployer\Util\Configuration as DeployerConfiguration;
 use PhpDeployer\Operations\Deployment as DeploymentOperation;
 
 use Exception;
+use PDO;
 
 /**
  * This is an example class that shows how you could set up a method that
@@ -90,6 +91,57 @@ class BaseCase extends TestCase
 
         // Return the response
         return $response;
+    }
+
+    protected function makeDatabase()
+    {
+        $dbh = $this->connectToDb(null);
+
+        do {
+            $dbName = uniqid('ponddb');
+            $sql = sprintf('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = "%s"', $dbName);
+        } while ($dbh->query($sql)->rowCount() > 0);
+
+        $dbName = uniqid('ponddb');
+        $dbh->exec(sprintf('CREATE DATABASE `%s`;', $dbName));
+
+        return $dbName;
+    }
+
+    protected function connectToDb($dbName)
+    {
+        $config = self::getConfig('database');
+        $dsn = 'mysql:host='.$config['host'];
+
+        if ($dbName) {
+            $dsn .= ';dbname='.$dbName;
+        }
+
+        return new PDO($dsn, $config['user'], $config['password']);
+    }
+
+    protected function doesTableExist($connection, $dbName, $tableName)
+    {
+        $sql = sprintf('SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = "%s" AND TABLE_NAME = "%s" LIMIT 1', $dbName, $tableName);
+
+        $statement = $connection->query($sql);
+        if ($statement === false) {
+            throw new Exception('Error executing SQL statement. '.$connection->errorInfo()[2]);
+        }
+
+        return $statement->rowCount() > 0;
+    }
+
+    protected function getTableRowCount($connection, $tableName)
+    {
+        $sql = sprintf('SELECT * FROM %s', $tableName);
+
+        $statement = $connection->query($sql);
+        if ($statement === false) {
+            throw new Exception('Error executing SQL statement. '.$connection->errorInfo()[2]);
+        }
+
+        return $statement->rowCount();
     }
 
     protected function makeValidConnection()

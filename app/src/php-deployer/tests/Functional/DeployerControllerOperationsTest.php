@@ -40,6 +40,12 @@ class DeployerControllerOperationTest extends BaseCase
 
         $params['params']['configTemplates'] = $this->loadTestConfigTemplates(__DIR__.'/../fixtures/test-config', $templatesParams);
 
+        $dbName = $this->makeDatabase();
+        $params['params']['databaseInit'] = $this->makeDatabaseInitParams();
+        $params['params']['databaseInit']['connection']['database'] = $dbName;
+        $params['params']['databaseInit']['dump'] = file_get_contents(__DIR__.'/../fixtures/test-database-dumps/partial-dump.sql');
+        $this->assertNotEmpty($params['params']['databaseInit']['dump']);
+
         $pondRoot = DeployerConfiguration::POND_ROOT;
 
         $environmentDirectory = $pondRoot.'/'.
@@ -76,11 +82,15 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertEquals($environmentDirectory.'/storage/app', readlink($environmentDirectory.'/blue/storage/app'));
         $this->assertTrue(is_link($environmentDirectory.'/blue/storage/framework/sessions'));
         $this->assertEquals($environmentDirectory.'/storage/framework/sessions', readlink($environmentDirectory.'/blue/storage/framework/sessions'));
+        $this->assertTrue(is_link($environmentDirectory.'/blue/config'));
+        $this->assertEquals($environmentDirectory.'/config', readlink($environmentDirectory.'/blue/config'));
 
         $this->assertTrue(is_link($environmentDirectory.'/green/storage/app'));
         $this->assertEquals($environmentDirectory.'/storage/app', readlink($environmentDirectory.'/green/storage/app'));
         $this->assertTrue(is_link($environmentDirectory.'/green/storage/framework/sessions'));
         $this->assertEquals($environmentDirectory.'/storage/framework/sessions', readlink($environmentDirectory.'/green/storage/framework/sessions'));
+        $this->assertTrue(is_link($environmentDirectory.'/green/config'));
+        $this->assertEquals($environmentDirectory.'/config', readlink($environmentDirectory.'/green/config'));
 
         $this->assertFileExists($environmentDirectory.'/green/index.php');
         $this->assertFileExists($environmentDirectory.'/green/plugins/october/demo/Plugin.php');
@@ -125,9 +135,17 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertContains('uploads', $statusContents['deploymentLog'][0]['components']);
         $this->assertContains('plugins', $statusContents['deploymentLog'][0]['components']);
         $this->assertContains('themes', $statusContents['deploymentLog'][0]['components']);
-        $this->assertContains('config', $statusContents['deploymentLog'][0]['components']);
 
         $this->assertEmpty(array_diff(scandir($environmentDirectory.'/pond-tmp'), ['.', '..']));
+
+        $connection = $this->connectToDb($dbName);
+        $this->assertTrue($this->doesTableExist($connection, $dbName, 'backend_user_groups'));
+        $this->assertEquals(1, $this->getTableRowCount($connection, 'backend_user_groups'));
+
+        $this->assertTrue($this->doesTableExist($connection, $dbName, 'user_groups'));
+        $this->assertEquals(2, $this->getTableRowCount($connection, 'user_groups'));
+
+        $this->assertTrue($this->doesTableExist($connection, $dbName, 'users_groups'));
 
         return [
             'params'=>$params, 
@@ -160,9 +178,34 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertContains('Unknown database ', $responseBody->error);
     }
 
-    
-    // Test database is not empty
-    // Test the temp directory is empty
+    public function testDatabaseNotEmpty()
+    {
+        $dbName = $this->makeDatabase();
+        $connection = $this->connectToDb($dbName);
+
+        $connection->exec('create table testtable(id integer);');
+
+        $params = $this->makeValidDeploymentConfig();
+        $params['params']['localProjectPath'] = __DIR__.'/../fixtures/partial-test-project';
+        $params['params']['buildTag'] = 'first-build';
+        $params['params']['databaseInit'] = $this->makeDatabaseInitParams();
+        $params['params']['databaseInit']['connection']['database'] = $dbName;
+
+        $pondRoot = DeployerConfiguration::POND_ROOT;
+
+        $environmentDirectory = $pondRoot.'/'.
+            $params['params']['projectDirectoryName'].'/'.
+            $params['params']['environmentDirectoryName'];
+
+        $this->assertDirectoryNotExists($environmentDirectory);
+        $response = $this->runDeploymentRequest($params);
+
+        $this->assertEquals(500, $response->getStatusCode());
+        $responseBody = json_decode((string)$response->getBody());
+        $this->assertNotNull($responseBody);
+        $this->assertEquals('general', $responseBody->type);
+        $this->assertContains('Database is not empty ', $responseBody->error);
+    }
 
     public function testFullDeployment()
     {
@@ -172,14 +215,24 @@ class DeployerControllerOperationTest extends BaseCase
             $this->markTestSkipped($message);
         }
 
+        $dbConfig = self::getConfig('database');
+        $appConfig = self::getConfig('full-deployment');
+        $dbName = $this->makeDatabase();
         $params = $this->makeValidDeploymentConfig();
 
         $templatesParams = [
-            'app.php' => [],
+            'app.php' => [
+                'key' => $appConfig['key']
+            ],
             'broadcasting.php' => [],
             'cache.php' => [],
             'cms.php' => [],
-            'database.php' => [],
+            'database.php' => [
+                'host' => '127.0.0.1',
+                'database' => $dbName,
+                'user' => $dbConfig['user'],
+                'password' => $dbConfig['password']
+            ],
             'filesystems.php' => [],
             'mail.php' => [],
             'queue.php' => [],
@@ -190,6 +243,11 @@ class DeployerControllerOperationTest extends BaseCase
 
         $params['params']['localProjectPath'] = __DIR__.'/../fixtures/test-project';
         $params['params']['configTemplates'] = $this->loadTestConfigTemplates(__DIR__.'/../fixtures/test-config-full', $templatesParams);
+
+        $params['params']['databaseInit'] = $this->makeDatabaseInitParams();
+        $params['params']['databaseInit']['connection']['database'] = $dbName;
+        $params['params']['databaseInit']['dump'] = file_get_contents(__DIR__.'/../fixtures/test-database-dumps/full-dump.sql');
+        $this->assertNotEmpty($params['params']['databaseInit']['dump']);
 
         $pondRoot = DeployerConfiguration::POND_ROOT;
         $environmentDirectory = $pondRoot.'/'.

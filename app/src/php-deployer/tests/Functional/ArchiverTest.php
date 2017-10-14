@@ -27,7 +27,6 @@ class ArchiverTest extends BaseCase
         $this->assertInternalType('array', $zip->statName('plugins/october/demo/Plugin.php'));
         $this->assertInternalType('array', $zip->statName('plugins/october/demo/Plugin.php'));
         $this->assertInternalType('array', $zip->statName('plugins/october/demo/.pondgitdir/test/test.txt'));
-        $this->assertInternalType('array', $zip->statName('config/app.php'));
 
         $archivedPaths = $archiver->getArchivedComponentPaths();
         $this->assertContains('index.php', $archivedPaths);
@@ -39,7 +38,6 @@ class ArchiverTest extends BaseCase
         $this->assertContains('uploads', $archivedComponents);
         $this->assertContains('plugins', $archivedComponents);
         $this->assertContains('themes', $archivedComponents);
-        $this->assertContains('config', $archivedComponents);
     }
 
     public function testDefaultPondIgnore()

@@ -5,5 +5,13 @@
         "privateKey": "/var/target-server-dev-environment/keys/id_rsa",
         "user": "deploy",
         "stringMask": ["secretString", "passhpraseValue"]
+    },
+    "database": {
+        "host": "localhost",
+        "user": "app",
+        "password": "password"
+    },
+    "full-deployment": {
+        "key": "VLLSk1TqjTvfgYGWucZiUCvqcAc2gdvj"
     }
 }
