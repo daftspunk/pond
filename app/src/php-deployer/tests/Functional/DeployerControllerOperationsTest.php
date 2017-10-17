@@ -340,7 +340,7 @@ class DeployerControllerOperationTest extends BaseCase
             'plugins' => ['october/demo2'],
             'themes' => true
         ];
-        $params['params']['scripts'] = [];
+        $params['params']['scripts'] = [$this->makePostDeploymentScriptItem('post-deployment-2.sh')];
 
         $response = $this->runDeploymentRequest($params);
         // print_r((string)$response->getBody());
@@ -360,12 +360,17 @@ class DeployerControllerOperationTest extends BaseCase
 
         $this->assertFileNotExists($environmentDirectory.'/green/plugins/october/demo2/Plugin.php');
         $this->assertFileNotExists($environmentDirectory.'/green/themes/demo2/theme.yaml');
+
+        return [
+            'params'=>$params, 
+            'environmentDirectory'=>$environmentDirectory
+        ];
     }
 
     /**
      * @depends testNewDeploymentPartialProjectNoErrors
      */
-    public function testPostDeploymentScripts($input)
+    public function testPostNewDeploymentScripts($input)
     {
         extract($input);
 
@@ -383,7 +388,26 @@ class DeployerControllerOperationTest extends BaseCase
         $this->assertFileExists($environmentDirectory.'/blue/post-deployment-blue');
     }
 
-    TODO: Write test for the deployment UPDATE post-deployment scripts
+    /**
+     * @depends testUpdateDeployment
+     */
+    public function testPostUpdateDeploymentScripts($input)
+    {
+        extract($input);
+
+        $pondRoot = DeployerConfiguration::POND_ROOT;
+        $projectDirectory = $pondRoot.'/'.$params['params']['projectDirectoryName'];
+
+        $this->assertDirectoryExists($projectDirectory.'/post-deployment-update-test');
+
+        $this->assertFileExists($projectDirectory.'/post-deployment-update-test/project.txt');
+        $fileContents = file_get_contents($projectDirectory.'/post-deployment-update-test/project.txt');
+        $this->assertEquals($params['params']['projectDirectoryName'].'-update', trim($fileContents));
+
+        $this->assertDirectoryExists($environmentDirectory.'/post-deployment-update-test');
+        $this->assertFileNotExists($environmentDirectory.'/green/post-deployment-update-green');
+        $this->assertFileExists($environmentDirectory.'/blue/post-deployment-update-blue');
+    }
 
     public function testUpdateNoProjectDirectory()
     {
