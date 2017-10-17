@@ -23,7 +23,7 @@ class View
             return $this->getTwig()->render($name, $variables);
         }
         catch (Exception $ex) {
-            throw new Exception(sprintf('Error processing configuration file %s: %s', $name, $ex->getMessage()));
+            throw new Exception(sprintf('Error processing template file %s: %s', $name, $ex->getMessage()));
         }
     }
 

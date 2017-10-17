@@ -48,6 +48,7 @@ class Deployment extends Base
 
     private $configurationOperation;
     private $databaseInitializer;
+    private $scriptRunner;
 
     public function run()
     {
@@ -55,6 +56,8 @@ class Deployment extends Base
             $this->validateEnvironmentDirectories();
             $deploymentEnvironment = $this->getInactiveDeploymentEnvironment();
             $this->archiveUploadAndExtract($deploymentEnvironment, (array)$this->get('params.updateComponents'));
+
+            $this->runPostDeploymentScripts($deploymentEnvironment);
         }
         else {
             $this->initDirectories();
@@ -64,6 +67,8 @@ class Deployment extends Base
             if ($this->get('params.databaseInit.initDatabase')) {
                 $this->databaseInitializer->run();
             }
+
+            $this->runPostDeploymentScripts(DeploymentEnvironment::DPE_BOTH);
         }
     }
 
@@ -121,6 +126,8 @@ class Deployment extends Base
                 $this->getConnection(), 
                 $this->getScpConnection());
         }
+
+        $this->makeScriptRunner();
     }
 
     private function initDirectories()
@@ -283,5 +290,29 @@ class Deployment extends Base
             $this->getEnvironmentDirectoryRemotePath());
 
         return $deploymentEnvironment->getInactive();
+    }
+
+    private function makeScriptRunner()
+    {
+        $vars = [
+            'projectDirectoryPath' => $this->getProjectDirectoryRemotePath(),
+            'project' => $this->getProjectDirectoryName(),
+            'environment' => $this->getEnvironmentDirectoryName(),
+            'deploymentEnvironments' => DeploymentEnvironment::DPE_BOTH
+        ];
+
+        $this->scriptRunner = new RemoteScriptRunner(
+            $this->requestContainer,
+            $this->getConnection(), 
+            $this->getScpConnection(),
+            $vars);
+    }
+
+    private function runPostDeploymentScripts($deploymentEnvironmentNames)
+    {
+        $deploymentEnvironmentNames = (array)$deploymentEnvironmentNames;
+
+        $this->scriptRunner->setVariable('deploymentEnvironments', $deploymentEnvironmentNames);
+        $this->scriptRunner->run();
     }
 }

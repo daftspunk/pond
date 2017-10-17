@@ -216,7 +216,7 @@ class Connection
                 $commandSshConnection->runCommand('chmod {{$mask}} "{{$destPath}}"', 10,  $params);
             }
             finally {
-                $commandSshConnection->runCommand('if [ -f "{{$tmpPath}}" ]; then rm "{{$tmpPath}}"; fi', $params);
+                $commandSshConnection->runCommand('if [ -f "{{$tmpPath}}" ]; then rm "{{$tmpPath}}"; fi', 10, $params);
             }
         }
         finally {

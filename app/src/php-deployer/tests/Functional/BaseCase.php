@@ -201,7 +201,8 @@ class BaseCase extends TestCase
                     'file' => '664',
                     'config' => '660'
                 ],
-                'configTemplates' => []
+                'configTemplates' => [],
+                'scripts' => []
             ]
         ];
 
@@ -222,6 +223,14 @@ class BaseCase extends TestCase
         }
 
         return $result;
+    }
+
+    protected function makePostDeploymentScriptItem($name)
+    {
+        return [
+            'type' => 'post-deployment',
+            'contents' => file_get_contents(__DIR__.'/../fixtures/test-scripts/'.$name)
+        ];
     }
 
     protected function makeDatabaseInitParams()

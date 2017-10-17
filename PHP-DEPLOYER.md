@@ -65,7 +65,13 @@ Request JSON parameters (must include the `common arguments` listed above):
             }
         },
         "configTemplates": [],
-        "buildTag": "1.1.0"
+        "buildTag": "1.1.0",
+        "scripts": [
+            {
+                "type": "post-deployment",
+                "contents": "script contents"
+            }
+        ]
     }
 }
 ```
@@ -97,6 +103,18 @@ Parameters explained:
         * `name` - string, required. Specifies the database name.
 * `configTemplates` - array, required for new deployments, ignored for updates. See the `/configure` operation below.
 * `buildTag` - string, optional. 50 characters max. Build tag to associate with the deployment, max len: 50.
+* `scripts` - array, required. Contains a list of custom scripts. Each element is an object:
+    * `type` - string, required. The only value allowed is `post-deployment`.
+    * `contents` - string, required. The shell script contents.
+
+### Custom scripts
+
+Scripts (`post-deployment`) use Twig engine for rendering. Available variables are:
+
+* `projectDirectoryPath` - string, path to the project directory.
+* `project` - string, name of the project directory, without path.
+* `environment` - string, name of the project environment directory, without path.
+* `deploymentEnvironments` - array of strings. Each string represents a name of the affected deployment environment (`blue`, `green` or both).
 
 ## POST /configure
 
@@ -193,6 +211,10 @@ The response is a JSON object string with two properties:
     "active" => "blue|green"
 }
 ```
+
+## Design notes
+
+All input parameters should be validated and tested as much as possible before running costly network operations. For example - configuration files and templates are rendered before the deployment starts. All request parameters are validated against a strict JSON schema.
 
 ## Security of the Pond server environments
 

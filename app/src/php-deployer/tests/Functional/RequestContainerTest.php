@@ -233,7 +233,8 @@ class RequestContainerTest extends BaseCase
                 "projectDirectoryName": "string",
                 "environmentDirectoryName": "string",
                 "localProjectPath": "string",
-                "permissions": "string"
+                "permissions": "string",
+                "scripts": []
             }
         }');
 
@@ -260,7 +261,8 @@ class RequestContainerTest extends BaseCase
                     "directory": "1234",
                     "file": "777",
                     "config": "777"
-                }
+                },
+                "scripts": []
             }
         }');
 
@@ -283,7 +285,8 @@ class RequestContainerTest extends BaseCase
                     "directory": "777",
                     "file": "777",
                     "config": "777"
-                }
+                },
+                "scripts": []
             }
         }');
 
@@ -309,7 +312,8 @@ class RequestContainerTest extends BaseCase
                 "permissions": {
                     "file": "777",
                     "config": "777"
-                }
+                },
+                "scripts": []
             }
         }');
 
@@ -336,7 +340,8 @@ class RequestContainerTest extends BaseCase
                     "directory": "1234",
                     "file": "777",
                     "config": "777"
-                }
+                },
+                "scripts": []
             }
         }');
 
@@ -364,11 +369,138 @@ class RequestContainerTest extends BaseCase
                     "file": "777",
                     "config": "777"
                 },
-                "buildTag": "1234567890123456789012345678901234567890123456789012345678901234567890"
+                "buildTag": "1234567890123456789012345678901234567890123456789012345678901234567890",
+                "scripts": []
             }
         }');
 
         $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage array is required
+     */
+    public function testDeploymentRequiredArgumentsScriptsIsNotArray()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "string",
+                "environmentDirectoryName": "string",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "777",
+                    "file": "777",
+                    "config": "777"
+                },
+                "buildTag": "123",
+                "scripts": {}
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage property type is required
+     */
+    public function testDeploymentRequiredArgumentsScriptsInvalidItem()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "string",
+                "environmentDirectoryName": "string",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "777",
+                    "file": "777",
+                    "config": "777"
+                },
+                "buildTag": "123",
+                "scripts": [
+                    {
+                        "property": "some"
+                    }
+                ]
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    /**
+     * @expectedException        PhpDeployer\Exceptions\Http
+     * @expectedExceptionMessage Does not have a value in the enumeration
+     */
+    public function testDeploymentRequiredArgumentsScriptsUnknownType()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "string",
+                "environmentDirectoryName": "string",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "777",
+                    "file": "777",
+                    "config": "777"
+                },
+                "buildTag": "123",
+                "scripts": [
+                    {
+                        "type": "some",
+                        "contents": "string"
+                    }
+                ]
+            }
+        }');
+
+        $container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS');
+    }
+
+    public function testDeploymentRequiredArgumentsValid()
+    {
+        $container = new RequestContainer('{
+            "privateKeyPath": "/path/to/private-key",
+            "publicKeyPath": "/path/to/public-key",
+            "ip": "192.168.0.1",
+            "user": "deploy",
+            "params": {
+                "update": true,
+                "projectDirectoryName": "string",
+                "environmentDirectoryName": "string",
+                "localProjectPath": "string",
+                "permissions": {
+                    "directory": "777",
+                    "file": "777",
+                    "config": "777"
+                },
+                "buildTag": "123",
+                "scripts": [
+                    {
+                        "type": "post-deployment",
+                        "contents": "string"
+                    }
+                ]
+            }
+        }');
+
+        $this->assertTrue($container->validate('DEPLOYMENT_REQUIRED_ARGUMENTS'));
     }
 
     /**

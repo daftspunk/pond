@@ -4,13 +4,6 @@
 
 class JsonSchemaStrings
 {
-    // Ideally we should use definitions and references
-    // to define common arguments as a requirement,
-    // but the validator fails to test required properties
-    // in this case, although the schema is valid 
-    // (tested with an online tool). Falling back to a simple
-    // schema merging here.
-
     const COMMON_ARGUMENTS_PROPERTIES = '{
         "privateKeyPath": {
             "type": "string"
@@ -164,6 +157,24 @@ class JsonSchemaStrings
                     "buildTag": {
                         "type": "string",
                         "maxLength": 50
+                    },
+                    "scripts": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "enum": ["post-deployment"]
+                                },
+                                "contents": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "type",
+                                "contents"
+                            ]
+                        }
                     }
                 },
                 "required": [
@@ -171,7 +182,8 @@ class JsonSchemaStrings
                     "projectDirectoryName",
                     "environmentDirectoryName",
                     "localProjectPath",
-                    "permissions"
+                    "permissions",
+                    "scripts"
                 ]
             }
         },
