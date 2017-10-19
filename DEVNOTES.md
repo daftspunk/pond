@@ -23,3 +23,13 @@ Instead of replacing the blue or green directories completely, as I was planning
 ## 2017-10-04
 
 Switching the request parameter manual validation to JSON schema validation. This will take time, but should be very beneficial and time saving later. Less tests will be required, less code will have to be written to validate different requests. It will be easy to update validation rules with editing JSON schema strings.
+
+## 2017-10-17
+
+Another challenge. How to protect traffic between Node.js and PHP Deployer components. PHP Deployer is going to be executed with a PHP built-in server, which does not support SSL. So far I see two options:
+* Do not allow sensitive information in the request parameters (pass them through files). Cons: there will be files keeping sensitive information.
+* Encrypt requests manually with public/private keys known to Node.JS and PHP Deployer. Cons: the keypair is going to be the same for all Pond installations, which makes Pond less secure.
+
+## 2017-10-18
+
+There's a problem with compiling native Node modules with browserify - `keytar`. It's a second case when I can't use a highly necessary module in the application, the first time it was SSH. I know that `keytar` can be used with Electron. Electron uses `webpack` for compiling the code instead of `browserify`. I had lots of issues with configuring `webpack` and never ended up with a satisfying configuration. I'm going to try again. If the attempt fails again I will make a test build of Electron now and see what modules I can load into it.

@@ -299,7 +299,8 @@ class JsonSchemaStrings
                                         "pattern": "^[0-9a-zA-Z_\\\-\\\.]+$"
                                     },
                                     "user": {
-                                        "type": "string"
+                                        "type": "string",
+                                        "maxLength": 16
                                     },
                                     "password": {
                                         "type": "string"

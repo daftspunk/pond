@@ -52,14 +52,18 @@ Request JSON parameters (must include the `common arguments` listed above):
             "themes": true|["website-final"],
             "media": true
         },
-        "databaseInit": {
-            "initDatabase": true,
+        "database": {
             "engine": "mysql",
-            "dump": "SQL dump string",
+            "createDatabase": true,
+            "initDatabase": {
+                "value": true,
+                "dump": "SQL dump string"
+            },
             "connection": {
                 "host": "localhost",
                 "user": "username",
                 "password": "password",
+                "rootPassword": "password",
                 "port": 3306,
                 "name": "my-database"
             }
@@ -91,14 +95,17 @@ Parameters explained:
     * `plugins` - boolean or array, whether to update all plugins or names of plugins to update.
     * `themes` - boolean or array, whether to update all themes or names of themes to update.
     * `media` - boolean, whether to update media files.
-* `databaseInit` - object, required for new deployments, ingored for updates. Defines parameters for the database initialization.
-    * `initDatabase` - boolean, required. Determines whether the database should be initialized with the supplied dump.
-    * `engine` - string, required if `initDatabase` is `true`. Specifies the database engine. Only MySQL is supported for the database initialization at the moment.
-    * `dump` - string, required if `initDatabase` is `true`. Contains the SQL dump.
-    * `connection` - object, required if `initDatabase` is `true`. Defines the database connection parameters.
+* `database` - required for new deployments, ingmored for updates. Defines different database management options.
+    * `createDatabase`: boolean, required. Determines whether the database should be created. Uses `root` user and `rootPassword` value from the `connection` object. Databases can be created only if a local MySQL server is used (installed on the same droplet). This is done for security reasons. Pond always creates users with local access permissions only. Databases on remote MySQL servers must be created manually.
+    * `initDatabase` - object, required, defines whether the database should be populated with a provided dump string.
+        * `value` - boolean, required. Determines whether the database should be populated or not.
+        * `dump` - string, required if `initDatabase` is `true`. Contains the SQL dump string.
+    * `connection` - object, required if `initDatabase.value` or `createDatabase` is `true`. Defines the database connection parameters.
+        * `engine` - string, required. Specifies the database engine. Only `mysql` is supported at the moment.
         * `host` - string, reguired. Database server host name or IP.
-        * `user` - string, required. Database user name.
+        * `user` - string, required. Database user name. 16 characters max.
         * `password` - string, required. Database password.
+        * `rootPassword` - string, required if `createdDatabase` is `true`. Defines the `root` user password for creating the database.
         * `port` - integer, required. Database server port number.
         * `name` - string, required. Specifies the database name.
 * `configTemplates` - array, required for new deployments, ignored for updates. See the `/configure` operation below.

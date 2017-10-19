@@ -149,6 +149,20 @@ The only risk we have is that somebody uses Pond to deploy projects without bein
 
 All other possible risks are out of our responsibility. Users will manage their SSH keys and custom deployment scripts on their own risk. Nevertheless we do validate and sanitize SSH commands and their arguments whenever it's possible.
 
+## Security
+
+Some information that Pond manages is sensitive:
+
+* SSL certificates for accessing droplets.
+* MySQL user names and passwords.
+* Unix user names.
+
+The sensitive data must be kept and tramsmitted securely. So far the following methods are known:
+
+* Store sensitive data in the Keychain (Mac), Credential Manager (Windows) or Gnome Keyring (Linux).
+* Do not use temporary files for storing sensitive data.
+* Encrypt the channel between Node.JS and PHP Deployer.
+
 ## UX notes
 
 * Do not use animation without purpose (for decoration).

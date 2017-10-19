@@ -30,102 +30,139 @@ On the other hand, a load balanced environment is supposed to run only a single 
 
 ### Deployment environment
 
-Each server environment has two deployment environments - blue and green. One of the deployment environments is always enabled and receives Internet traffic, and another one is used then website updates are deployed. After deploying updates it's possible to connect to the just updated and still inactive deployment environment with a browser and test the updated features. If the updated deployment environment works as expected, it can be made active using Pond environment manager.
+Each server environment has two deployment environments - `blue` and `green`. One of the deployment environments is always enabled and receives Internet traffic, and another one is used then website updates are deployed. After deploying updates it's possible to connect to the just updated and still inactive deployment environment with a browser and test the updated features. If the updated deployment environment works as expected, it can be made active using Pond environment manager.
 
-We always update the inactive deployment environment, e.g. if the currently active environment is blue, we will deploy to green and vice versa.
+We always update the inactive deployment environment, e.g. if the currently active environment is `blue`, we will deploy to green and vice versa.
 
 Deployment environments belonging to a same server environment share the same configuration, uploaded files, media and sessions. 
 
-## What Pond knows about DO
+## What Pond knows about DigitalOcean accounts
 
-These are kept in Pond settings.
+We keek a list of DigitalOcean accounts in Poind. Information about each account includes:
 
-- A list of DO accounts with SSL certificates.
+* SSL certificates
 
-## What a Pond project knows about DO servers
+## What a Pond project knows about DigitalOcean droplets
 
-These are kept in Pond project configuration.
+These parameters are kept in Pond project configuration.
 
-* Type of the server (reserved - currently just DO)
-* DO account (reference)
-* List of server environments associated with the project
-  * Server environment type (single server / load balanced)
-  * List of droplets associated with the server environment
-  * Environment domain name
-  * A build tag of the last successful deployment
-  * Green or Blue marker of the last successful deployment (will be needed when adding a new server to existing balanced environment). **Not needed:** this can always be loaded from the project's servers Pond metadata. If there are no associated servers with the project, just make Green active on a new server.
-  * Secret prefix for accessing the blue and green environments with a browser.
-  * Project directory name on the server(s)
-  * Post-provision and post-deployment bash scripts
-  * Deployment .pondignore file - what directories to ignore on deployment (config files are auto-ignored)
+* Type of the server (reserved - currently just DO).
+* DO account (reference).
+* List of server environments associated with the project.
+  * Server environment type (single server / load balanced).
+  * List of droplets associated with the server environment (single droplet for single server environment).
+  * Environment domain name.
+  * Secret prefix for accessing the `blue` and `green` deployment environments with a browser.
+  * Project directory name on the server(s).
+  * Post-provision and post-deployment bash scripts.
+  * `.pondignore` file - what directories to ignore on deployment (config files are auto-ignored)
   * Configuration file templates for session, database, cache and other files.
+  * Droplet-specific user names and permissions information, see below.
 
-## What a server knows about Pond
+Note: the following parameters are droplet-specific and can be stored in a separate droplet database and shared between multiple projects and server environments.
 
-* Whether the Blue or Green environment is active at the moment
-* A tag of the currently deployed build
-* Log of deployment operations
+  * MySQL `root` password.
+  * SSH user name.
+  * Deployment user group name.
+  * Permission masks to be used for directories, regular files and configuration files.
 
-## Deploying a project, flow diagram
+## What metadata Pond keeps on a droplet
 
-* Create server environment from scratch
-  * Single server
-      * New server
-  * Load balanced environment
-      * New environment
-* Create environment and bind to existing DO servers
+Each server environment includes `metadata` directory, which holds the `status.json` file and log files.
 
-### Deploying a new single server
+* Whether the `blue` or `green` environment is active at the moment.
+* A tag of the currently deployed build.
+* Log of deployment operations, in the `metadata/logs` directory.
 
-* What DO account to use (create one if needed).
+Structure of `/metadata/status.json` file:
+
+```json
+{
+  "deploymentEnvironments": {
+    "blue": {
+      "lastDeployment": "datetime",
+      "buildTag": "string"
+    },
+    ...
+  },
+  "deploymentLog": {
+    [
+      {
+        "datetime": "datetime",
+        "status": "success|fail",
+        "type": "deploy|swap",
+        "components": ["core", "config", ...],
+        "environment": ["blue"],
+        "ip": "1.2.3.4"
+      }
+    ],
+    ...
+  }
+}
+```
+
+The `deploymentLog` part keeps information only about X days of latest deployments.
+
+## Droplets used for deployments
+
+Pond expects droplets it deploys projects to are provisioned with Pond. When a droplet is provisioned, it gets the following components:
+
+* Apache web server.
+* PHP.
+* MySql - optional.
+* User and group, required for deployments.
+
+There can be dedicated MySQL droplets that do not host web applications. Pond does not manage such droplets, but allows projects to connect to them. Users must create databases on those MySQL servers by themselves.
+
+### Deploying a project to a new single server
+
+* Ask what DO account to use (create one if needed).
 * Ask for the domain name (notify that it should be registered, with a link to the registration documentation page).
 * Advanced, hidden by default - what DO image to use.
-* Whether to create a database server on that server, or use existing (allow to select a droplet). 
-* Ask for the MySQL droplet name, DB name, user name and credentials. If the MySQL droplet doesn't exist, suggest that MySQL will be deployed one the same server.
+* Ask for the MySQL droplet name, DB name, user name and password.
+* If the MySQL server is going to be hosted on the new droplet, ask to enter the MySQL root password. This password will be set for MySQL `root` user when the database server is created and saved in the droplet configuration.
+* Ask for permission masks to be used on the droplet.
+* Ask for the deployment user name and group.
 * Ask whether data from the database should be transferred too.
 * Ask whether attachment files should be transferred too.
 * Ask for the build tag.
-* Ask for the secret prefix to be used for direct access of the blue and green environments.
+* Ask for the secret prefix to be used for direct access of the `blue` and `green` environments.
 * Provision the server.
+* Deploy the project
 * If the domain already exists in DO, ask if they want to update the A record now to point to the new droplet. Otherwise add the domain and create A and CNAME records.
-* The finish page should tell that the server is provisioned and how to access the production environment and Blue/Green environments.
+* The finish page should tell that the server is provisioned and how to access the production environment and `blue`/`green` environments.
 
 ## Operations required to provision a droplet
 
-These things can be factored out from the single and balanced environments. It looks like everything can be done with a large bash command. Something bash language with conditions and variables.
-
-Requirements for the server - web server and database server. Not necessary Apache, not necessary MySQL. We only need two directories and DB server type connection and connection information. This could be done later.
-
-* Setup Apache, PHP (these can be bash commands)
-* Create web user and group
-* Initialize environment variables
-* Configure Apache hosts (these can be bash commands - copy templates)
-* If needed - setup  and configure MySQL server (bash commands)
-* Create blue, green, config, storage, current directories (bash commands)
-* Run post-provision bash scripts
+* Setup Apache
+* Setup PHP.
+* Create web user and group.
+* Initialize environment variables.
+* If needed - setup and configure MySQL server. Set MySQL `root` password provided by the user.
 
 Code deployment steps on first deployment:
 
-* Make a complete copy of the October installation in the blue and green directories, excluding configuration files and with applying the .pondignore file.
-* If requested - upload files and database. At this point we only support database initialization for MySQL.
-* Populate the /config directory using templates and user-provided variables.
-* Create the configuration files in the blue and green directories.
-* Run post-deployment bash scripts
-* Make Blue or Green environment active (Pond should know which one to make active)
+* Make a complete copy of the October installation in the `blue` and `green` directories, excluding configuration files and with applying the .pondignore file.
+* If requested - upload files and database dump. At this point we only support database initialization for MySQL.
+* Populate the `/config` directory using templates and user-provided variables..
+* Run post-deployment bash scripts.
+* Make Green environment active.
+* Save pond logs entries.
+* Create Apache virtual host file.
+* Create the database if the MySQL server is hosted by the same droplet.
+* Populate the database, if requested.
+* Run post-provision bash scripts.
+
+Code deployment steps for updating an existing server environment:
+
+* Update `blue` or green `directory` with applying the .pondignore file.
+* Save required metadata.
+* Run post-deployment bash scripts.
 * Save pond logs entries.
 
-Code deployment steps on subsequent deployments:
+Switching to another deployment environment (`blue`/`green`) is not automatic when deploying to an existing server environment. This should be performed from the server environment status area, allowing the user to test the new copy before activating it.
 
-* Update blue or green directory with applying the .pondignore file.
-* Save required metadata
-* Run post-deployment bash scripts
-* Save pond logs entries
-
-Switching to another deployment environment (blue/green) should not be automatic when deploying to an existing server environment. This should be performed from the server environment status area, allowing the user to test the new copy before activating it.
-
-There should be an ability to unbind Pond project from a droplet and start the deployment over - to another server, etc.
-
-The only case when Pond deployer removes files from the server is when we deploy a plugin. The plugin's directory is removed from the server before it's replaced from the archive.
+There should be an ability to unbind Pond project from a droplet and start the deployment over - to another server, etc. Update: projects are bound to droplets through server environments. In order to unbind we just delete a server environment.
 
 ## .pondignore
 
@@ -165,37 +202,6 @@ Themes are deploying like regular directories. There will be no issues with asse
 ## Environment status
 
 Pond projects should be able to request and show the server environment status: what droplets are registered, their status (running or stopped), which environment is current, what is the last deployed build tag, when was the last deployment. Also, Pond log for every server should be available with clicking a button.
-
-## Keeping some data on the could servers
-
-Deployed environments must keep enough metadata to determine what projects the belong to, just for convenience of administrators. Droplets will use tags matching project names. Metadata structure (`/metadata/status.json`):
-
-```json
-{
-  "deploymentEnvironments": {
-    "blue": {
-      "lastDeployment": "datetime",
-      "buildTag": "string"
-    },
-    ...
-  },
-  "deploymentLog": {
-    [
-      {
-        "datetime": "datetime",
-        "status": "success|fail",
-        "type": "deploy|swap",
-        "components": ["core", "config", ...],
-        "environment": ["blue"],
-        "ip": "1.2.3.4"
-      }
-    ],
-    ...
-  }
-}
-```
-
-The `deploymentLog` part keeps information only about X days of latest deployments.
 
 ## Billing
 

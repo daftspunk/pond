@@ -24,6 +24,7 @@
     "child-process-promise": "^2.2.1",
     "install": "^0.10.1",
     "jquery": "^3.2.1",
+    "keytar": "^4.0.4",
     "less": "^2.7.2",
     "marked": "^0.3.6",
     "node-sshclient": "^0.2.0",
