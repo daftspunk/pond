@@ -33,3 +33,9 @@ Another challenge. How to protect traffic between Node.js and PHP Deployer compo
 ## 2017-10-18
 
 There's a problem with compiling native Node modules with browserify - `keytar`. It's a second case when I can't use a highly necessary module in the application, the first time it was SSH. I know that `keytar` can be used with Electron. Electron uses `webpack` for compiling the code instead of `browserify`. I had lots of issues with configuring `webpack` and never ended up with a satisfying configuration. I'm going to try again. If the attempt fails again I will make a test build of Electron now and see what modules I can load into it.
+
+`ssh2` works with Electron boilerplate project, although there are problems with loading `keytar`, but they seem to resolvable. This doesn't mean yet that we have to switch to Electron yet. The boilerplate uses `webpack`, which is able to compile `ssh2`. The next step is to try to switch the project to `webpack` and see if we can compile `ssh2` in Pond. If it works and `keytar` works we will need to abandon the PHP deployer project and implement this part in `node.js` which is not that bad, because the distinctive functionality of PHP Deployer is not too complicated and I have spent a lot of time implementing the request validation and experimenting. The functionality can be easily copied to node.js. There are big benefit in having the deployment part implemented in node.js:
+
+ - We don't need to worry about starting the built-in server for running the deployer, which adds the reliability
+ - No need to worry about protecting the channel between node.js and deployer.
+ - Delivering messages from the deployer to UI in real time becomes a trivial task.
