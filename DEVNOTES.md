@@ -39,3 +39,17 @@ There's a problem with compiling native Node modules with browserify - `keytar`.
  - We don't need to worry about starting the built-in server for running the deployer, which adds the reliability
  - No need to worry about protecting the channel between node.js and deployer.
  - Delivering messages from the deployer to UI in real time becomes a trivial task.
+
+ ## 2017-10-20
+
+ I was able to create a minimal nw.js project that uses webpack for compiling the source code, Vue and babel loader, `ssh2` and `keytar`. Important findings:
+
+ * We must switch to webpack and we can keep using NW.js
+ * `ssh2` and `fs` must be imported with `const var = nw.require('package')` instead of just `require()`.
+ * We must use `import ... from ...` syntax now.
+ * Native mode modules require a special loader in the webpack configuration file: {test: /\.node$/, loader: 'node-loader'}
+ * Native modules must be recompiled with `node-gyp` against the version of node.js used by NW.js. To get the version of node in NW.js run `process.versions.node` in the application console. For example it returns 8.1.4. After this - go to the native module directory (`keytar` in my case), and run `node-gyp rebuild --target=v8.1.4`. More information is here: https://github.com/nodejs/node-gyp. 
+
+All required components now work in Pond-like environment and can be moved to Pond. It's clear that we depart from PHP Deployer idea now and going to implement the deployment code in Node.js, and that's good.
+
+I will need to clean up Pond dependencies, documentation and building process. It got pretty messy after all the experiments.
