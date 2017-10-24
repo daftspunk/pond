@@ -1,10 +1,10 @@
-const BaseProvisioner = require('../')
-const PortFinder = require('../../port-finder')
-const validationUtils = require('../../../validation/utils')
-const EnvironmentStatus = require('../../status')
-const fileSystem = require('../../../filesystem')
-const assets = require('../../../assets')
-const validator = require('validator')
+import BaseProvisioner from '../'
+import portFinder from '../../port-finder'
+import validationUtils from '../../../validation/utils'
+import environmentStatus from '../../status'
+import fileSystem from '../../../filesystem'
+import assets from '../../../assets'
+import validator from 'validator'
 
 /**
  * Environment provisioner: 
@@ -26,17 +26,17 @@ class Provisioner extends BaseProvisioner {
             return
         }
 
-        const otherProject = PortFinder.isInUseByAProject(this.project.localPort, projects)
+        const otherProject = portFinder.isInUseByAProject(this.project.localPort, projects)
         if (otherProject && otherProject.id != this.project.id) {
             errorBag.add('localPort', 'projects.create_project.error_local_port_used_by_another_project')
             return
         }
 
         try {
-            await PortFinder.isInUseByAnotherApp(this.project.localPort, '127.0.0.1')
+            await portFinder.isInUseByAnotherApp(this.project.localPort, '127.0.0.1')
         }
         catch (e) {
-            if (this.project.runtime && this.project.runtime.status != EnvironmentStatus.ONLINE) {
+            if (this.project.runtime && this.project.runtime.status != environmentStatus.ONLINE) {
                 // If the port is in use by this very project and it's online,
                 // return no errors.
 
@@ -65,4 +65,4 @@ class Provisioner extends BaseProvisioner {
     }
 }
 
-module.exports = Provisioner
+export default Provisioner

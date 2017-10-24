@@ -1,4 +1,4 @@
-const Os = require('os')
+import Os from 'os'
 
 /**
  * Provides some file-system operations.
@@ -76,7 +76,7 @@ function makeTmpFileName(prefix) {
     return tmpDir + '/' + prefix + _randomChars(12)
 }
 
-module.exports = {
+export default {
     copy,
     unlink,
     isDirectory,

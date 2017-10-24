@@ -1,4 +1,4 @@
-const BaseProvisioner = require('./')
+import BaseProvisioner from './'
 
 /**
  * Environment provisioner: 
@@ -13,4 +13,4 @@ class Provisioner extends BaseProvisioner {
     }
 }
 
-module.exports = Provisioner
+export default Provisioner

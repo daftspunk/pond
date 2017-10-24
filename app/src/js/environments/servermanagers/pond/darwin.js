@@ -1,7 +1,6 @@
-const BaseManager = require('./')
-const spawn = require('child_process').spawn
-const assets = require('../../../assets')
-const resolve = require('path').resolve
+import BaseManager from './'
+import assets from '../../../assets'
+import {resolve} from 'path'
 
 /**
  * Web server manager: 
@@ -18,4 +17,4 @@ class Manager extends BaseManager {
     }
 }
 
-module.exports = Manager
+export default Manager

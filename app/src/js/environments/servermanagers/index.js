@@ -10,8 +10,7 @@
  *  - log
  */
 
-const EventEmitter = require('events').EventEmitter
-const request = require('request')
+import {EventEmitter} from 'events'
 
 class Manager extends EventEmitter {
     constructor (project) {
@@ -83,6 +82,7 @@ class Manager extends EventEmitter {
         const endTime = currentTime + timeout
         const connectioTimeout = 200
         const retryInterval = 300
+        const request = nw.require('request')
 
         // TODO: check if the error 500 is considered
         // as a running state (it must be so)
@@ -138,4 +138,4 @@ class Manager extends EventEmitter {
     }
 }
 
-module.exports = Manager
+export default Manager

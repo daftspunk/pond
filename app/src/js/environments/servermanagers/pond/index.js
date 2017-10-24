@@ -1,5 +1,4 @@
-const BaseManager = require('../')
-const spawn = require('child_process').spawn
+import BaseManager from '../'
 
 /**
  * Web server manager for Pond environment base class: 
@@ -162,4 +161,4 @@ class Manager extends BaseManager {
     }
 }
 
-module.exports = Manager
+export default Manager

@@ -21,6 +21,4 @@ function handleLinkClick(ev) {
 
 jQuery(document).on('click', 'a', handleLinkClick)
 
-module.exports = {
-    
-}
+export default {}

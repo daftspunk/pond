@@ -1,5 +1,5 @@
-const config = require('../config')
-const fileSystem = require('../filesystem')
+import config from '../config'
+import fileSystem from '../filesystem'
 
 // TODO: downloads should be tracked with Google Analytics.
 
@@ -69,4 +69,4 @@ class Downloader {
     }
 }
 
-module.exports = Downloader
+export default Downloader

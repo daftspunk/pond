@@ -1,4 +1,4 @@
-module.exports = [
+export default [
     {
         path: '/',
         component: require('./../components/projects-view.vue')

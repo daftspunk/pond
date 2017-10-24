@@ -1,4 +1,4 @@
-const Vue = require('vue')
+import Vue from 'vue'
 
 function focusFirstField(errorBag) {
     const errorField = errorBag.getFirstErrorField()
@@ -8,6 +8,6 @@ function focusFirstField(errorBag) {
     }
 }
 
-module.exports = {
+export default {
     focusFirstField
 }

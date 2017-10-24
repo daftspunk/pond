@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     projects: {
         title: 'Projects',
         find_placeholder: 'Find projects',

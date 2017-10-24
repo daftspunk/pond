@@ -1,4 +1,4 @@
-const agentFactory = require('../agent')
+import agentFactory from '../agent'
 
 /**
  * It doesn't look like we are going to have individual
@@ -54,4 +54,4 @@ class Installer {
     }
 }
 
-module.exports = Installer
+export default Installer

@@ -1,4 +1,4 @@
-module.exports = function() {
+export default function() {
     this.lines = []
     this.totalLines = 0
     this.maxLines = 100

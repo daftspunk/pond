@@ -1,5 +1,5 @@
-const path = require('path')
-const config = require('../config')
+import path from 'path'
+import config from '../config'
 
 function getDistDir() {
     if (config.getPondEnvironmentName() == 'production') {
@@ -23,7 +23,7 @@ function getPhpBinDir() {
     return getDistDir() + '/assets-bin-php'
 }
 
-module.exports = {
+export default {
     getAssetsDir,
     getPhpBinDir
 }

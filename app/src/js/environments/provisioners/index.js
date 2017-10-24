@@ -1,4 +1,4 @@
-const fileSystem = require('../../filesystem')
+import fileSystem from '../../filesystem'
 
 /**
  * Environment provisioner base class.
@@ -49,4 +49,4 @@ class Provisioner {
     }
 }
 
-module.exports = Provisioner
+export default Provisioner

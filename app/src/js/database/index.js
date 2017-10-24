@@ -1,6 +1,7 @@
-const PouchDB = require('pouchdb')
+import PouchDB from 'pouchdb'
+import PouchDbFind from 'pouchdb-find'
 
-PouchDB.plugin(require('pouchdb-find'));
+PouchDB.plugin(PouchDbFind)
 
 class DbManager {
     constructor (project) {
@@ -45,4 +46,4 @@ class DbManager {
     }
 }
 
-module.exports = new DbManager()
+export default new DbManager()

@@ -51,4 +51,4 @@ class PortFinder {
     }
 }
 
-module.exports = new PortFinder()
+export default new PortFinder()

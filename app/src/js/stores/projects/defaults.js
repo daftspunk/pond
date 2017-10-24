@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     advancedOptions: {
         adminFirstName: 'Admin',
         adminLastName: 'Person',

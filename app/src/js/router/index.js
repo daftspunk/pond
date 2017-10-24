@@ -1,5 +1,5 @@
-const VueRouter = require('vue-router')
-const Routes = require('./routes')
+import VueRouter from 'vue-router'
+import Routes from './routes'
 
 var router = null;
 
@@ -13,7 +13,7 @@ function makeRouter() {
     return router
 }
 
-module.exports = {
+export default {
     getVueRouter: () => VueRouter,
     makeRouter
 }

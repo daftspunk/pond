@@ -4,6 +4,6 @@ function projectMatchesSearchString(project, filterString) {
         || project.client.toLowerCase().indexOf(filterString.toLowerCase()) !== -1
 }
 
-module.exports = {
+export default {
     projectMatchesSearchString
 }

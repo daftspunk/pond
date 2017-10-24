@@ -1,6 +1,6 @@
-const Initializer = require('./initializer')
-const EnvironmentTypes = require('./types')
-const Platforms = require('./platforms')
+import Initializer from './initializer'
+import environmentTypes from './types'
+import platforms from './platforms'
 
 // We must include all files statically, otherwise
 // browserify won't compile them in the build.
@@ -69,13 +69,13 @@ function getInstallerClass(project, platform) {
 }
 
 function createInitializer(project) {
-    const platform = Platforms.getPlatform()
+    const platform = platforms.getPlatform()
 
-    if (!EnvironmentTypes.isKnownEnvironment(project.environmentType)) {
+    if (!environmentTypes.isKnownEnvironment(project.environmentType)) {
         throw new Error('Unknown environment type')
     }
 
-    if (!Platforms.isSupportedPlatform(platform)) {
+    if (!platforms.isSupportedPlatform(platform)) {
         throw new Error('Unsupported platform: '+platform)
     }
 
@@ -91,6 +91,6 @@ function createInitializer(project) {
     )
 }
 
-module.exports = {
+export default {
     createInitializer
 }

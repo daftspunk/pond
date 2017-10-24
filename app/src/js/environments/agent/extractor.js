@@ -1,7 +1,6 @@
-const BaseAgent = require('./base')
-const fileSystem = require('../../filesystem')
-const assets = require('../../assets')
-const request = require('request')
+import BaseAgent from './base'
+import fileSystem from '../../filesystem'
+import assets from '../../assets'
 
 /**
  * Extractor Pond Agent
@@ -25,6 +24,7 @@ class Agent extends BaseAgent {
     }
 
     async run () {
+        const request = nw.require('request')
         this.project.runtime.initState.textLog.addLine('Extracting the archive')
 
         return new Promise((resolve, reject) => {
@@ -69,4 +69,4 @@ class Agent extends BaseAgent {
     }
 }
 
-module.exports = Agent
+export default Agent

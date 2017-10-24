@@ -1,9 +1,9 @@
-const Database = require('./')
+import database from './'
 const TYPE = 'project'
 
 class ProjectManager {
     async list () {
-        const db = await Database.get()
+        const db = await database.get()
 
         const result = await db.find({
             selector: {
@@ -19,7 +19,7 @@ class ProjectManager {
     }
 
     async create (project) {
-        const db = await Database.get()
+        const db = await database.get()
 
         var projectClone = Object.assign({}, project)
         projectClone.documentType = TYPE
@@ -44,7 +44,7 @@ function getManager() {
     return manager
 }
 
-module.exports = {
+export default {
     getManager,
     type: TYPE
 }

@@ -1,11 +1,12 @@
-const Vuex = require('vuex')
+import Vuex from 'vuex'
+import projects from './projects'
 
 var store = null
 
-module.exports = {
+export default {
     makeStore: () => store = new Vuex.Store({
         modules: {
-            projects: require('./projects')
+            projects: projects
         }
     }),
     getStore: () => store,

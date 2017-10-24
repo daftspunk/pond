@@ -1,5 +1,5 @@
-const validationUtils = require('../validation/utils')
-const validator = require('validator')
+import validationUtils from '../validation/utils'
+import validator from 'validator'
 
 /**
  * Validates data on the first step of the Create Project 
@@ -83,4 +83,4 @@ class ProjectPrevalidator {
     }
 }
 
-module.exports = ProjectPrevalidator
+export default ProjectPrevalidator

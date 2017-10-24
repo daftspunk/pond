@@ -1,8 +1,7 @@
-const BaseAgent = require('./base')
-const fileSystem = require('../../filesystem')
-const assets = require('../../assets')
-const request = require('request')
-const projectDefaults = require('../../stores/projects/defaults')
+import BaseAgent from './base'
+import fileSystem from '../../filesystem'
+import assets from '../../assets'
+import projectDefaults from '../../stores/projects/defaults'
 
 /**
  * Configurator Pond Agent
@@ -62,6 +61,7 @@ class Agent extends BaseAgent {
     async run (configuration) {
         this.project.runtime.initState.textLog.addLine('Configuring the installation')
 
+        const request = nw.require('request')
         var filteredConfiguration = Object.assign({}, configuration)
 
         if (!filteredConfiguration.useAdvancedOptions) {
@@ -95,4 +95,4 @@ class Agent extends BaseAgent {
     }
 }
 
-module.exports = Agent
+export default Agent

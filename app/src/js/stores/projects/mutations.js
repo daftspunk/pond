@@ -1,7 +1,7 @@
-const LogState = require('../../projects/log-state')
-const environmentStatus = require('../../environments/status')
-const initializationState = require('../../environments/initialization-state')
-const projectDefaults = require('./defaults')
+import LogState from '../../projects/log-state'
+import environmentStatus from '../../environments/status'
+import initializationState from '../../environments/initialization-state'
+import projectDefaults from './defaults'
 
 function findProjectById(state, id) {
     return state.list.find(project => project._id == id)
@@ -29,7 +29,7 @@ function generateEncryptionKey() {
     return result
 }
 
-module.exports = {
+export default {
     // Important TODO: the project deletion mutation
     // must trigger deletion of the environment object,
     // if is initialized in the memory. This should

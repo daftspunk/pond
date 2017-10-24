@@ -21,7 +21,7 @@ function isSupportedPlatform(platform) {
     return platforms.includes(platform)
 }
 
-module.exports = {
+export default {
     typeToString,
     isSupportedPlatform,
     platforms,

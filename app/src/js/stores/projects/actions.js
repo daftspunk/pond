@@ -1,8 +1,8 @@
-const environments = require('../../environments')
-const environmentStatus = require('../../environments/status')
-const projects = require('../../database/projects')
+import environments from '../../environments'
+import environmentStatus from '../../environments/status'
+import projects from '../../database/projects'
 
-module.exports = {
+export default {
     loadState (context, payload) {
         return projects.getManager().list().then((loadedProjects) => {
             context.commit('SET_PROJECTS', {

@@ -53,7 +53,7 @@ module.exports.copyBuiltApp = function (finalAppDir, projectDir) {
             return projectDir.copyAsync('app/package.json', finalAppDir.path('Contents/Resources/app.nw/package.json'), { overwrite: true });
         });
 
-    var indexPath = 'app/index-production.html';
+    var indexPath = 'app/src/index-production.html';
 
     if (process.env.POND_DEV_RELEASE != 'true') {
         // For production we replace main.js with main.bin and use another index.html

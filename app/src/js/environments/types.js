@@ -17,7 +17,7 @@ function isKnownEnvironment(environment) {
     return types.includes(environment)
 }
 
-module.exports = {
+export default {
     typeToString,
     types,
     isKnownEnvironment

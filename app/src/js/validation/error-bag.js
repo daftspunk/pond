@@ -38,4 +38,4 @@ class ErrorBag {
     }
 }
 
-module.exports = ErrorBag
+export default ErrorBag

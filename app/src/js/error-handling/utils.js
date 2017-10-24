@@ -18,6 +18,6 @@ function getErrorString(err) {
     return 'common.unknown_error'
 }
 
-module.exports = {
+export default {
     getErrorString
 }

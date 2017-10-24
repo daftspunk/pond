@@ -1,4 +1,4 @@
-const LogState = require('../projects/log-state')
+import LogState from '../projects/log-state'
 
 /**
  * Keeps project initialization state
@@ -16,7 +16,7 @@ class InitializationState {
     }
 }
 
-module.exports = {
+export default {
     Tracker: InitializationState,
     DOWNLOADING,
     PROVISIONING,

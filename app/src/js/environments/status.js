@@ -3,7 +3,7 @@ const OFFLINE = 'offline'
 const STARTING = 'starting'
 const STOPPING = 'stopping'
 
-module.exports = {
+export default {
     ONLINE,
     OFFLINE,
     STARTING,

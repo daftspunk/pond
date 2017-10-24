@@ -1,6 +1,6 @@
-const EnvironmentTypes = require('./types')
-const Store = require('../stores')
-const environmentStatus = require('./status')
+import environmentTypes from './types'
+import store from '../stores'
+import environmentStatus from './status'
 
 class Environment {
     constructor (project, serverManager) {
@@ -11,7 +11,7 @@ class Environment {
     }
 
     getEnvironmentTypeName () {
-        return EnvironmentTypes.typeToString(this.project.environmentType)
+        return environmentTypes.typeToString(this.project.environmentType)
     }
 
     getLocalUrl () {
@@ -57,7 +57,7 @@ class Environment {
     }
 
     _serverStarted () {
-        Store.getStore().dispatch('setProjectStatus', {
+        store.getStore().dispatch('setProjectStatus', {
             projectId: this.project._id,
             status: environmentStatus.ONLINE
         })
@@ -70,7 +70,7 @@ class Environment {
             return
         }
 
-        Store.getStore().dispatch('setProjectStatus', {
+        store.getStore().dispatch('setProjectStatus', {
             projectId: this.project._id,
             status: environmentStatus.OFFLINE
         })
@@ -83,11 +83,11 @@ class Environment {
             return
         }
 
-        Store.getStore().dispatch('logServerEvent', {
+        store.getStore().dispatch('logServerEvent', {
             projectId: this.project._id,
             message: message
         })
     }
 }
 
-module.exports = Environment
+export default Environment

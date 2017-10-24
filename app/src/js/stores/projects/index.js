@@ -1,8 +1,7 @@
-const Actions = require('./actions')
-const Mutations = require('./mutations')
-const LogState = require('../../projects/log-state')
+import actions from './actions'
+import mutations from './mutations'
 
-module.exports = {
+export default {
     state: {
         loading: true,
         list: [
@@ -27,7 +26,6 @@ module.exports = {
         selectedProject: null,
         newProject: {}
     },
-
-    mutations: Mutations,
-    actions: Actions
+    mutations,
+    actions
 }

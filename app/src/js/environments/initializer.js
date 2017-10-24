@@ -1,7 +1,7 @@
-const Downloader = require('./downloader')
-const initializationState = require('./initialization-state')
-const projectsDb = require('../database/projects')
-const store = require('../stores')
+import Downloader from './downloader'
+import initializationState from './initialization-state'
+import projectsDb from '../database/projects'
+import store from '../stores'
 
 /**
  * This class orchestrates initialization of new projects:
@@ -106,4 +106,4 @@ class Initializer {
     }
 }
 
-module.exports = Initializer
+export default Initializer

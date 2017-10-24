@@ -1,4 +1,4 @@
-const fileSystem = require('../filesystem')
+import fileSystem from '../filesystem'
 
 function toSafeString(value) {
     if (value === undefined || value === null) {
@@ -16,7 +16,7 @@ function isDirectoryEmpty(path) {
     return fileSystem.isDirectoryEmpty(path)
 }
 
-module.exports = {
+export default {
     toSafeString,
     isDirectory,
     isDirectoryEmpty

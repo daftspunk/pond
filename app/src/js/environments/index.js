@@ -29,4 +29,4 @@ class Pool {
     }
 }
 
-module.exports = new Pool()
+export default new Pool()

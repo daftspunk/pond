@@ -1,5 +1,5 @@
-const ExtractorAgent = require('./extractor')
-const ConfiguratorAgent = require('./configurator')
+import ExtractorAgent from './extractor'
+import ConfiguratorAgent from './configurator'
 
 /**
  * Pond Agent performs operations in October installations on behalf of Pond.
@@ -28,7 +28,7 @@ function makeAgent(project, localUrl, type) {
     }
 }
 
-module.exports = {
+export default {
     makeAgent,
     EXTRACTOR,
     CONFIGURATOR
