@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import Brace from 'brace'
+import brace from 'brace'
 
 export default {
     props: [
@@ -19,7 +19,7 @@ export default {
         'noToolbarControls'
     ],
     mounted () {
-        var editor = Brace.edit($(this.$el).find(".text-viewer").get(0))
+        var editor = brace.edit($(this.$el).find(".text-viewer").get(0))
         editor.setReadOnly(true)
         editor.setShowPrintMargin(false)
         editor.setHighlightActiveLine(false)
@@ -36,7 +36,7 @@ export default {
     },
     watch: {
         'log.lines' () {
-            var editor = Brace.edit($(this.$el).find(".text-viewer").get(0))
+            var editor = brace.edit($(this.$el).find(".text-viewer").get(0))
             editor.setValue(this.text, 1)
             editor.scrollToLine(this.log.lines.length, false, false)
             editor.setOption("firstLineNumber", this.log.getFirstLineNumber())

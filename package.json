@@ -16,7 +16,7 @@
   "scripts": {
     "postinstall": "cd ./app  && npm install && cd ../nw-normal && npm install",
     "dev": "node ./tasks/dev",
-    "watch": "./node_modules/.bin/gulp copy-assets && cd app && watchify -t vueify -p [ vueify/plugins/extract-css -o dist/main.css ] -e src/js/main.js -o dist/main.js -v",
+    "watch": "./node_modules/.bin/gulp copy-assets && cd app && ./node_modules/.bin/webpack --watch",
     "copy-assets": "./node_modules/.bin/gulp copy-assets",
     "copy-bin-assets": "./node_modules/.bin/gulp copy-bin-assets",
     "release": "cd app && browserify -t vueify -p [ vueify/plugins/extract-css -o dist/main.css ] -e src/js/main.js -o dist/main.js -v && cd ../ && ./node_modules/.bin/gulp release --env=production"

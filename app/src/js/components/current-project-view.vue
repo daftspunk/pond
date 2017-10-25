@@ -100,10 +100,11 @@
 </template>
 
 <script>
-import marked from 'marked'
 import LogPanel from './log-panel.vue'
-import Environments from '../environments'
-import EnvironmentStatus from '../environments/status'
+
+import marked from 'marked'
+import environments from '../environments'
+import environmentStatus from '../environments/status'
 
 import DeployTest from '../remote/deployment/deploy-test'
 
@@ -124,10 +125,10 @@ export default {
                 return ''
             }
 
-            return Environments.get(this.selectedProject).getEnvironmentTypeName()
+            return environments.get(this.selectedProject).getEnvironmentTypeName()
         },
         localUrl () {
-            return Environments.get(this.selectedProject).getLocalUrl()
+            return environments.get(this.selectedProject).getLocalUrl()
         },
         localBackendUrl () {
             return this.localUrl + '/backend/'
@@ -139,10 +140,10 @@ export default {
             return this.selectedProject.runtime.status
         },
         isStopButtonDisabled () {
-            return this.status == EnvironmentStatus.OFFLINE || this.status == EnvironmentStatus.STARTING || this.status == EnvironmentStatus.STOPPING
+            return this.status == environmentStatus.OFFLINE || this.status == environmentStatus.STARTING || this.status == environmentStatus.STOPPING
         },
         isStartButtonDisabled () {
-            return this.status == EnvironmentStatus.ONLINE || this.status == EnvironmentStatus.STARTING || this.status == EnvironmentStatus.STOPPING
+            return this.status == environmentStatus.ONLINE || this.status == environmentStatus.STARTING || this.status == environmentStatus.STOPPING
         }
     },
     methods: {
@@ -150,14 +151,14 @@ export default {
             this.$store.dispatch('toggleProjectStar', this.selectedProject)
         },
         startServer () {
-            if (this.status != EnvironmentStatus.OFFLINE) {
+            if (this.status != environmentStatus.OFFLINE) {
                 return
             }
 
             this.$store.dispatch('startServer', this.selectedProject)
         },
         stopServer () {
-            if (this.status != EnvironmentStatus.ONLINE) {
+            if (this.status != environmentStatus.ONLINE) {
                 return
             }
 

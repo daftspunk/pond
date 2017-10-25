@@ -1,14 +1,18 @@
+import ProjectsView from '../components/projects-view.vue'
+import Settings from '../components/settings.vue'
+import NewProject from '../components/new-project/index.vue'
+
 export default [
     {
         path: '/',
-        component: require('./../components/projects-view.vue')
+        component: ProjectsView
     },
     {
         path: '/settings',
-        component: require('./../components/settings.vue')
+        component: Settings
     },
     {
         path: '/new-project',
-        component: require('./../components/new-project/index.vue')
+        component: NewProject
     }
 ]

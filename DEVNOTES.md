@@ -53,3 +53,7 @@ There's a problem with compiling native Node modules with browserify - `keytar`.
 All required components now work in Pond-like environment and can be moved to Pond. It's clear that we depart from PHP Deployer idea now and going to implement the deployment code in Node.js, and that's good.
 
 I will need to clean up Pond dependencies, documentation and building process. It got pretty messy after all the experiments.
+
+## 2017-10-24
+
+Pond is fully moved to webpack now, although creating project doesn't work and there are weird issues with CSS. I'm going to implement the deployment part in node.js now, as a separate testable package and then continue with fixing the existing part of Pond.

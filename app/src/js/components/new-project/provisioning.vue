@@ -74,6 +74,7 @@ export default {
             isError: false,
             errorMessage: '',
             errors: [],
+            waiting: false,
             progressSteps: [
                 {name: 'projects.create_project.downloading'},
                 {name: 'projects.create_project.initializing'},
@@ -102,14 +103,17 @@ export default {
     mounted () {
         const initializer = InitializerFactory.createInitializer(this.project)
         this.project.runtime.initState.textLog.clear()
+        this.waiting = true
 
         initializer.initProject().then(() => {
+            this.waiting = false
             this.$emit('show-done-step')
         }).catch((err) => {
             var errorStr = errorHandlingUtils.getErrorString(err)
 
             this.project.runtime.initState.textLog.addLine('ERROR. ' + this.$t(errorStr))
 
+            this.waiting = false
             this.isError = true
             this.errorMessage = errorStr
             this.errors = err.errors

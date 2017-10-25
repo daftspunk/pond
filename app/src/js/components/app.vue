@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import Environments from '../environments'
+import environments from '../environments'
 
 export default {
     mounted () {
@@ -22,7 +22,7 @@ export default {
         const win = nw.Window.get()
 
         win.on('closed', function() {
-            Environments.cleanup()
+            environments.cleanup()
         })
     }
 }

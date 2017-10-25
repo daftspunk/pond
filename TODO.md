@@ -1,21 +1,13 @@
 ## Current notes
 
-* [ ] Continue changing import syntax in modules
-* [ ] Find all `module.exports =` and replace with `export default`
-* [ ] Deal with `const request = nw.require('request')` in servermanagers/index.js. nw.require works in the minimum app. In this case environments are linked through a Vue component.
-* [ ] Switch Pond to webpack, update package.json - make sure that dev and production dependencies are listed properly. Also - no need to copy index.html manually, it can be copied with `HtmlWebpackPlugin`. It also inject CSS and JS references.
-
 * [ ] Update the main documentation to include steps required for compiling native modules and running the dev process (copy from the DEVNOTES).
-* [ ] We must switch `import` syntax to respect default exports for everything including components. `nw.require('package')` stays the same.
-* [ ] When working with `keytar` application does not start if it's refreshed with `cmd+r`. Restart it with "Simulate browser restart".
-* [ ] Update documentation part which explains the import syntax standard.
+* [ ] When working with `keytar` application does not start if it's refreshed with `cmd+r`. Restart it with "Simulate browser restart". - put to readme
 
-* [x] Build minimum possible nw.js application with webpack and see if `ssh2` and `keytar` can be used.
+* [ ] Find out how to run tests in node.js
+* [ ] Implement PHPDeployer features in node.js
 
 * [ ] Rewrite JSON schema, deployer and tests to satisfy the new request structure (the database part).
-* [x] Make sure https://medium.com/@ccnokes/how-to-securely-store-sensitive-information-in-electron-with-node-keytar-51af99f1cfc4 works in NW.js. 
-* [ ] SSL certificates should not be stored in files. Transmit their contents in requests and use php://memory for storing them in PHP before passing to `ssh2_` commands.
-* [ ] How to encrypt the channel between Node.js and PHP Deployer? Possible solutions - encryption with floating keyphrase, for example a size of the database.
+* [ ] SSL certificates are going to be stored in keychain or similar services. Update readme.
 
 * [ ] New deployments should create a database.
 * [ ] New deployments should configure Apache. 

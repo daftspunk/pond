@@ -1,4 +1,4 @@
-const environmentFactory = require('./factory')
+import environmentFactory from './factory'
 
 class Pool {
     constructor () {

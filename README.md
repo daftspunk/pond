@@ -26,13 +26,6 @@ The outer directory is the NW.js building framework. The `app` directory is the 
 
 **Note:** all commands should be ran in the root directory, which contains the `app` subdirectory.
 
-### Setting up required libraries
-
-First, **download and install NodeJS and NPM**. Then:
-
-* `sudo npm install -g browserify`
-* `sudo npm install -g watchify`
-
 ### Install packages:
 
 In the root Pond directory run:
@@ -43,8 +36,10 @@ This will take a long time. Ignore NPM warning `Invalid name: "October CMS Pond"
 
 Here is a weird part. Although `"nw": "^0.23.6-sdk-1"` is specified in package.json, running `npm run dev` throws an error on my Mac. Running these commands help:
 
+* cd app
 * `npm uninstall --sav-dev nw`
 * `npm install --save-dev nw@0.23.6-sdk-1`
+* cd ../
 
 ### Install PHP binaries
 
@@ -117,12 +112,12 @@ Coding standards are usual (no semicolons) with some additions described below.
 
 ### Imports for scripts
 
-Imports should be done with `const`. If the imported object is a class (can be used with `new`), the constant name should have a capital first letter. Otherwise it should be lower-case. **TODO:** update the code to use this rule everywhere.
+Imports should be done with `import ... from ...` syntax. If the imported object is a class (can be used with `new`), the imported variable name should start with a capital letter. Otherwise it should be lower-case.
 
 
-```
-const BaseAgent = require('./base')
-const fileSystem = require('../filesystem')
+```js
+import BaseAgent from './base'
+import fileSystem from '../filesystem'
 
 const agent = new BaseAgent()
 fileSystem.copy()

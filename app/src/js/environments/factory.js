@@ -7,7 +7,7 @@ import platforms from './platforms'
 
 // macOS
 
-require('./servermanagers/pond/darwin')
+import ServerManagerPondDarwin from './servermanagers/pond/darwin'
 
 // require('./servermanagers/vagrant/darwin')
 // require('./servermanagers/docker/darwin')
@@ -34,10 +34,12 @@ function requireWithCheck(path, errorString) {
 }
 
 function getServerManagerClass(project, platform) {
-    return requireWithCheck(
-        './servermanagers/'+project.environmentType+'/'+platform,
-        `Server manager for ${project.environmentType}/${platform} is not currently supported`
-    )
+    if (project.environmentType == 'pond' && platform == 'darwin') {
+        return ServerManagerPondDarwin
+    }
+
+    const errorString = `Server manager for ${project.environmentType}/${platform} is not currently supported`
+    throw new Error(errorString)
 }
 
 function createEnvironment(project) {

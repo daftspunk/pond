@@ -7,9 +7,9 @@ import platforms from './platforms'
 
 // macOS
 
-require('./servermanagers/pond/darwin')
-require('./provisioners/pond/darwin')
-require('./installers')
+import ServerManagerPondDarwin from './servermanagers/pond/darwin'
+import ProvisionerPondDarwin from './provisioners/pond/darwin'
+import Installer from './installers'
 
 // require('./servermanagers/vagrant/darwin')
 // require('./provisioners/vagrant/darwin')
@@ -48,24 +48,30 @@ function requireWithCheck(path, errorString) {
 }
 
 function getServerManagerClass(project, platform) {
-    return requireWithCheck(
-        './servermanagers/'+project.environmentType+'/'+platform,
-        `Server manager for ${project.environmentType}/${platform} is not currently supported`
-    )
+    if (project.environmentType == 'pond' && platform == 'darwin') {
+        return ServerManagerPondDarwin
+    }
+
+    const errorString = `Server manager for ${project.environmentType}/${platform} is not currently supported`
+    throw new Error(errorString)
 }
 
 function getProvisionerClass(project, platform) {
-    return requireWithCheck(
-        './provisioners/'+project.environmentType+'/'+platform,
-        `Environment provisioner for ${project.environmentType}/${platform} is not currently supported`
-    )
+    if (project.environmentType == 'pond' && platform == 'darwin') {
+        return ProvisionerPondDarwin
+    }
+
+    const errorString = `Environment provisioner for ${project.environmentType}/${platform} is not currently supported`
+    throw new Error(errorString)
 }
 
 function getInstallerClass(project, platform) {
-    return requireWithCheck(
-        './installers',
-        `October installer for ${project.environmentType}/${platform} is not currently supported`
-    )
+    if (project.environmentType == 'pond' && platform == 'darwin') {
+        return Installer
+    }
+
+    const errorString = `October installer for ${project.environmentType}/${platform} is not currently supported`
+    throw new Error(errorString)
 }
 
 function createInitializer(project) {

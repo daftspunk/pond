@@ -4,23 +4,24 @@ const Bootstrap = require('bootstrap')
 
 import Vue from 'vue'
 import App from './components/app.vue'
-import AppRouter from './router'
-import I18n from './i18n'
-import Store from './stores'
-import LinksWatcher from './html-utils/links-watcher'
+import appRouter from './router'
+import i18nProvider from './i18n'
+import store from './stores'
+import linksWatcher from './html-utils/links-watcher'
 
-Vue.use(AppRouter.getVueRouter())
-Vue.use(I18n.getVueI18n())
-Vue.use(Store.getVuex())
+Vue.use(appRouter.getVueRouter())
+Vue.use(i18nProvider.getVueI18n())
+Vue.use(store.getVuex())
 
-const i18n = I18n.makeI18n() // Use i18n.locale = ... to change locale in runtime
+const i18n = i18nProvider.makeI18n() // Use i18n.locale = ... to change locale in runtime
 
 new Vue({
-    router: AppRouter.makeRouter(),
+    router: appRouter.makeRouter(),
     i18n: i18n,
-    store: Store.makeStore(),
+    el: '#app',
+    store: store.makeStore(),
     render: h => h(App)
-}).mount('#app')
+})
 
 Vue.config.errorHandler = function (error, vm, info) {
     alert(error)
