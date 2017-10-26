@@ -26,6 +26,8 @@ The outer directory is the NW.js building framework. The `app` directory is the 
 
 **Note:** all commands should be ran in the root directory, which contains the `app` subdirectory.
 
+Prerequisites: node.js of version at lest 8.x is required for running unit tests. I used the version 6.x successfully for the development, but had to upgrade to run mocha tests.
+
 ### Install packages:
 
 In the root Pond directory run:
@@ -40,6 +42,14 @@ Here is a weird part. Although `"nw": "^0.23.6-sdk-1"` is specified in package.j
 * `npm uninstall --sav-dev nw`
 * `npm install --save-dev nw@0.23.6-sdk-1`
 * cd ../
+
+### Rebuild native modules
+
+Run this to install `node-gyp` tool:
+
+* `sudo npm install node-gyp`
+
+Native modules must be rebuild with `node-gyp` against the version of node.js used by NW.js. To get the version of node in NW.js run `process.versions.node` in the browser console of the running application. For example it returns `8.1.4`. After this - go to the native module directory (`keytar` in this case), and run `node-gyp rebuild --target=v8.1.4`. More information is here: https://github.com/nodejs/node-gyp. 
 
 ### Install PHP binaries
 

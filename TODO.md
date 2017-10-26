@@ -34,6 +34,7 @@
 
 **TODO: packaging**
 
+* [ ] Packaging must use webkit production compilation, not browserify
 * [ ] The source JavaScript code should be compiled in the version that we give to users. See http://docs.nwjs.io/en/latest/For%20Users/Advanced/Protect%20JavaScript%20Source%20Code/ This should be done during the building process for each platform separately.
 * [ ] Some code in the copyBuiltApp() is OSX-specific.
 * [ ] Finish packaging with code compilation. Maybe just build .bin as a part of the building process when release runs, and delete main.js if it's a production release.

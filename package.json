@@ -3,9 +3,11 @@
   "version": "0.0.1",
   "description": "October CMS Pond",
   "devDependencies": {
+    "chai": "^4.1.2",
     "fs-jetpack": "^1.1.0",
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.8",
+    "mocha": "^4.0.1",
     "nw": "^0.23.6-sdk-1",
     "q": "^1.5.0"
   },
@@ -19,9 +21,16 @@
     "watch": "./node_modules/.bin/gulp copy-assets && cd app && ./node_modules/.bin/webpack --watch",
     "copy-assets": "./node_modules/.bin/gulp copy-assets",
     "copy-bin-assets": "./node_modules/.bin/gulp copy-bin-assets",
-    "release": "cd app && browserify -t vueify -p [ vueify/plugins/extract-css -o dist/main.css ] -e src/js/main.js -o dist/main.js -v && cd ../ && ./node_modules/.bin/gulp release --env=production"
+    "release": "cd app && browserify -t vueify -p [ vueify/plugins/extract-css -o dist/main.css ] -e src/js/main.js -o dist/main.js -v && cd ../ && ./node_modules/.bin/gulp release --env=production",
+    "test": "mocha --require babel-register --require babel-polyfill --require app/test/nw-mock.js --globals nw app/test"
   },
   "optionalDependencies": {
     "appdmg": "^0.4.5"
+  },
+  "dependencies": {
+    "babel": "^6.23.0",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.26.0"
   }
 }
