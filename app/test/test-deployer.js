@@ -5,12 +5,12 @@ import DeployTest from '../src/js/remote/deployment/deploy-test.js'
 // must be done explicitly in tests.
 import ssh2 from 'ssh2'
 
-describe('New deployment', function() {
-    describe('No errors', function() {
-        it('Main page content', async () => {
-            var dp = new DeployTest()
-            const result = await dp.deploy()
-            assert.include(result, 'Stream :: close');
-        })
-    })
-})
+// describe('New deployment', function() {
+//     describe('No errors', function() {
+//         it('Main page content', async () => {
+//             var dp = new DeployTest()
+//             const result = await dp.deploy()
+//             assert.include(result, 'Stream :: close');
+//         })
+//     })
+// })

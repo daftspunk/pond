@@ -1,9 +1,5 @@
 ## Current notes
 
-* [ ] Update the main documentation to include steps required for compiling native modules and running the dev process (copy from the DEVNOTES).
-* [ ] When working with `keytar` application does not start if it's refreshed with `cmd+r`. Restart it with "Simulate browser restart". - put to readme
-
-* [ ] Find out how to run tests in node.js
 * [ ] Implement PHPDeployer features in node.js
 
 * [ ] Rewrite JSON schema, deployer and tests to satisfy the new request structure (the database part).

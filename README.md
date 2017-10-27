@@ -84,6 +84,8 @@ After that, in another terminal tab, start NW.js:
 
 The application still should be refreshed manually in NW.js window when needed. This can be done in NW.js console using the command: `nw.Window.get().reload()`. To open the console use normal Chrome development tools hot keys.
 
+Note about `keytar` module: sometimes application does not start properly if it's refreshed with `cmd+r`. Restart it with "Simulate browser restart".
+
 ### Compiling LESS
 
 LESS is compiled automatically when `watch` command runs. If there was a compilation error (file not found, missing semicolon, etc.) it might be needed to save `theme.less` or any `.vue` file to reanimate the compiler.

@@ -1,1 +1,0 @@
-<?php return ['param3' => {{value}}];
