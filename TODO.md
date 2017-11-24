@@ -1,5 +1,9 @@
 ## Current notes
 
+* [ ] The first published release should not have the deployer available, just the local installation management and built-in server support. Then we can make October downloadable as an installer. Focus on the local project management first.
+
+==
+
 * [ ] Implement PHPDeployer features in node.js
 
 * [ ] Rewrite JSON schema, deployer and tests to satisfy the new request structure (the database part).

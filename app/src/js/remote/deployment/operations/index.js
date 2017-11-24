@@ -3,21 +3,15 @@
  */
 
 class DeploymentOperation {
-    constructor (parameters) {
-        this._parameters = parameters
-        this._parametersValidated = false
+    constructor (parameterHolder) {
+        this._parameterHolder = parameterHolder
     }
 
     validateParameters () {
-        this._parametersValidated = true
     }
 
-    get () {
-        if (!this._parametersValidated) {
-            throw new Error('Parameters are not validated');
-        }
-
-        return _parameters
+    get (path, optional, defaultValue) {
+        return this._parameters.get(path, optional, defaultValue)
     }
 }
 

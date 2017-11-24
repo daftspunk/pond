@@ -432,7 +432,4 @@ describe('Deployer operation parameter holder', _ => {
         assert.throws(holder.validate.bind(holder, 'SWAP_REQUIRED_ARGUMENTS'), Error, `should have required property 'activate'`)
         done()
     })
-    // testConfigurationDirectoryNameInvalidFormat
-
-    // testDeploymentUpdateComponentsInvalidPlugins
 })
