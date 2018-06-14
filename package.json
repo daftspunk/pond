@@ -1,0 +1,15 @@
+{
+    "name": "october-pond",
+    "version": "0.0.1",
+    "main": "main.js",
+    "devDependencies": {
+        "fs-jetpack": "^1.1.0",
+        "gulp": "^3.9.1",
+        "gulp-util": "^3.0.8"
+    },
+    "scripts": {
+        "start": "cd app && sh node_modules/.bin/electron ./",
+        "postinstall": "cd ./app  && npm install",
+        "watch": "sh node_modules/.bin/gulp copy-assets && cd app && sh node_modules/.bin/webpack --watch"
+    }
+}

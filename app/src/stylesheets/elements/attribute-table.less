@@ -1,0 +1,38 @@
+table.attribute-table {
+    font-size: @font-size-base;
+    line-height: 150%;
+
+    th, td {
+        padding: 8px;
+        border-bottom: 1px solid @color-layout-grid-lines-minor;
+        vertical-align: top;
+    }
+
+    tr:first-child {
+        th, td {
+            padding-top: 0;
+        }
+    }
+
+    tr:last-child {
+        th, td {
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+    }
+
+    th {
+        padding-left: 0;
+        font-weight: normal;
+        white-space: nowrap;
+        color: @color-text-minor;
+
+        &.min-width {
+            width: 80px;
+        }
+    }
+
+    td {
+        padding-right: 0;
+    }
+}

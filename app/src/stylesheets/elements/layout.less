@@ -1,0 +1,51 @@
+// Usage:
+//
+// <div class="layout-flex-rows-container">
+//   <div clas="layout-flex-row">Header</div>
+//   <div class="layout-flex-row layout-stretch layout-relative">
+//     <div class="layout-full-size scrollable">
+//       This DIV will occupy available all height and be scrollable
+//     </div>
+//   </div>
+//   <div clas="layout-flex-row">Footer</div>
+// </div>
+
+.layout-relative {
+    position: relative;
+}
+
+.layout-full-size {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+
+    &.scrollable {
+        overflow: auto;
+    }
+}
+
+.layout-flex-rows-container {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: flex-start;
+    width: 100%;
+
+    > .layout-flex-row {
+        order: 0;
+        flex: 0 1 auto;
+        align-self: stretch;
+    }
+
+    > .layout-stretch {
+        flex: 1 0 auto;
+    }
+
+    .min-height-200 {
+        min-height: 200px;
+    }
+}

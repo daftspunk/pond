@@ -1,0 +1,113 @@
+div.project-list {
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0 20px 0;
+
+        li {
+            &.project {
+                padding: 6px 5px 6px 35px;
+                cursor: pointer;
+                position: relative;
+                user-select: none;
+
+                h3 {
+                    font-size: 14px;
+                    margin: 0;
+                }
+
+                span.status-indicator {
+                    position: absolute;
+                    left: 20px;
+                    top: 9px;
+
+                    &:before {
+                        .icons-sprite-pseudo(8px, 8px, 25px, 86px);
+                    }
+
+                    &.online {
+                        &:before {
+                            .icons-sprite-pseudo(8px, 8px, 6px, 86px);
+                        }
+                    }
+
+                    &.starred {
+                        top: 8px;
+
+                        &:before {
+                            .icons-sprite-pseudo(10px, 10px, 84px, 85px);
+                        }
+
+                        &.online:before {
+                            .icons-sprite-pseudo(10px, 10px, 64px, 85px);
+                        }
+                    }
+                }
+
+                &.selected {
+                    background: @color-selected-project-bg;
+                    color: @color-selected-project-text;
+
+                    span.status-indicator {
+                        &:before {
+                            .icons-sprite-pseudo(8px, 8px, 6px, 106px);
+                        }
+
+                        &.starred:before {
+                            .icons-sprite-pseudo(10px, 10px, 84px, 105px);
+                        }
+                    }
+                }
+            }
+
+            &.client {
+                h2 {
+                    margin : 0 0 -5px 20px;
+                    font-size: 16px;
+                    font-weight: bold;
+                }
+
+                > ul {
+                    margin-left: 0;
+                }
+            }
+        }
+    }
+
+    > ul:last-child {
+        margin-bottom: 0;
+    }
+
+    div.projects-search {
+        position: relative;
+
+        &:before {
+            .icons-sprite-pseudo(13px, 14px, 143px, 103px);
+            position: absolute;
+            left: 10px;
+            top: 10px;
+        }
+
+        input[type=text] {
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            padding-left: 30px;
+            width: 100%;
+
+            &, &:focus {
+                border-bottom: 1px solid @color-layout-grid-lines;
+            }
+        }
+    }
+
+    div.add-project-panel {
+        padding: 15px;
+
+        a:before {
+            .icons-sprite-pseudo(11px, 14px, 125px, 64px);
+            margin-right: 7px;
+            vertical-align: text-bottom;
+        }
+    }
+}
