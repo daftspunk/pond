@@ -10,6 +10,8 @@
     "scripts": {
         "start": "cd app && sh node_modules/.bin/electron ./",
         "postinstall": "cd ./app  && npm install",
+        "copy-assets": "sh node_modules/.bin/gulp copy-assets",
+        "copy-bin-assets": "sh node_modules/.bin/gulp copy-bin-assets",
         "watch": "sh node_modules/.bin/gulp copy-assets && cd app && sh node_modules/.bin/webpack --watch"
     }
 }

@@ -83,15 +83,15 @@ class Manager extends BaseManager {
 
         console.log('Spawning the server child process')
 
-        const spawn = require('child_process').spawn
+        const {spawn} = require('child_process')
 
         console.log('Spawn ', this.getChildProcessCommand(), this.getChildProcessArguments(), this.getChildProcessOptions())
 
         this.serverProcess = spawn(
-                this.getChildProcessCommand(),
-                this.getChildProcessArguments(),
-                this.getChildProcessOptions()
-            )
+            this.getChildProcessCommand(),
+            this.getChildProcessArguments(),
+            this.getChildProcessOptions()
+        )
 
         this.serverProcess.once('close', (code, signal) => {
             console.log('Closing the server child process')

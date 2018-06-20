@@ -7,7 +7,7 @@ import assets from '../../../assets'
 import validator from 'validator'
 
 /**
- * Environment provisioner: 
+ * Environment provisioner:
  *
  *  - Pond built-in environment
  */

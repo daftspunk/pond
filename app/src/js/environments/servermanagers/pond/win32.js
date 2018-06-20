@@ -12,8 +12,7 @@ import {resolve} from 'path'
 
 class Manager extends BaseManager {
     getChildProcessCommand () {
-        // return '/usr/bin/php'
-        return resolve(assets.getPhpBinDir()) + '/win32/bin/php'
+        return assets.getPhpBinDir() + '/win32/php.exe'
     }
 }
 

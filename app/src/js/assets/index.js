@@ -2,17 +2,7 @@ import path from 'path'
 import config from '../config'
 
 function getDistDir() {
-    if (config.getPondEnvironmentName() == 'production') {
-        const processDir = process.cwd()
-
-        // TODO: it's likely Windows environment another
-        // path to the assets directory directory.
-
-        return path.dirname(processDir) + '/app.nw/dist'
-    }
-    else {
-        return process.cwd() + '/dist'
-    }
+    return require('electron').remote.process.cwd() + '/dist'
 }
 
 function getAssetsDir() {

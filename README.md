@@ -33,3 +33,21 @@ This will be updating assets in app/dist in live mode. It could take ~15 seconds
 After that, in another terminal tab, start Electron:
 
 * `npm run start`
+
+### Install PHP binaries
+
+Find the PHP version specified in the file src/js/config/index.js in object path `builtInServerInfo.darwin.php.version`, for example `7.1`.
+
+#### macOS
+
+* Download a PHP build matching the version here: https://php-osx.liip.ch/
+* Run the installer
+* Copy the directory from /usr/local/php.xxx to `app/src/assets-bin-php/darwin` (so that `darwin` contains `bin`, `etc`, `lib` and so on).
+* Run `npm run copy-bin-assets` in the Pond's root directory.
+
+#### Windows
+
+* Download a PHP build matching the version here: https://windows.php.net/
+* Run the installer
+* Copy the directory from /usr/local/php.xxx to `app/src/assets-bin-php/win32` (so that `darwin` contains `bin`, `etc`, `lib` and so on).
+* Run `npm run copy-bin-assets` in the Pond's root directory.

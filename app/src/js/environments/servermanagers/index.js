@@ -80,7 +80,7 @@ class Manager extends EventEmitter {
     async _makeTestRequest (timeout, waitForStart) {
         const currentTime = new Date().getTime()
         const endTime = currentTime + timeout
-        const connectioTimeout = 200
+        const connectionTimeout = 200
         const retryInterval = 300
         const request = require('request')
 
@@ -92,7 +92,7 @@ class Manager extends EventEmitter {
                 console.log('Pinging the server...')
 
                 request
-                    .get(this.getLocalUrl(), {'timeout': connectioTimeout})
+                    .get(this.getLocalUrl(), {'timeout': connectionTimeout})
                     .on('response', response => {
                         console.log('Server response received')
 
