@@ -82,7 +82,7 @@ class Manager extends EventEmitter {
         const endTime = currentTime + timeout
         const connectionTimeout = 200
         const retryInterval = 300
-        const request = require('request')
+        const net = require('electron').remote.net
 
         // TODO: check if the error 500 is considered
         // as a running state (it must be so)
@@ -91,8 +91,13 @@ class Manager extends EventEmitter {
             var doRequest = () => {
                 console.log('Pinging the server...')
 
+                let request = net.request({
+                    method: 'GET',
+                    url: this.getLocalUrl(),
+                    timeout: connectionTimeout
+                })
+
                 request
-                    .get(this.getLocalUrl(), {'timeout': connectionTimeout})
                     .on('response', response => {
                         console.log('Server response received')
 
@@ -117,6 +122,8 @@ class Manager extends EventEmitter {
                         //     // Wait more...
                         // }
                     })
+
+                request.end()
             }
 
             var nextOrReject = () => {

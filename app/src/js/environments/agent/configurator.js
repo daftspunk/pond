@@ -61,7 +61,7 @@ class Agent extends BaseAgent {
     async run (configuration) {
         this.project.runtime.initState.textLog.addLine('Configuring the installation')
 
-        const request = require('request')
+        const net = require('electron').remote.net
         var filteredConfiguration = Object.assign({}, configuration)
 
         if (!filteredConfiguration.useAdvancedOptions) {
@@ -73,24 +73,38 @@ class Agent extends BaseAgent {
         }
 
         return new Promise((resolve, reject) => {
-            request.post(this.localUrl + '/pond/configure', function callback(err, httpResponse, body) {
-                if (err) {
+            let request = net.request({
+                method: 'POST',
+                url: this.localUrl + '/pond/configure'
+            })
+
+            request
+                .on('response', response => {
+                    if (response.statusCode != 200) {
+                        reject('Configuration error. ' + body)
+                        return
+                    }
+
+                    response.on('data', (body) => {
+                        if (body !== 'DONE') {
+                            reject('Invalid response received from the configurator')
+                            return
+                        }
+                        else {
+                            resolve()
+                        }
+                    })
+
+                    response.on('error', (err) => {
+                        reject(err)
+                    })
+                })
+                .on('error', err => {
                     reject(err)
-                    return
-                }
+                })
 
-                if (httpResponse.statusCode != 200) {
-                    reject('Configuration error. ' + body)
-                    return
-                }
-
-                if (body !== 'DONE') {
-                    reject('Invalid response received from the configurator')
-                    return
-                }
-
-                resolve()
-            }).form(fields)
+            request.write(fields)
+            request.end()
         })
     }
 }

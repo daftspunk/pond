@@ -7,7 +7,8 @@ function getPlatformIssues(&$errors, &$warnings)
 
     if ($iniPath = php_ini_loaded_file()) {
         $iniMessage = PHP_EOL.'The php.ini used by your command-line PHP is: ' . $iniPath;
-    } else {
+    }
+    else {
         $iniMessage = PHP_EOL.'A php.ini file does not exist. You will have to create one.';
     }
 
@@ -143,7 +144,7 @@ function installOctober()
     if ($zip->open($file) !== true) {
         return false;
     }
-        
+
     $zip->extractTo(__DIR__);
     $zip->close();
     return true;
@@ -154,8 +155,8 @@ $warnings = array();
 
 if (getPlatformIssues($errors, $warnings)) {
     $content = json_encode(array(
-        'errors'=>$errors,
-        'warnings'=>$warnings ?: null )
+        'errors' => $errors,
+        'warnings' => $warnings ?: null )
     );
 
     return respond($content, 500, 'Internal Server Error');
@@ -163,11 +164,11 @@ if (getPlatformIssues($errors, $warnings)) {
 
 if (installOctober()) {
     $content = json_encode(array(
-        'status'=>'DONE',
-        'warnings'=>$warnings ?: null)
+        'status' => 'DONE',
+        'warnings' => $warnings ?: null)
     );
 
-    return respond($content);}
+    return respond($content);
+}
 
 return respond('Unable to extract the archive.', 500, 'Internal Server Error');
-?>
