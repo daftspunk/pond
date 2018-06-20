@@ -126,9 +126,10 @@ class Manager extends EventEmitter {
                     return
                 }
                 else {
-                    reject(waitForStart ? 
-                        'Server manager could not start the environment.' :
-                        'Server manager could not stop the environment.')
+                    reject(waitForStart
+                        ? 'Server manager could not start the environment.'
+                        : 'Server manager could not stop the environment.'
+                    )
                 }
             }
 

@@ -85,7 +85,7 @@ export default {
         //
         state.newProject =  {
             name: '',
-            environmentType: '',
+            environmentType: 'pond',
             location: '',
             client: '',
             description: '',

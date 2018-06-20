@@ -6,7 +6,7 @@
         ></general-information>
 
         <pond-configuration
-            v-if="stepCode == 'env-config' && project.environmentType == 'pond'"
+            v-if="stepCode == 'env-config'"
             @show-provisioning-step="showProvisioningStep"
             @show-general-step="showGeneralStep"
         ></pond-configuration>

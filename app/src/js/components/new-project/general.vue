@@ -67,38 +67,6 @@
                         <textarea id="project-description" class="form-control" type="text" v-bind:placeholder="$t('projects.create_project.description_placeholder')" v-model="project.description"></textarea>
                     </div>
 
-                    <h4 v-bind:class="{ invalid: errorBag.has('environmentType') }">
-                        {{ $t('projects.create_project.environment_type') }}
-                    </h4>
-                    <span class="validation-error">{{ $t(errorBag.get('environmentType')) }}</span>
-
-                    <div class="form-group">
-                        <div data-open-links-in-browser class="radio">
-                            <label for="environment-pond">
-                                <input
-                                    name="environment-type" value="pond" type="radio" id="environment-pond" v-model="project.environmentType"/>
-                                <span class="radio-label">{{ $t('projects.environment_type.pond') }}</span>
-                                <span class="description" v-html="$t('projects.create_project.pond_env_description', {phpVersion: phpVersion})"></span>
-                            </label>
-                        </div>
-
-                        <div data-open-links-in-browser class="radio">
-                            <label for="environment-lamp">
-                                <input name="environment-type" value="lamp" type="radio" id="environment-lamp" v-model="project.environmentType"/>
-                                <span class="radio-label">{{ $t('projects.environment_type.lamp') }}</span>
-                                <span class="description" v-html="$t('projects.create_project.lamp_env_description')"></span>
-                            </label>
-                        </div>
-
-                        <div data-open-links-in-browser class="radio">
-                            <label for="environment-vagrant">
-                                <input name="environment-type" value="vagrant" type="radio" id="environment-vagrant" v-model="project.environmentType"/>
-                                <span class="radio-label">{{ $t('projects.environment_type.vagrant') }}</span>
-                                <span class="description" v-html="$t('projects.create_project.vagrant_env_description')"></span>
-                            </label>
-                        </div>
-                    </div>
-
                     <div class="form-group">
                         <div class="toggle">
                             <label>
