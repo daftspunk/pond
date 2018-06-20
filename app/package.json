@@ -28,6 +28,7 @@
         "brace": "^0.10.0",
         "child-process-promise": "^2.2.1",
         "clone-deep": "^1.0.0",
+        "follow-redirects": "^1.5.0",
         "fs": "0.0.1-security",
         "jquery": "^3.2.1",
         "keytar": "^4.0.4",

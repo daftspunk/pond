@@ -1,5 +1,14 @@
 export default {
     installerDownloadOptions: {
+        wizard: {
+            hostname: 'github.com',
+            // If changed to 80, the downloader class should be updated
+            // to use 'http' instead of 'https' class.
+            port: 443,
+            path: '/octobercms/install/archive/master.zip',
+            method: 'GET',
+            redirect: 'follow'
+        },
         stable: {
             hostname: 'octobercms.com',
             // If changed to 80, the downloader class should be updated

@@ -147,8 +147,26 @@ function installOctober()
 
     $zip->extractTo(__DIR__);
     $zip->close();
+
+    // Move files from inner directory to parent
+    $innerDir = 'install-master';
+    $source = __DIR__.DIRECTORY_SEPARATOR.$innerDir.DIRECTORY_SEPARATOR;
+    $destination = __DIR__.DIRECTORY_SEPARATOR;
+    $files = scandir($source);
+
+    foreach ($files as $file) {
+        if (in_array($file, array('.', '..'))) {
+            continue;
+        }
+
+        rename($source.$file, $destination.$file);
+    }
+
+    @rmdir($source);
+
     return true;
 }
+
 
 $errors = array();
 $warnings = array();

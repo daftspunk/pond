@@ -14,7 +14,7 @@ class Installer {
 
     // Installation steps:
     //
-    // 1. Install Extractor Pond Agent 
+    // 1. Install Extractor Pond Agent
     // 2. Run Extractor
     // 3. Remove Extractor Agent
     // 4. If the server extractor to normal switch more requires 
@@ -33,20 +33,20 @@ class Installer {
         try {
             await extractorAgent.run()
 
-            const configuratorAgent = agentFactory.makeAgent(this.project, localUrl, agentFactory.CONFIGURATOR)
-            await configuratorAgent.install()
+            // const configuratorAgent = agentFactory.makeAgent(this.project, localUrl, agentFactory.CONFIGURATOR)
+            // await configuratorAgent.install()
 
             serverManager.setExtractorModeOff()
             if (serverManager.getSwitchFromExtractorRequiresRestart()) {
                 await serverManager.restart()
             }
 
-            try {
-                await configuratorAgent.run(configuration)
-            }
-            finally {
-                await configuratorAgent.cleanup()
-            }
+            // try {
+            //     await configuratorAgent.run(configuration)
+            // }
+            // finally {
+            //     await configuratorAgent.cleanup()
+            // }
         }
         finally {
             await extractorAgent.cleanup()

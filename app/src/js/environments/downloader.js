@@ -11,22 +11,12 @@ class Downloader {
 
     async run () {
         const fs = require('fs')
-        const client = require('https')
+        const client = require('follow-redirects').https
         const tmpFilePath = fileSystem.makeTmpFileName('october-installer-archive')
 
         this.textLog.addLine('Downloading the installer')
 
-        // TODO: this is temporary
-        // DEBUG
-        if ( process.env.X_LOCAL_DEBUG == 1 ) {
-            return fileSystem
-                .copy('/Users/alexeybobkov/tmp/installer.pak', tmpFilePath)
-                .then(path => {
-                    return path
-                })
-        }
-
-        var options = this.edgeUpdates ? config.installerDownloadOptions.edge : config.installerDownloadOptions.stable
+        var options = config.installerDownloadOptions.wizard
 
         return new Promise((resolve, reject) => {
             const file = fs.createWriteStream(tmpFilePath)
