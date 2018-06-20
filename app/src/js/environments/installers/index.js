@@ -12,6 +12,14 @@ class Installer {
         this.project = project
     }
 
+    //-----------------
+    // IMPORTANT NOTE: The configuratorAgent was originally used to manipulate
+    // October's config files as part of the install, but now it uses the
+    // wizard installer for simplicity. The configuratorAgent is kept here
+    // because it may be useful to repurpose it for customising the actual
+    // installer instead. i.e presetting values
+    //-----------------
+
     // Installation steps:
     //
     // 1. Install Extractor Pond Agent
