@@ -45,6 +45,8 @@ Find the PHP version specified in the file src/js/config/index.js in object path
 * Copy the directory from /usr/local/php.xxx to `app/src/assets-bin-php/darwin` (so that `darwin` contains `bin`, `etc`, `lib` and so on).
 * Run `npm run copy-bin-assets` in the Pond's root directory.
 
+> Note: Following liip.ch's install will [restart the Apache web server](https://github.com/liip/php-osx/blob/e811dd814a166c469063fd78d2eaa8ff1d41c63b/create_package.sh#L84-L101) that ships with macOS. For those using MAMP, XAMPP, Docker or another web server on port 80, this may be confusing. Run `sudo /usr/sbin/apachectl stop` to stop Apache.
+
 #### Windows
 
 * Download a PHP build matching the version here: https://windows.php.net/
