@@ -2,7 +2,7 @@ import database from './'
 
 const TYPE = 'website'
 
-export default class Project {
+export default class Website {
     async list() {
         const db = await database.get()
 

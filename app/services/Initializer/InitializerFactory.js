@@ -1,11 +1,14 @@
-import Environment from './Environment';
+import Initializer from './Initializer';
 import EnvironmentTypes from './EnvironmentTypes';
 import platforms from '../../utils/platforms';
 
-import ServerManagerPondWin32 from '../Servers/PondServer.Win32';
 import ServerManagerPondDarwin from '../Servers/PondServer.Darwin';
+import ServerManagerPondWin32 from '../Servers/PondServer.Win32';
 
-export function createEnvironment(website) {
+import ProvisionerPondDarwin from '../Provisioners/PondProvisioner.Darwin';
+import ProvisionerPondWin32 from '../Provisioners/PondProvisioner.Win32';
+
+export function createInitializer(website) {
     const platform = platforms.getPlatform();
 
     if (!EnvironmentTypes.isKnownEnvironment(website.environmentType)) {
@@ -17,10 +20,12 @@ export function createEnvironment(website) {
     }
 
     const serverManagerClass = getServerManagerClass(website, platform);
+    const provisionerClass = getProvisionerClass(website, platform);
 
-    return new Environment(
+    return new Initializer(
         website,
-        new serverManagerClass(website)
+        new serverManagerClass(website),
+        new provisionerClass(website)
     );
 }
 
@@ -40,3 +45,17 @@ function getServerManagerClass(website, platform) {
     const errorString = `Server manager for ${website.environmentType}/${platform} is not currently supported`;
     throw new Error(errorString);
 }
+
+function getProvisionerClass(website, platform) {
+    if (website.environmentType == 'pond' && platform == 'darwin') {
+        return ProvisionerPondDarwin;
+    }
+
+    if (website.environmentType == 'pond' && platform == 'win32') {
+        return ProvisionerPondWin32;
+    }
+
+    const errorString = `Environment provisioner for ${website.environmentType}/${platform} is not currently supported`;
+    throw new Error(errorString);
+}
+

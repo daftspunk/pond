@@ -1,4 +1,4 @@
-import EnvironmentFactory from './EnvironmentFactory'
+import EnvironmentFactory from './EnvironmentFactory';
 
 class Environments {
     constructor() {
