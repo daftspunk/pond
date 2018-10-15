@@ -1,4 +1,4 @@
-import ServerBase from './ServerBase'
+import ServerBase from './ServerBase';
 
 /**
  * Web server manager for Pond environment base class: 
@@ -8,10 +8,10 @@ import ServerBase from './ServerBase'
  */
 
 export default class PondServerBase extends ServerBase {
-    constructor (project) {
-        super(project)
+    constructor(website) {
+        super(website);
 
-        this.serverProcess = null
+        this.serverProcess = null;
 
         // Determines if the server process was terminated
         // after receiving the 'close' event. If the server
@@ -22,123 +22,128 @@ export default class PondServerBase extends ServerBase {
         //
         // TODO: is it a best place to keep this state?
         //
-        this.terminated = false
+        this.terminated = false;
     }
 
     async start() {
-        return this.createChildProcess()
+        return this.createChildProcess();
     }
 
     async stop() {
         if (this.serverProcess === null) {
-            return
+            return;
         }
 
-        this.serverProcess.kill()
+        this.serverProcess.kill();
 
-        this.emit('log', 'Stopping the server...')
+        this.emit('log', 'Stopping the server...');
 
-        await this.waitWebServerStopped()
+        await this.waitWebServerStopped();
 
-        this.emit('log', 'Server has stopped')
+        this.emit('log', 'Server has stopped');
     }
 
     getChildProcessArguments() {
         // TODO - the port should be dynamic
 
         if (!this.extractorMode) {
-            return ['-S', 'localhost:'+this.project.localPort, 'server.php']
+            return ['-S', 'localhost:'+this.website.localPort, 'server.php'];
         }
         else {
-            return ['-S', 'localhost:'+this.project.localPort]
+            return ['-S', 'localhost:'+this.website.localPort];
         }
     }
 
     getChildProcessOptions() {
         return {
-            cwd: this.project.location
-        }
+            cwd: this.website.location
+        };
     }
 
     getLocalUrl() {
-        return 'http://localhost:'+this.project.localPort
+        return 'http://localhost:' + this.website.localPort;
     }
 
     getServerStartTimeout() {
-        return 1000
+        return 1000;
     }
 
     getServerStopTimeout() {
-        return 1000
+        return 1000;
     }
 
     getSwitchFromExtractorRequiresRestart() {
-        return true
+        return true;
     }
 
     async createChildProcess() {
         if (this.serverProcess !== null) {
-            throw new Error('Server child process is already running')
+            throw new Error('Server child process is already running');
         }
 
-        console.log('Spawning the server child process')
+        console.log('Spawning the server child process');
 
-        const {spawn} = require('child_process')
+        const remote = window.require('electron').remote;
+        const { spawn } = remote.require('child_process');
 
-        console.log('Spawn ', this.getChildProcessCommand(), this.getChildProcessArguments(), this.getChildProcessOptions())
-
-        this.serverProcess = spawn(
+        console.log('Spawn ',
             this.getChildProcessCommand(),
             this.getChildProcessArguments(),
             this.getChildProcessOptions()
         )
 
-        this.serverProcess.once('close', (code, signal) => {
-            console.log('Closing the server child process')
+        this.serverProcess = spawn(
+            this.getChildProcessCommand(),
+            this.getChildProcessArguments(),
+            this.getChildProcessOptions()
+        );
 
-            this._cleanUpServer()
-            this.emit('stop')
-            this.terminated = true
-        })
+        this.serverProcess.once('close', (code, signal) => {
+            console.log('Closing the server child process');
+
+            this._cleanUpServer();
+            this.emit('stop');
+            this.terminated = true;
+        });
 
         this.serverProcess.stderr.on('data', (data) => {
             if (typeof data === 'string') {
-                this.emit('log', data)
+                this.emit('log', data);
             }
             else {
-                this.emit('log', data.toString('utf8'))
+                this.emit('log', data.toString('utf8'));
             }
-        })
+        });
 
         this.serverProcess.once('error', (err) => {
-            console.log('Error in the server child process', err)
+            console.log('Error in the server child process', err);
 
-            this.stop()
-            this.emit('log', err)
-        })
+            this.stop();
+            this.emit('log', err);
+        });
 
-        this.emit('log', 'Waiting for the server...')
+        this.emit('log', 'Waiting for the server...');
 
-        this.terminated = false
+        this.terminated = false;
 
         return new Promise((resolve, reject) => {
             this.waitWebServerStarted()
                 .then(_ => {
                     if (!this.terminated) {
-                        this.emit('start')
-                        this.emit('log', 'Server is ready')
-                        resolve()
+                        this.emit('start');
+                        this.emit('log', 'Server is ready');
+                        resolve();
                     }
                     else {
-                        reject('The server process was terminated')
+                        reject('The server process was terminated');
                     }
                 })
                 .catch(err => {
-                    this.emit('log', 'Cannot start the server')
+                    this.emit('log', 'Cannot start the server');
                     if (typeof err === 'string') {
-                        this.emit('log', err)
+                        this.emit('log', err);
                     }
-                    reject(err)
+                    reject(err);
                 })
         })
     }
@@ -149,14 +154,14 @@ export default class PondServerBase extends ServerBase {
 
     _cleanUpServer() {
         if (this.serverProcess === null) {
-            throw new Error('Invalid cleanUp call - server child process is not running')
+            throw new Error('Invalid cleanUp call - server child process is not running');
         }
 
-        console.log('Cleaning up the server manager')
+        console.log('Cleaning up the server manager');
 
-        this.serverProcess.removeAllListeners(['error', 'close'])
-        this.serverProcess.stderr.removeAllListeners(['data'])
+        this.serverProcess.removeAllListeners(['error', 'close']);
+        this.serverProcess.stderr.removeAllListeners(['data']);
 
-        this.serverProcess = null
+        this.serverProcess = null;
     }
 }

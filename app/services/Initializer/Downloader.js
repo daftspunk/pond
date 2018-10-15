@@ -1,5 +1,5 @@
 import config from '../../config'
-import fileSystem from 'fs-extra';
+import fileSystem from '../../utils/filesystem';
 import followRedirects from 'follow-redirects';
 
 export default class Downloader {
@@ -68,7 +68,8 @@ export default class Downloader {
             return value.join('');
         }
 
-        var tmpDir = require('os').tmpdir();
+        const remote = window.require('electron').remote;
+        var tmpDir = remote.require('os').tmpdir();
 
         return tmpDir + '/' + prefix + randomChars(12);
     }

@@ -1,12 +1,13 @@
 import EnvironmentTypes from './EnvironmentTypes';
-import store from '../../utils/store';
 import { onServerStarted, onServerStopped, onLogMessage } from '../../actions/WebsiteActions';
 
 export default class Environment {
     constructor(website, serverManager) {
         this.serverManager = serverManager;
         this.website = website;
+    }
 
+    bindListenersToStore(store) {
         this.serverManager.on('start', () => store.dispatch(onServerStarted(this.website)));
         this.serverManager.on('stop', () => store.dispatch(onServerStopped(this.website)));
         this.serverManager.on('log', (message) => store.dispatch(onServerStopped(this.website, message)));

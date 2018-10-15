@@ -1,7 +1,6 @@
 import Downloader from './Downloader';
 import initializerConstants from '../../constants/InitializerConstants';
 import websiteDb from '../../database/Website';
-import store from '../../utils/store';
 import { onAddWebsite, onSelectWebsite } from '../../actions/WebsiteActions';
 
 /**
@@ -57,10 +56,6 @@ export default class Initializer {
                 // )
 
                 var newWebsite = await websiteDb.create(this.website);
-
-                store.dispatch(onAddWebsite(newWebsite));
-
-                store.dispatch(onAddWebsite(onSelectWebsite));
             }
             catch (err) {
                 this.provisioner.errorCleanup();
@@ -78,13 +73,18 @@ export default class Initializer {
         }
 
         await this.cleanup(true);
+
+        // store.dispatch(onAddWebsite(newWebsite));
+        // store.dispatch(onSelectWebsite(newWebsite));
+
+        return newWebsite;
     }
 
-    async validateProvisionerConfiguration (errorBag, websites) {
+    async validateProvisionerConfiguration(errorBag, websites) {
         return this.provisioner.validateConfiguration(errorBag, websites);
     }
 
-    async cleanup (isSuccess) {
+    async cleanup(isSuccess) {
         this.website.runtime.initState.textLog.addLine('Stopping the environment...');
         await this.serverManager.stop();
         this.website.runtime.initState.textLog.addLine('Server stopped');

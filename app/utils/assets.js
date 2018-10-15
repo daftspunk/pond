@@ -1,17 +1,14 @@
+// import { remote } from 'electron';
 
-function getDistDir() {
-    return require('electron').remote.process.cwd() + '/dist'
+export function getDistDir() {
+    const remote = window.require('electron').remote;
+    return remote.process.cwd() + '/dist';
 }
 
-function getAssetsDir() {
-    return getDistDir() + '/assets'
+export function getAssetsDir() {
+    return getDistDir() + '/assets';
 }
 
-function getPhpBinDir() {
-    return getDistDir() + '/assets-bin-php'
-}
-
-export default {
-    getAssetsDir,
-    getPhpBinDir
+export function getPhpBinDir() {
+    return getDistDir() + '/assets-bin-php';
 }

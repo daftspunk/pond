@@ -1,12 +1,17 @@
 import Initializer from './Initializer';
-import EnvironmentTypes from './EnvironmentTypes';
+import EnvironmentTypes from '../Environment/EnvironmentTypes';
 import platforms from '../../utils/platforms';
+import Scanner from './Scanner';
 
 import ServerManagerPondDarwin from '../Servers/PondServer.Darwin';
 import ServerManagerPondWin32 from '../Servers/PondServer.Win32';
 
 import ProvisionerPondDarwin from '../Provisioners/PondProvisioner.Darwin';
 import ProvisionerPondWin32 from '../Provisioners/PondProvisioner.Win32';
+
+export function createScanner(project) {
+    return new Scanner(project);
+}
 
 export function createInitializer(website) {
     const platform = platforms.getPlatform();
@@ -58,4 +63,3 @@ function getProvisionerClass(website, platform) {
     const errorString = `Environment provisioner for ${website.environmentType}/${platform} is not currently supported`;
     throw new Error(errorString);
 }
-

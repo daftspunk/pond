@@ -12,7 +12,8 @@ function typeToString(type) {
 }
 
 function getPlatform() {
-    return require('os').platform();
+    const remote = window.require('electron').remote;
+    return remote.require('os').platform();
 }
 
 function isSupportedPlatform(platform) {

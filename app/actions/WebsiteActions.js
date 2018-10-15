@@ -15,14 +15,6 @@ const LOG_EVENT = 'october/website/LOG_EVENT';
 
 export default function reducer(state = {}, action) {
     switch (action.type) {
-        // case CREATE_SELECT:
-        //     return {
-        //         showSelect: true
-        //     };
-        // case CREATE_FORM:
-        //     return {
-        //         showForm: true
-        //     };
         default:
             return state;
     }

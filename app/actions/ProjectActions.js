@@ -1,5 +1,7 @@
 import { PROJECT_CREATE } from '../constants/ModalConstants';
 import { onOpenModal } from '../actions/ModalActions';
+import { createScanner } from '../services/Initializer/InitializerFactory';
+import { getDistDir } from '../utils/assets';
 
 //
 // Actions
@@ -32,7 +34,17 @@ export default function reducer(state = {}, action) {
 //
 
 export function onCreateProject() {
-    return () => alert('hi');
+    return (dispatch) => { };
+    // return async (dispatch) => {
+    //     let project = {
+    //         location: getDistDir() + '/../'
+    //     };
+    //     console.log(project);
+
+    //     let scanner = createScanner(project);
+    //     const test = await scanner.run();
+    //     console.log(test);
+    // };
 }
 
 export function onCreateProjectModal() {

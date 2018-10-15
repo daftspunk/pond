@@ -19,7 +19,7 @@ class PortFinder {
     }
 
     isInUseByAnotherApp(port, hostname) {
-        const { net } = require('electron');
+        const { net } = window.require('electron');
         const server = new net.Server();
 
         return new Promise((resolve, reject) => {

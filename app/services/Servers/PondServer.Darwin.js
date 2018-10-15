@@ -1,5 +1,5 @@
 import PondServerBase from './PondServerBase';
-import assets from '../../utils/assets';
+import { getPhpBinDir } from '../../utils/assets';
 import { resolve } from 'path';
 
 /**
@@ -8,6 +8,6 @@ import { resolve } from 'path';
 export default class Server extends PondServerBase {
     getChildProcessCommand() {
         // return '/usr/bin/php'
-        return resolve(assets.getPhpBinDir()) + '/darwin/bin/php';
+        return resolve(getPhpBinDir()) + '/darwin/bin/php';
     }
 }

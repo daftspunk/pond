@@ -1,4 +1,4 @@
-import fileSystem from 'fs-extra';
+import fileSystem from './filesystem';
 
 export function toSafeString(value) {
     if (value === undefined || value === null) {

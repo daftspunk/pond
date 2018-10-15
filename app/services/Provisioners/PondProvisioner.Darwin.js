@@ -8,7 +8,7 @@ import PondProvisionerBase from './PondProvisionerBase';
  */
 
 export default class Provisioner extends PondProvisionerBase {
-    constructor (project) {
+    constructor(project) {
         super(project);
     }
 }

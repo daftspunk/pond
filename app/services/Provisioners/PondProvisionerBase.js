@@ -1,10 +1,10 @@
 import validator from 'validator';
-import fileSystem from 'fs-extra';
 import ProvisionerBase from './ProvisionerBase';
+import fileSystem from '../../utils/filesystem';
 import portFinder from '../../utils/portFinder';
 import validationUtils from '../../utils/validation';
 import { ONLINE } from '../../constants/EnvironmentConstants';
-import assets from '../../utils/assets';
+import { getAssetsDir } from '../../utils/assets';
 
 /**
  * Environment provisioner:
@@ -56,7 +56,7 @@ export default class Provisioner extends ProvisionerBase {
         // Just put the archive and server.php to the website's
         // directory.
 
-        const asssetsDir = assets.getAssetsDir();
+        const asssetsDir = getAssetsDir();
 
         fileSystem.copy(asssetsDir + '/pond/' + scriptName, this.website.location + '/' + scriptName);
     }

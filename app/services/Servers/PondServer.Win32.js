@@ -1,5 +1,5 @@
-import ServerBase from './PondServerBase';
-import assets from '../../utils/assets';
+import PondServerBase from './PondServerBase';
+import { getPhpBinDir } from '../../utils/assets';
 import { resolve } from 'path';
 
 /**
