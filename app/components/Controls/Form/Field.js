@@ -4,8 +4,6 @@ import classnames from 'classnames';
 import { Control, Label, Help } from './Form';
 
 const Field = ({
-    label,
-    comment,
     className,
     renderAs,
     align,
@@ -24,30 +22,16 @@ const Field = ({
         k = 'is-grouped';
     }
 
-    let elementClass = classnames('field', className, {
+    return <Element {...props} className={classnames('field', className, {
         [`${k}`]: k,
         [`${k}-${align}`]: k && align,
         [`${k}-multiline`]: k === 'is-grouped' && multiline,
         'is-horizontal': horizontal,
-    });
-
-    if (label) {
-        return (
-            <Element {...props} className={elementClass}>
-                <Label>{label}</Label>
-                <Control>{props.children}</Control>
-                { comment ? <Help>{comment}</Help> : '' }
-            </Element>
-        );
-    }
-    else {
-        return <Element {...props} className={elementClass} />;
-    }
+    })} />;
 };
 
 Field.propTypes = {
     children: PropTypes.node,
-    className: PropTypes.string,
     style: PropTypes.shape({}),
     renderAs: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     align: PropTypes.oneOf(['centered', 'right']),
@@ -57,8 +41,6 @@ Field.propTypes = {
 };
 
 Field.defaultProps = {
-    label: null,
-    comment: null,
     children: null,
     className: '',
     style: {},

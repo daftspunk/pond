@@ -62,7 +62,7 @@ export default class Input extends PureComponent {
                 {...props}
                 ref="input"
                 name={name}
-                defaultValue={value}
+                value={value}
                 type={type}
                 placeholder={placeholder}
                 readOnly={readOnly || isStatic}

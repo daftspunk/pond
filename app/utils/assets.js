@@ -1,5 +1,3 @@
-// import { remote } from 'electron';
-
 export function getDistDir() {
     const remote = window.require('electron').remote;
     return remote.process.cwd() + '/dist';

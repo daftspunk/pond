@@ -15,6 +15,7 @@ const Select = ({
     disabled,
     value,
     multiple,
+    fullwidth,
     children,
     name,
     ...props
@@ -26,6 +27,7 @@ const Select = ({
                 [`is-${color}`]: color,
                 'is-loading': loading,
                 'is-multiple': multiple,
+                'is-fullwidth': fullwidth,
             })}
             style={style}
         >
@@ -52,6 +54,7 @@ Select.propTypes = {
     readOnly: PropTypes.bool,
     disabled: PropTypes.bool,
     multiple: PropTypes.bool,
+    fullwidth: PropTypes.bool,
     loading: PropTypes.bool,
     value: PropTypes.oneOfType([
         PropTypes.string,
@@ -73,6 +76,7 @@ Select.defaultProps = {
     readOnly: false,
     disabled: false,
     multiple: false,
+    fullwidth: true,
     loading: false,
     name: null,
 };

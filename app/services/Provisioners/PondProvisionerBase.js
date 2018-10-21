@@ -2,7 +2,7 @@ import validator from 'validator';
 import ProvisionerBase from './ProvisionerBase';
 import fileSystem from '../../utils/filesystem';
 import portFinder from '../../utils/portFinder';
-import validationUtils from '../../utils/validation';
+import { toSafeString } from '../../utils/validation';
 import { ONLINE } from '../../constants/EnvironmentConstants';
 import { getAssetsDir } from '../../utils/assets';
 
@@ -17,12 +17,12 @@ const scriptName = 'server.php';
 export default class Provisioner extends ProvisionerBase {
 
     async validateConfiguration(errorBag, websites) {
-        if (validator.isEmpty(validationUtils.toSafeString(this.website.localPort))) {
+        if (validator.isEmpty(toSafeString(this.website.localPort))) {
             errorBag.add('localPort', 'websites.create_website.error_local_port_empty');
             return;
         }
 
-        if (!validator.isInt(validationUtils.toSafeString(this.website.localPort))) {
+        if (!validator.isInt(toSafeString(this.website.localPort))) {
             errorBag.add('localPort', 'websites.create_website.error_local_port_not_integer');
             return;
         }
