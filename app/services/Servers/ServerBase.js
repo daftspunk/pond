@@ -13,7 +13,7 @@ import { EventEmitter } from 'events'
  */
 
 export default class ServerBase extends EventEmitter {
-    constructor (project) {
+    constructor(project) {
         super();
 
         this.project = project;

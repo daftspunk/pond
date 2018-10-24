@@ -1,7 +1,7 @@
 import styles from './Form.scss';
 
 export { default as Form } from './Form';
-export { default as Field } from './Field';
+export { default as Field } from './Field/Field';
 export { default as Control } from './Field/Control';
 export { default as Label } from './Field/Label';
 export { default as Help } from './Field/Help';

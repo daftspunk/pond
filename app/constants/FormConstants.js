@@ -1,0 +1,3 @@
+export default {
+    CREATE_PROJECT_FORM: 'FORM_CREATE_PROJECT_FORM',
+}

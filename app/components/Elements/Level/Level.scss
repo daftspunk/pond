@@ -1,0 +1,15 @@
+@import "../../../styles/utils.scss";
+
+:global {
+    @import '~bulma/sass/components/level.sass';
+
+    .level-left,
+    .level-right {
+        &.is-wrap {
+            flex-shrink: 1;
+            .level-item {
+                flex-shrink: 1;
+            }
+        }
+    }
+}

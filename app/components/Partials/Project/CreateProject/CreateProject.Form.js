@@ -1,52 +1,24 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
-import { Field, Control, Label, Input, Help } from '../../../Controls/Form/Form';
-import { Modal } from '../../../Controls';
-import { Button } from '../../../Elements';
+import React, { PureComponent } from 'react'
+import { reduxForm } from 'redux-form'
+import PropTypes from 'prop-types'
+import { Form, Modal } from '../../../Controls'
+import { Button } from '../../../Elements'
+import { CREATE_PROJECT_FORM } from '../../../../constants/FormConstants'
 
-export default class Form extends PureComponent {
+class CreateProjectForm extends PureComponent {
     static propTypes = {
         onClose: PropTypes.func,
         onCreateShowSelect: PropTypes.func,
         onCreateProject: PropTypes.func,
-    };
-
-    static defaultProps = {
-    };
-
-    state = {
-        project: {
-            name: '',
-            directory: '',
-            description: '',
-        },
-        submitted: false
-    };
-
-    handleChange = (event) => {
-        const { name, value } = event.target;
-        const { project } = this.state;
-        this.setState({
-            project: {
-                ...project,
-                [name]: value
-            }
-        });
     }
 
-    handleSubmit = (event) => {
-        event.preventDefault();
-        this.setState({ submitted: true });
-
-        const { project } = this.state;
-        // @todo Validate project
-        this.props.onCreateProject(project);
+    static defaultProps = {
     }
 
     render() {
-        const { onClose, onCreateShowSelect } = this.props;
+        const { onClose, handleSubmit, onCreateProject, onCreateShowSelect } = this.props
         return (
-            <form name="form" onSubmit={this.handleSubmit}>
+            <Form>
                 <Modal.Card>
                     <Modal.Card.Head onClose={onClose}>
                         <Modal.Card.Title>
@@ -54,28 +26,13 @@ export default class Form extends PureComponent {
                         </Modal.Card.Title>
                     </Modal.Card.Head>
                     <Modal.Card.Body>
-                        <Field label="Project name">
-                            <Input
-                                placeholder="Pick a name for this project"
-                                name="name"
-                                autoFocus
-                                onChange={this.handleChange} />
-                        </Field>
-                        <Field label="Project directory">
-                            <Input
-                                name="directory"
-                                onChange={this.handleChange} />
-                        </Field>
-                        <Field label="Description">
-                            <Input
-                                name="description"
-                                onChange={this.handleChange} />
-                        </Field>
-
+                        <Form.Field name="name" label="Project name" placeholder="Pick a name for this project" autoFocus />
+                        <Form.Field name="directory" label="Project directory" />
+                        <Form.Field name="description" label="Description" />
                     </Modal.Card.Body>
                     <Modal.Card.Foot>
                         <p>
-                            <Button color="primary">Create</Button>
+                            <Button color="primary" onSubmit={handleSubmit(onCreateProject)}>Create</Button>
                         </p>
                         <p>
                             <Button onClick={onCreateShowSelect}>
@@ -84,7 +41,11 @@ export default class Form extends PureComponent {
                         </p>
                     </Modal.Card.Foot>
                 </Modal.Card>
-            </form>
-        );
+            </Form>
+        )
     }
 }
+
+export default reduxForm({
+    form: CREATE_PROJECT_FORM
+})(CreateProjectForm)

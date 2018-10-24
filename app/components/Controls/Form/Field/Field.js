@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { Control, Label, Help } from './Form';
+import { Control, Label, Help } from '../Form';
 
 const Field = ({
     className,
