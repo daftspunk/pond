@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import LevelSide from './Item/LevelSide';
-import LevelItem from './Item/LevelItem';
+import LevelSide from './Level.Side';
+import LevelItem from './Level.Item';
 import styles from './Level.scss';
 
 const CONSTANT_BREAKPOINTS = {

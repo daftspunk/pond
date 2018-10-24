@@ -4,6 +4,7 @@ import TextareaControl from './Controls/Textarea';
 import SelectControl from './Controls/Select';
 import CheckboxControl from './Controls/Checkbox';
 import RadioControl from './Controls/Radio';
+import FileControl from './Controls/File';
 import { Columns } from '../../Elements';
 import FormField from './Form.Field'
 import styles from './Form.scss';
@@ -22,11 +23,14 @@ export default class Form extends PureComponent {
 
     static Radio = props => <RadioControl {...props} />;
 
+    static FileUpload = props => <FileControl {...props} />;
+
     static stringToControlMap = {
         'text': Form.Text,
         'password': Form.Password,
         'textarea': Form.Textarea,
         'dropdown': Form.Dropdown,
+        'fileupload': Form.FileUpload,
     };
 
     static EmptyField = () => <Columns.Column size={6} />;

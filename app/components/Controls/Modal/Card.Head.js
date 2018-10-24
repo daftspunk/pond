@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import Button from '../../../Elements/Button/Button';
+import Button from '../../Elements/Button/Button';
 
 const ModalCardHead = ({
     children,

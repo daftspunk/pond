@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-
-import ModalCardHead from './Card/Head';
-import ModalCardBody from './Card/Body';
-import ModalCardFoot from './Card/Foot';
-import ModalCardTitle from './Card/Title';
+import ModalCardHead from './Card.Head';
+import ModalCardBody from './Card.Body';
+import ModalCardFoot from './Card.Foot';
+import ModalCardTitle from './Card.Title';
 
 const ModalCard = ({
     className,

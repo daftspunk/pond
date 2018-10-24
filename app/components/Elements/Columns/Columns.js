@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Column from './Items/Column';
+import Column from './Columns.Column';
 import COLUMN_CONSTANTS from './ColumnConstants';
 import styles from './Columns.scss';
 

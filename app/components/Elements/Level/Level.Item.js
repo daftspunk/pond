@@ -7,6 +7,7 @@ const LevelItem = ({
     className,
     renderAs,
     narrow,
+    centered,
     ...props
 }) => {
     const Element = renderAs;
@@ -15,6 +16,7 @@ const LevelItem = ({
             {...props}
             className={classnames('level-item', className, {
                 'is-narrow': narrow,
+                'has-text-centered': centered
             })}>
             {children}
         </Element>
@@ -24,6 +26,7 @@ const LevelItem = ({
 LevelItem.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
+    centered: PropTypes.bool,
     /**
      * `true` to remove space between columns
      */
@@ -33,6 +36,7 @@ LevelItem.propTypes = {
 };
 
 LevelItem.defaultProps = {
+    centered: false,
     narrow: false,
     children: null,
     className: '',
