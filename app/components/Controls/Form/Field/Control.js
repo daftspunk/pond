@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
+import React from 'react'
+import PropTypes from 'prop-types'
+import classnames from 'classnames'
 
 const Control = ({
     children,
@@ -13,7 +13,7 @@ const Control = ({
     size,
     ...props
 }) => {
-    const Element = renderAs;
+    const Element = renderAs
     return (
         <Element
             {...props}
@@ -27,8 +27,8 @@ const Control = ({
         >
             {children}
         </Element>
-    );
-};
+    )
+}
 
 Control.propTypes = {
     children: PropTypes.node,
@@ -36,11 +36,12 @@ Control.propTypes = {
     style: PropTypes.shape({}),
     renderAs: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
     fullwidth: PropTypes.bool,
+    indent: PropTypes.bool,
     iconLeft: PropTypes.bool,
     iconRight: PropTypes.bool,
     loading: PropTypes.bool,
     size: PropTypes.oneOf(['small', 'medium', 'large']),
-};
+}
 
 Control.defaultProps = {
     children: null,
@@ -52,6 +53,6 @@ Control.defaultProps = {
     iconRight: false,
     loading: false,
     size: null,
-};
+}
 
-export default Control;
+export default Control

@@ -18,7 +18,7 @@ export default class Dropdown extends PureComponent {
         right: PropTypes.bool,
         boxed: PropTypes.bool,
         name: PropTypes.string,
-        label: PropTypes.string,
+        buttonText: PropTypes.string,
     }
 
     static defaultProps = {
@@ -32,7 +32,7 @@ export default class Dropdown extends PureComponent {
         right: false,
         boxed: false,
         name: null,
-        label: 'Choose a file...',
+        buttonText: 'Choose a file...',
     }
 
     select = (event) => {
@@ -62,7 +62,7 @@ export default class Dropdown extends PureComponent {
             right,
             boxed,
             name,
-            label,
+            buttonText,
             ...props
         } = this.props
 
@@ -92,7 +92,7 @@ export default class Dropdown extends PureComponent {
                             <Icon icon="fas fa-upload" />
                         </span>
                         <span className="file-label">
-                            {label}
+                            {buttonText}
                         </span>
                     </span>
                     {fileName &&

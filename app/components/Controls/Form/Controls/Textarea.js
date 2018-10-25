@@ -1,9 +1,9 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import * as colors from '../../../../constants/ColorConstants';
+import React from 'react'
+import PropTypes from 'prop-types'
+import classnames from 'classnames'
+import * as colors from '../../../../constants/ColorConstants'
 
-const colorMap = [null].concat(Object.keys(colors).map(key => colors[key]));
+const colorMap = [null].concat(Object.keys(colors).map(key => colors[key]))
 
 const Textarea = ({
     className,
@@ -31,8 +31,8 @@ const Textarea = ({
                 [`is-${color}`]: color,
             })}
         />
-    );
-};
+    )
+}
 
 Textarea.propTypes = {
     className: PropTypes.string,
@@ -48,7 +48,7 @@ Textarea.propTypes = {
      * The name of the input field Commonly used for [multi-input handling](https://reactjs.org/docs/forms.html#handling-multiple-inputs)
      */
     name: PropTypes.string,
-};
+}
 
 Textarea.defaultProps = {
     className: '',
@@ -61,6 +61,6 @@ Textarea.defaultProps = {
     rows: 4,
     value: '',
     name: '',
-};
+}
 
-export default Textarea;
+export default Textarea

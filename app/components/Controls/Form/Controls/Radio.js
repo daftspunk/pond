@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
+import React from 'react'
+import PropTypes from 'prop-types'
+import classnames from 'classnames'
 
 const Radio = ({
     className,
@@ -28,8 +28,8 @@ const Radio = ({
             />
             {children}
         </label>
-    );
-};
+    )
+}
 
 Radio.propTypes = {
     children: PropTypes.node,
@@ -42,7 +42,7 @@ Radio.propTypes = {
     disabled: PropTypes.bool,
     checked: PropTypes.bool,
     value: PropTypes.string,
-};
+}
 
 Radio.defaultProps = {
     children: null,
@@ -51,6 +51,6 @@ Radio.defaultProps = {
     style: {},
     disabled: false,
     checked: false,
-};
+}
 
-export default Radio;
+export default Radio

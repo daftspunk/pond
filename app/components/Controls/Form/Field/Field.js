@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { Control, Label, Help } from '../Form';
+import React from 'react'
+import PropTypes from 'prop-types'
+import classnames from 'classnames'
+import { Control, Label, Help } from '../Form'
 
 const Field = ({
     className,
@@ -9,17 +9,18 @@ const Field = ({
     align,
     multiline,
     horizontal,
+    indent,
     kind,
     ...props
 }) => {
-    const Element = renderAs;
-    let k = null;
+    const Element = renderAs
+    let k = null
 
     if (kind === 'addons') {
-        k = 'has-addons';
+        k = 'has-addons'
     }
     else if (kind === 'group') {
-        k = 'is-grouped';
+        k = 'is-grouped'
     }
 
     return <Element {...props} className={classnames('field', className, {
@@ -27,8 +28,9 @@ const Field = ({
         [`${k}-${align}`]: k && align,
         [`${k}-multiline`]: k === 'is-grouped' && multiline,
         'is-horizontal': horizontal,
-    })} />;
-};
+        'is-indent': indent,
+    })} />
+}
 
 Field.propTypes = {
     children: PropTypes.node,
@@ -38,7 +40,8 @@ Field.propTypes = {
     kind: PropTypes.oneOf(['addons', 'group']),
     multiline: PropTypes.bool,
     horizontal: PropTypes.bool,
-};
+    indent: PropTypes.bool,
+}
 
 Field.defaultProps = {
     children: null,
@@ -47,8 +50,9 @@ Field.defaultProps = {
     renderAs: 'div',
     align: null,
     kind: null,
+    indent: false,
     multiline: false,
     horizontal: false,
-};
+}
 
-export default Field;
+export default Field
