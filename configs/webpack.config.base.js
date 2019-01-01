@@ -37,6 +37,10 @@ export default {
     extensions: ['.js', '.jsx', '.json']
   },
 
+  externals: [
+    'leveldown'
+  ],
+
   plugins: [
     new webpack.EnvironmentPlugin({
       NODE_ENV: 'production'
