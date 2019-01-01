@@ -1,0 +1,124 @@
+@import "../../../styles/utils.scss";
+
+$sidebar-width: 4.5rem;
+$sidebar-settings-height: 70px;
+$sidebar-brand-height: 65px;
+
+div.sidebarContainer {
+    display: block;
+}
+
+div.mainContainer {
+    background: $body-background-color;
+    position: absolute;
+    bottom: 0;
+    left: $sidebar-width;
+    width: calc(100% - #{$sidebar-width});
+    height: calc(100% - #{$titlebar-height});
+    overflow-y: auto;
+}
+
+//
+// Sidebar
+//
+
+div.sidebar {
+    background: $sidebar-background-color;
+    position: fixed;
+    top: $titlebar-height;
+    left: 0;
+    height: calc(100% - #{$titlebar-height});
+    width: $sidebar-width;
+    text-align: center;
+
+    :global {
+        .button {
+            width: 50px;
+            height: 50px;
+            margin: .25em 0;
+            color: rgba(255,255,255,.8);
+            background: rgba(255,255,255,.2);
+            border-color: transparent;
+
+            i, img {
+                opacity: .9;
+            }
+            i {
+                display: block;
+                font-size: 1.8rem;
+                width: 100%;
+            }
+            img {
+                width: 55%;
+            }
+            &:active, &:focus {
+                box-shadow: none;
+            }
+            &:hover {
+                i, img { opacity: 1; }
+            }
+            &.is-active {
+                box-shadow: none;
+                i, img { opacity: 1; }
+            }
+        }
+    }
+}
+
+div.sidebarTools {
+    overflow-x: hidden;
+    padding-top: .2em;
+    text-align: center;
+    height: calc(100% - #{$sidebar-settings-height} - #{$sidebar-brand-height});
+
+    button.newNavItem {
+        border-style: dashed;
+        background: transparent;
+        border-color: rgba(255,255,255,.2);
+
+        &:hover {
+            border-color: rgba(255,255,255,.7);
+        }
+    }
+}
+
+div.sidebarSettings {
+    position: relative;
+    text-align: center;
+    height: $sidebar-settings-height;
+
+    &::after {
+        content:"";
+        position: absolute;
+        width: 40%;
+        border-bottom: 1px solid rgba(255,255,255,.2);
+        bottom: .3em;
+        left: 30%;
+    }
+
+    :global {
+        .button {
+            color: $white;
+            border: none;
+            background: transparent;
+
+            i {
+                font-size: 2.1rem;
+                opacity: .8;
+            }
+            &:hover i {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+div.sidebarBrand {
+    padding-top: .5em;
+    text-align: center;
+    height: $sidebar-brand-height;
+
+    img {
+        width: 35px;
+    }
+}

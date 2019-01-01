@@ -1,0 +1,10 @@
+@import "../../../styles/utils.scss";
+
+img.welcomeImage {
+    width: 50%;
+    margin-bottom: 3rem;
+}
+
+section.noSitesContainer {
+    min-height: calc(100% - #{$titlebar-height}) !important;
+}

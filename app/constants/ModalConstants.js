@@ -1,0 +1,6 @@
+export default {
+    ALERT: 'MODAL_ALERT',
+    CONFIRM: 'MODAL_CONFIRM',
+
+    PROJECT_CREATE: 'MODAL_PROJECT_CREATE',
+}

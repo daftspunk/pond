@@ -1,0 +1,28 @@
+@import '~bulma/sass/utilities/initial-variables.sass';
+
+// Fix hero referencing navbar
+$navbar-height: 3.25rem !default
+
+// Set your brand colors
+$blue: #3498db;
+
+$body-size: 14px;
+
+// Update Bulma's global variables
+$family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+$primary: $blue;
+$link: $blue;
+$widescreen-enabled: false;
+$fullhd-enabled: false;
+
+// Update some of Bulma's component variables
+$body-background-color: $white;
+$control-border-width: 1px;
+//$input-border-color: transparent;
+$input-shadow: none;
+
+// Global variables
+$titlebar-height: 2rem;
+$sidebar-background-color: #283f4d;
+
+@import '~bulma/sass/utilities/_all.sass';

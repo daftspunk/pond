@@ -1,0 +1,9 @@
+@import "../../../styles/utils.scss";
+
+:global {
+    @import "~bulma/sass/elements/button.sass";
+
+    .button {
+        box-sizing: border-box;
+    }
+}

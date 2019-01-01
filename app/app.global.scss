@@ -1,0 +1,23 @@
+@charset "utf-8";
+
+// Font awesome
+@import "~@fortawesome/fontawesome-free/css/all.css";
+
+@import "./app/styles/variables.scss";
+
+// Import only what you need from Bulma
+@import "../node_modules/bulma/sass/utilities/_all.sass";
+@import "../node_modules/bulma/sass/base/_all.sass";
+@import "../node_modules/bulma/sass/grid/_all.sass";
+@import "../node_modules/bulma/sass/elements/container.sass";
+@import "../node_modules/bulma/sass/elements/form.sass";
+@import "../node_modules/bulma/sass/elements/box.sass";
+@import "../node_modules/bulma/sass/elements/title.sass";
+@import "../node_modules/bulma/sass/elements/content.sass";
+@import "../node_modules/bulma/sass/elements/other.sass";
+@import "../node_modules/bulma/sass/layout/hero.sass";
+
+// Remove the scrollbars
+html {
+    overflow-y: auto;
+}
