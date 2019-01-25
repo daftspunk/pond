@@ -29,7 +29,9 @@ const Button = ({
     ...props
 }) => {
     let Element = isStatic ? 'span' : renderAs;
-    const otherProps = {};
+    const otherProps = {
+        type: 'button'
+    };
     if (submit) {
         Element = 'button';
         otherProps.type = 'submit';

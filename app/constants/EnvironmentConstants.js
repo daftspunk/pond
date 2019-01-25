@@ -1,6 +1,4 @@
-export default {
-    ONLINE: 'online',
-    OFFLINE: 'offline',
-    STARTING: 'starting',
-    STOPPING: 'stopping'
-}
+const ONLINE = 'online';
+const OFFLINE = 'offline';
+const STARTING = 'starting';
+const STOPPING = 'stopping';

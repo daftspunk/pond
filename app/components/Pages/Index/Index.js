@@ -19,7 +19,7 @@ export default class Index extends Component {
                                 Create your first and enjoy October CMS!
                             </p>
                             <p>
-                                <Button color="primary" onClick={this.props.onCreateWebsite}>
+                                <Button color="info" onClick={this.props.onCreateWebsite}>
                                     Create your first website
                                 </Button>
                             </p>
