@@ -1,1 +1,1 @@
-const INDEX = "/";
+export const INDEX = "/";

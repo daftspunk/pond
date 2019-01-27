@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Layout from '../../Layouts/Default/Default';
-import SidebarNav from '../../Partials/Site/SidebarNav/SidebarNavContainer';
+import SidebarNav from '../../Partials/Site/SidebarNav/SidebarNav';
 import { Button } from '../../Elements';
 import styles from './Index.scss';
 import image from '../../../images/welcome.png';

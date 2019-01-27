@@ -28,7 +28,7 @@ export default class Select extends PureComponent {
                                 <h5 className="title is-5">Create</h5>
                                 <p>Create an empty project folder to store your websites.</p>
                                 <hr />
-                                <Button color="primary" onClick={onCreateShowForm}>
+                                <Button color="info" onClick={onCreateShowForm}>
                                     Create Project
                                 </Button>
                             </div>

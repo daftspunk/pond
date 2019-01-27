@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 import { ALERT, CONFIRM, PROJECT_CREATE } from '../../../../constants/ModalConstants';
-import CreateProject from '../../../Partials/Project/CreateProject/CreateProjectContainer';
+import { ModalActions } from '../../../../actions/ModalActions'
 import AlertModal from './GlobalModals.Alert';
 import ConfirmModal from './GlobalModals.Confirm';
 
-export default class GlobalModals extends Component {
+import CreateProject from '../../../Partials/Project/CreateProject/CreateProject';
+
+class GlobalModals extends Component {
     static Alert = AlertModal;
     static Confirm = ConfirmModal;
 
@@ -22,7 +26,7 @@ export default class GlobalModals extends Component {
                     item={item}
                     key={i}
                     zIndex={i}
-                    onClose={(item) => this.props.onCloseModal(item)} />
+                    onClose={item=>this.props.onCloseModal(item)} />
             );
         });
 
@@ -33,3 +37,16 @@ export default class GlobalModals extends Component {
         );
     }
 }
+
+export default connect(
+    state => {
+        return {
+            modals: state.modals.modals,
+        }
+    },
+    dispatch => {
+        return bindActionCreators({
+            ...ModalActions
+        }, dispatch)
+    }
+)(GlobalModals)

@@ -1,4 +1,4 @@
-const ONLINE = 'online';
-const OFFLINE = 'offline';
-const STARTING = 'starting';
-const STOPPING = 'stopping';
+export const ONLINE = 'online';
+export const OFFLINE = 'offline';
+export const STARTING = 'starting';
+export const STOPPING = 'stopping';

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import * as routes from '../../../constants/RouteConstants';
-import GlobalModals from '../../Partials/Site/GlobalModals/GlobalModalsContainer';
+import GlobalModals from '../../Partials/Site/GlobalModals/GlobalModals';
 import styles from './Default.scss';
 
 export default class Default extends Component {

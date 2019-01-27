@@ -1,12 +1,16 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { Button, Icon } from '../../../Elements';
 import { Scrollbars } from 'react-custom-scrollbars';
 import * as routes from '../../../../constants/RouteConstants';
 import styles from '../../../Layouts/Default/Default.scss';
 import OctoberIcon from '../../../Elements/Icon/Icons/OctoberIcon';
 
-export default class SidebarNav extends Component {
+import { ProjectActions } from '../../../../actions/ProjectActions';
+
+class SidebarNav extends Component {
 
     static NavItem = props => (
         <Button title={props.children} size="large" rounded>
@@ -45,3 +49,14 @@ export default class SidebarNav extends Component {
         );
     }
 }
+
+export default connect(
+    state => {
+        return {}
+    },
+    dispatch => {
+        return bindActionCreators({
+            ...ProjectActions
+        }, dispatch)
+    }
+)(SidebarNav)

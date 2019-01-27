@@ -37,6 +37,13 @@ export default function reducer(state = initialState, action) {
 // Action Creators
 //
 
+export const ModalActions = {
+    onOpenAlert,
+    onOpenConfirm,
+    onOpenModal,
+    onCloseModal
+}
+
 /*
 function onConfirmAction() {
     return (dispatch) => {

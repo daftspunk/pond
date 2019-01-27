@@ -1,4 +1,4 @@
-const DOWNLOADING = 'downloading';
-const PROVISIONING = 'provisioning';
-const INSTALLING = 'installing';
-const DONE = 'done';
+export const DOWNLOADING = 'downloading';
+export const PROVISIONING = 'provisioning';
+export const INSTALLING = 'installing';
+export const DONE = 'done';

@@ -33,6 +33,13 @@ export default function reducer(state = {}, action) {
 // Action Creators
 //
 
+export const ProjectActions = {
+    onCreateProject,
+    onCreateProjectModal,
+    onCreateShowSelect,
+    onCreateShowForm
+}
+
 export function onCreateProject() {
     return (dispatch) => { };
     // return async (dispatch) => {

@@ -1,12 +1,10 @@
-export default {
-    PRIMARY: 'primary',
-    SUCCESS: 'success',
-    INFO: 'info',
-    WARNING: 'warning',
-    DANGER: 'danger',
-    LIGHT: 'light',
-    DARK: 'dark',
-    WHITE: 'white',
-    BLACK: 'black',
-    LINK: 'link',
-}
+export const PRIMARY = 'primary';
+export const SUCCESS = 'success';
+export const INFO = 'info';
+export const WARNING = 'warning';
+export const DANGER = 'danger';
+export const LIGHT = 'light';
+export const DARK = 'dark';
+export const WHITE = 'white';
+export const BLACK = 'black';
+export const LINK = 'link';

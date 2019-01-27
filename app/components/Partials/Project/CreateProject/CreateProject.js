@@ -1,17 +1,19 @@
-import React, { Component } from 'react'
-import { reduxForm } from 'redux-form'
-import PropTypes from 'prop-types'
-import { Modal } from '../../../Controls'
-import { Button } from '../../../Elements'
-import ProjectSelect from './CreateProject.Select'
-import ProjectForm from './CreateProject.Form'
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Modal } from '../../../Controls';
+import { Button } from '../../../Elements';
+import ProjectSelect from './CreateProject.Select';
+import ProjectForm from './CreateProject.Form';
+import { ProjectActions } from '../../../../actions/ProjectActions';
 
-export default class CreateProject extends Component {
+class CreateProject extends Component {
     static propTypes = {
         item: PropTypes.object,
         showSelect: PropTypes.bool,
         showForm: PropTypes.bool,
-    }
+    };
 
     static defaultProps = {
     }
@@ -39,3 +41,13 @@ export default class CreateProject extends Component {
         )
     }
 }
+
+export default connect(
+    state => ({
+        showSelect: state.project.showSelect,
+        showForm: state.project.showForm,
+    }),
+    dispatch => bindActionCreators({
+        ...ProjectActions
+    }, dispatch)
+)(CreateProject)

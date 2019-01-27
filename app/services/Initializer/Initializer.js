@@ -1,5 +1,5 @@
 import Downloader from './Downloader';
-import initializerConstants from '../../constants/InitializerConstants';
+import * as initializerConstants from '../../constants/InitializerConstants';
 import websiteDb from '../../database/Website';
 import { onAddWebsite, onSelectWebsite } from '../../actions/WebsiteActions';
 
