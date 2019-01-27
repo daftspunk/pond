@@ -1,7 +1,7 @@
-import { PROJECT_CREATE } from '../constants/ModalConstants';
-import { onOpenModal } from '../actions/ModalActions';
-import { createScanner } from '../services/Initializer/InitializerFactory';
-import { getDistDir } from '../utils/assets';
+import { PROJECT_CREATE } from '../constants/ModalConstants'
+import { onOpenModal } from '../actions/ModalActions'
+import { createScanner } from '../services/Initializer/InitializerFactory'
+import { getDistDir } from '../utils/assets'
 
 //
 // Actions

@@ -17,7 +17,7 @@ export default class Input extends PureComponent {
         isRounded: PropTypes.bool,
         disabled: PropTypes.bool,
         placeholder: PropTypes.string,
-        value: PropTypes.string,
+        value: PropTypes.any,
         name: PropTypes.string,
     };
 

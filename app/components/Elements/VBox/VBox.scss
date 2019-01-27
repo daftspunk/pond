@@ -1,0 +1,9 @@
+.verticalBox {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.mainBox {
+    flex: 1;
+}

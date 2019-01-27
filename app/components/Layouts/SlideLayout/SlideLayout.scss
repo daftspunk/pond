@@ -1,0 +1,44 @@
+@import "../../../styles/utils.scss";
+
+$close-width: 3em;
+
+.slideView {
+    position: fixed;
+    left: 0;
+    top: $titlebar-height;
+    bottom: 0;
+    right: 0;
+
+    background: $white;
+    background: orange;
+}
+
+.close {
+    position: absolute;
+    right: .1rem;
+    top: .5rem;
+    padding: 0 .5rem;
+}
+
+.contentArea {
+    padding-right: $close-width;
+    background: #eee;
+}
+
+.title {
+    padding: 1.5rem 2rem;
+    /*padding-bottom: 3rem;*/
+    background: $white;
+    border-bottom: 1px solid #ccc;
+}
+
+.content {
+    padding: 1.5rem 2rem 1rem;
+    background: $white;
+    height: 100%;
+}
+
+.buttons {
+    padding: 1rem 2rem;
+    background: $white;
+}

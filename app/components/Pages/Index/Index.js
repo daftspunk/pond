@@ -1,12 +1,18 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import Layout from '../../Layouts/Default/Default';
 import SidebarNav from '../../Partials/Site/SidebarNav/SidebarNav';
 import { Button } from '../../Elements';
 import styles from './Index.scss';
 import image from '../../../images/welcome.png';
+import { SlideActions } from '../../../actions/SlideActions';
+import { CREATE_WEBSITE } from '../../../constants/SlideConstants';
 
-export default class Index extends Component {
+class Index extends Component {
     render() {
+        const { onOpenSlides } = this.props;
+
         return (
             <Layout sidebar={<SidebarNav />}>
                 <section className={`hero is-fullheight ${styles.noSitesContainer}`}>
@@ -19,7 +25,7 @@ export default class Index extends Component {
                                 Create your first and enjoy October CMS!
                             </p>
                             <p>
-                                <Button color="info" onClick={this.props.onCreateWebsite}>
+                                <Button color="info" onClick={() => onOpenSlides(CREATE_WEBSITE)}>
                                     Create your first website
                                 </Button>
                             </p>
@@ -30,3 +36,18 @@ export default class Index extends Component {
         );
     }
 }
+
+function onCreateWebsite() {
+    return () => alert('hi')
+}
+
+export default connect(
+    state => {
+        return {}
+    },
+    dispatch => {
+        return bindActionCreators({
+            ...SlideActions
+        }, dispatch)
+    }
+)(Index)

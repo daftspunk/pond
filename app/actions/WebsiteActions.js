@@ -1,4 +1,4 @@
-import { ONLINE, OFFLINE } from '../constants/EnvironmentConstants';
+import { ONLINE, OFFLINE } from '../constants/EnvironmentConstants'
 
 //
 // Actions
@@ -23,6 +23,14 @@ export default function reducer(state = {}, action) {
 //
 // Action Creators
 //
+
+export const WebsiteActions = {
+    onAddWebsite,
+    onSelectWebsite,
+    onServerStarted,
+    onServerStopped,
+    onLogMessage,
+}
 
 export function onAddWebsite(website) {
     return {

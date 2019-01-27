@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 import { ALERT, CONFIRM, PROJECT_CREATE } from '../../../../constants/ModalConstants';
-import { ModalActions } from '../../../../actions/ModalActions'
+import { ModalActions } from '../../../../actions/ModalActions';
 import AlertModal from './GlobalModals.Alert';
 import ConfirmModal from './GlobalModals.Confirm';
 

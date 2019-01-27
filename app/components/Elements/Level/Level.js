@@ -5,6 +5,23 @@ import LevelSide from './Level.Side';
 import LevelItem from './Level.Item';
 import styles from './Level.scss';
 
+//
+// Usage
+//
+
+/*
+<Level>
+    <Level.Side align="left">
+        <Level.Item>
+            ...
+        </Level.Item>
+    </Level.Side>
+    <Level.Side align="right">
+        ...
+    </Level.Side>
+</Level>
+*/
+
 const CONSTANT_BREAKPOINTS = {
     DESKTOP: 'desktop',
     TABLET: 'tablet',

@@ -1,5 +1,5 @@
-import uuid from 'uuid';
-import { ALERT, CONFIRM } from '../constants/ModalConstants';
+import uuid from 'uuid'
+import { ALERT, CONFIRM } from '../constants/ModalConstants'
 
 //
 // Actions

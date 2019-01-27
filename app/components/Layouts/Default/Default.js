@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import * as routes from '../../../constants/RouteConstants';
 import GlobalModals from '../../Partials/Site/GlobalModals/GlobalModals';
+import GlobalSlides from '../../Partials/Site/GlobalSlides/GlobalSlides';
 import styles from './Default.scss';
 
 export default class Default extends Component {
@@ -21,6 +22,7 @@ export default class Default extends Component {
                     {this.props.children}
                 </div>
                 <GlobalModals />
+                <GlobalSlides />
             </React.Fragment>
         );
     }
