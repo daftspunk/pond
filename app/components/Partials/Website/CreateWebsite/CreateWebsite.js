@@ -4,8 +4,9 @@ import { connect } from 'react-redux'
 import { Button, Level } from '../../../Elements'
 import { WebsiteActions } from '../../../../actions/WebsiteActions'
 import { SlideActions } from '../../../../actions/SlideActions'
-import SlideLayout from '../../../Layouts/SlideLayout/SlideLayout'
-import WebsiteForm from './CreateWebsite.Form';
+import SlideLayout from '../../../Layouts/Slide/Slide'
+import WebsiteForm from './CreateWebsite.Form'
+import WebsiteProgress from './CreateWebsite.Progress'
 
 class CreateWebsite extends Component {
     render() {
@@ -13,7 +14,11 @@ class CreateWebsite extends Component {
 
         return (
             <SlideLayout close={<Button remove size="medium" onClick={onCloseSlides} />}>
-                <WebsiteForm {...this.props} />
+                {true ? (
+                    <WebsiteProgress {...this.props} />
+                ) : (
+                    <WebsiteForm {...this.props} />
+                )}
             </SlideLayout>
         )
     }
@@ -21,8 +26,7 @@ class CreateWebsite extends Component {
 
 export default connect(
     state => ({
-        // showSelect: state.project.showSelect,
-        // showForm: state.project.showForm,
+        project: state.project.project || {}
     }),
     dispatch => bindActionCreators({
         ...SlideActions,

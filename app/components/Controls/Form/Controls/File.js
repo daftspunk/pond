@@ -19,6 +19,7 @@ export default class Dropdown extends PureComponent {
         boxed: PropTypes.bool,
         name: PropTypes.string,
         buttonText: PropTypes.string,
+        directory: PropTypes.bool,
     }
 
     static defaultProps = {
@@ -32,7 +33,8 @@ export default class Dropdown extends PureComponent {
         right: false,
         boxed: false,
         name: null,
-        buttonText: 'Choose a file...',
+        buttonText: 'Choose...',
+        directory: false,
     }
 
     select = (event) => {
@@ -41,8 +43,11 @@ export default class Dropdown extends PureComponent {
         }
 
         const file = event.target
+
         if (file && file.files.length > 0) {
-            this.labelElement.innerHTML = file.files[0].name
+            this.labelElement.innerHTML = this.props.directory
+                ? file.files[0].path
+                : file.files[0].name
         }
 
         if (this.props.onChange) {
@@ -63,6 +68,7 @@ export default class Dropdown extends PureComponent {
             boxed,
             name,
             buttonText,
+            directory,
             ...props
         } = this.props
 
@@ -79,14 +85,27 @@ export default class Dropdown extends PureComponent {
                 })}
             >
                 <label className="file-label">
-                    <input
-                        {...props}
-                        name={name}
-                        value=""
-                        type="file"
-                        className="file-input"
-                        onChange={this.select}
-                    />
+                    {directory ? (
+                        <input
+                            {...props}
+                            name={name}
+                            value={undefined}
+                            type="file"
+                            className="file-input"
+                            onChange={this.select}
+                            directory=""
+                            webkitdirectory=""
+                        />
+                    ) : (
+                        <input
+                            {...props}
+                            name={name}
+                            value={undefined}
+                            type="file"
+                            className="file-input"
+                            onChange={this.select}
+                        />
+                    )}
                     <span className="file-cta">
                         <span className="file-icon">
                             <Icon icon="fas fa-upload" />

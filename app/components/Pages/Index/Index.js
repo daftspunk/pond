@@ -1,52 +1,57 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import Layout from '../../Layouts/Default/Default';
-import SidebarNav from '../../Partials/Site/SidebarNav/SidebarNav';
-import { Button } from '../../Elements';
-import styles from './Index.scss';
-import image from '../../../images/welcome.png';
-import { SlideActions } from '../../../actions/SlideActions';
-import { CREATE_WEBSITE } from '../../../constants/SlideConstants';
+import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import Layout from '../../Layouts/Default/Default'
+import SidebarNav from '../../Partials/Site/SidebarNav/SidebarNav'
+import { Button, Columns } from '../../Elements'
+import styles from './Index.scss'
+import { SlideActions } from '../../../actions/SlideActions'
+import { ProjectActions } from '../../../actions/ProjectActions'
+import { WebsiteActions } from '../../../actions/WebsiteActions'
+import NoSites from './Index.NoSites'
+import SitesList from './Sites/Sites.List'
+import SitesDetail from './Sites/Sites.Detail'
 
 class Index extends Component {
+    componentDidMount() {
+        this.props.onFetchProjects();
+        this.props.onSetActiveProject();
+    }
+
     render() {
-        const { onOpenSlides } = this.props;
+        const { websites } = this.props;
 
         return (
             <Layout sidebar={<SidebarNav />}>
-                <section className={`hero is-fullheight ${styles.noSitesContainer}`}>
-                    <div className="hero-body">
-                        <div className="container has-text-centered">
-                            <img src={image} className={styles.welcomeImage} />
-                            <h4 className="title is-4 is-spaced">Welcome to The Pond</h4>
-                            <p className="subtitle is-6">
-                                You don't have any websites in this project yet.
-                                Create your first and enjoy October CMS!
-                            </p>
-                            <p>
-                                <Button color="info" onClick={() => onOpenSlides(CREATE_WEBSITE)}>
-                                    Create your first website
-                                </Button>
-                            </p>
-                        </div>
-                    </div>
-                </section>
+                {!websites.length ? (
+                    <NoSites {...this.props} />
+                ) : (
+                    <Columns gapless fullheight>
+                        <Columns.Column size={4} className={styles.sitesList}>
+                            <SitesList {...this.props} />
+                        </Columns.Column>
+                        <Columns.Column size={8}>
+                            <SitesDetail {...this.props} />
+                        </Columns.Column>
+                    </Columns>
+                )}
             </Layout>
         );
     }
 }
 
-function onCreateWebsite() {
-    return () => alert('hi')
-}
-
 export default connect(
     state => {
-        return {}
+        return {
+            project: state.project.project || {},
+            websites: state.website.websites,
+            editWebsite: state.website.editWebsite
+        }
     },
     dispatch => {
         return bindActionCreators({
+            ...WebsiteActions,
+            ...ProjectActions,
             ...SlideActions
         }, dispatch)
     }

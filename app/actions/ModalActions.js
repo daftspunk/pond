@@ -7,6 +7,7 @@ import { ALERT, CONFIRM } from '../constants/ModalConstants'
 
 const OPEN_MODAL = 'october/modal/OPEN_MODAL';
 const CLOSE_MODAL = 'october/modal/CLOSE_MODAL';
+const CLOSE_MODAL_BY_TYPE = 'october/modal/CLOSE_MODAL_BY_TYPE';
 
 //
 // Reducers
@@ -27,6 +28,11 @@ export default function reducer(state = initialState, action) {
             return {
                 ...state,
                 modals: state.modals.filter(item => item.id !== action.obj.id),
+            };
+        case CLOSE_MODAL_BY_TYPE:
+            return {
+                ...state,
+                modals: state.modals.filter(item => item.type !== action.obj.type),
             };
         default:
             return state;
@@ -87,7 +93,7 @@ export function onOpenModal(obj) {
 
 export function onCloseModal(obj) {
     if (!obj.id) {
-        obj.id = uuid.v4();
+        return { type: CLOSE_MODAL_BY_TYPE, obj };
     }
 
     return { type: CLOSE_MODAL, obj };

@@ -71,6 +71,22 @@ div.sidebarTools {
     text-align: center;
     height: calc(100% - #{$sidebar-settings-height} - #{$sidebar-brand-height});
 
+    button.navItemActive {
+        &:after {
+            position: absolute;
+            margin-top: -15px;
+            height: 30px;
+            width: 10px;
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            background: #fff;
+            content: "";
+            display: block;
+            top: 50%;
+            left: -14px;
+        }
+    }
+
     button.newNavItem {
         border-style: dashed;
         background: transparent;

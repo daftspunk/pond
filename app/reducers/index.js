@@ -8,6 +8,7 @@ import { reducer as formReducer } from 'redux-form'
 
 const rootReducer = combineReducers({
     project,
+    website,
     modals,
     slide,
     form: formReducer,

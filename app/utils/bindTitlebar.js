@@ -1,7 +1,7 @@
 // This file is required by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
-export default function handleWindowControls() {
+export default function bindTitlebar() {
     const remote = window.require('electron').remote;
 
     // When document has loaded, initialise

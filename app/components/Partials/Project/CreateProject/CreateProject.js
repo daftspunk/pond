@@ -4,7 +4,6 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from '../../../Controls';
 import { Button } from '../../../Elements';
-import ProjectSelect from './CreateProject.Select';
 import ProjectForm from './CreateProject.Form';
 import { ProjectActions } from '../../../../actions/ProjectActions';
 
@@ -30,12 +29,7 @@ class CreateProject extends Component {
         return (
             <React.Fragment>
                 <Modal showClose={false} onClose={this.props.onClose}>
-                    {this.props.showSelect && (
-                        <ProjectSelect {...this.props} onClose={this.onClose} />
-                    )}
-                    {this.props.showForm && (
-                        <ProjectForm {...this.props} onClose={this.onClose} />
-                    )}
+                    <ProjectForm {...this.props} onClose={this.onClose} />
                 </Modal>
             </React.Fragment>
         )
@@ -44,8 +38,7 @@ class CreateProject extends Component {
 
 export default connect(
     state => ({
-        showSelect: state.project.showSelect,
-        showForm: state.project.showForm,
+        newProject: state.project.newProject,
     }),
     dispatch => bindActionCreators({
         ...ProjectActions

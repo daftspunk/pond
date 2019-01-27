@@ -4,7 +4,6 @@ import classnames from 'classnames';
 import styles from './Button.scss';
 import * as colors from '../../../constants/ColorConstants';
 
-console.log(colors)
 const colorMap = [null, ''].concat(Object.keys(colors).map(key => colors[key]));
 
 const Button = ({

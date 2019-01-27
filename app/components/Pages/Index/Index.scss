@@ -8,3 +8,34 @@ img.welcomeImage {
 section.noSitesContainer {
     min-height: calc(100% - #{$titlebar-height}) !important;
 }
+
+.sitesList {
+    background: #f0f0f0;
+}
+
+.sitesDetail {
+}
+
+.siteTitle {
+    border-bottom: 1px solid #ccc;
+    padding: 1.5rem;
+
+    p {
+        margin-bottom: 0 !important;
+    }
+}
+
+.siteSettings {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+}
+
+.siteActions {
+    border-bottom: 1px solid #ccc;
+    padding: 0 1.5rem;
+}
+
+.siteDetails {
+    padding: 1rem 1.5rem;
+}

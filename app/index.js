@@ -1,12 +1,14 @@
-import React from 'react';
-import { render } from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
-import Root from './containers/Root';
-import { configureStore, history } from './store/configureStore';
-import handleWindowControls from './utils/bindTitlebar';
-import './app.global.scss';
+import React from 'react'
+import { render } from 'react-dom'
+import { AppContainer } from 'react-hot-loader'
+import Root from './containers/Root'
+import { configureStore, history } from './store/configureStore'
+import bindTitlebar from './utils/bindTitlebar'
+import Application from './services/Foundation/Application'
+import './app.global.scss'
 
 const store = configureStore();
+const app = new Application(store);
 
 render(
     <AppContainer>
@@ -28,4 +30,6 @@ if (module.hot) {
     });
 }
 
-handleWindowControls();
+bindTitlebar();
+
+app.boot();

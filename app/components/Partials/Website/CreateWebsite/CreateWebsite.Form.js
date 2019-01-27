@@ -4,10 +4,11 @@ import PropTypes from 'prop-types'
 import { Form } from '../../../Controls'
 import { Field, Control, Input } from '../../../Controls/Form'
 import { Button, Level } from '../../../Elements'
-import SlideLayout from '../../../Layouts/SlideLayout/SlideLayout'
+import SlideLayout from '../../../Layouts/Slide/Slide'
 import { CREATE_WEBSITE_FORM } from '../../../../constants/FormConstants'
+import { reset } from 'redux-form'
 
-class CreateProjectForm extends Component {
+class CreateWebsiteForm extends Component {
     static propTypes = {
         onCloseSlides: PropTypes.func,
     };
@@ -17,6 +18,13 @@ class CreateProjectForm extends Component {
 
     state = {
         isRemoteEnabled: false
+    }
+
+    handleSubmit = async (values) => {
+        const { onCreateWebsite, onSetNewWebsite } = this.props;
+        await onCreateWebsite(values);
+        reset(CREATE_WEBSITE_FORM);
+        onSetNewWebsite(false);
     }
 
     handleRemoteToggle = event => {
@@ -37,16 +45,16 @@ class CreateProjectForm extends Component {
     }
 
     render() {
-        const { onCloseSlides } = this.props;
+        const { handleSubmit, onCloseSlides, project } = this.props;
         const isRemoteEnabled = !!this.state.isRemoteEnabled;
 
         return (
             <React.Fragment>
-                <SlideLayout.Title title="The Pond" subtitle="Create a new website" />
+                <SlideLayout.Title title={project.name||'Pond'} subtitle="Create a new website" />
                 <SlideLayout.Content>
                     <Form>
                         <Form.Field name="name" label="Website name" placeholder="Pick a name for your new website" autoFocus />
-                        <Form.Field name="folder_name" label="Folder name" placeholder="Directory to store the website files" />
+                        <Form.Field name="folderName" label="Folder name" placeholder="Directory to store the website files" />
                         <Form.Field name="description" label="Description" fullwidth />
                         <Form.Field name="port" label="Port" component={this.renderPortField()} />
                         <Form.EmptyField>
@@ -55,9 +63,9 @@ class CreateProjectForm extends Component {
                                 If the port is taken a random one will be used instead.
                             </p>
                         </Form.EmptyField>
-                        <Form.Field name="is_remote_enabled" label="Remote Deployments" component="checkbox" onChange={this.handleRemoteToggle} fullwidth />
+                        <Form.Field name="isRemoteEnabled" label="Remote Deployments" component="checkbox" onChange={this.handleRemoteToggle} fullwidth />
                         {isRemoteEnabled &&
-                            <Form.Field name="remote_handleshake" placeholder="Paste the remote server's secret handshake here" component="textarea" fullwidth indent />
+                            <Form.Field name="remoteHandleshake" placeholder="Paste the remote server's secret handshake here" component="textarea" fullwidth indent />
                         }
                     </Form>
                 </SlideLayout.Content>
@@ -69,7 +77,7 @@ class CreateProjectForm extends Component {
                             </Button>
                         </Level.Side>
                         <Level.Side align="right">
-                            <Button color="info" onSubmit={onCloseSlides}>
+                            <Button color="info" onClick={handleSubmit(this.handleSubmit)}>
                                 Create
                             </Button>
                         </Level.Side>
@@ -82,4 +90,4 @@ class CreateProjectForm extends Component {
 
 export default reduxForm({
     form: CREATE_WEBSITE_FORM
-})(CreateProjectForm)
+})(CreateWebsiteForm)

@@ -6,13 +6,18 @@ import { Scrollbars } from 'react-custom-scrollbars'
 import * as routes from '../../../../constants/RouteConstants'
 import styles from '../../../Layouts/Default/Default.scss'
 import OctoberIcon from '../../../Elements/Icon/Icons/OctoberIcon'
+import classnames from 'classnames'
 
 import { ProjectActions } from '../../../../actions/ProjectActions'
 
 class SidebarNav extends Component {
 
-    static NavItem = props => (
-        <Button title={props.children} size="large" rounded>
+    static NavItem = ({ active, ...props }) => (
+        <Button
+            title={props.children}
+            className={classnames({[styles.navItemActive]: active })}
+            size="large" rounded
+            {...props}>
             <Icon icon={props.icon} />
         </Button>
     );
@@ -26,6 +31,7 @@ class SidebarNav extends Component {
     render() {
         const Item = SidebarNav.NavItem;
         const AddItem = SidebarNav.AddItem;
+        const { projects, project, onSetActiveProject } = this.props;
 
         return (
             <div>
@@ -35,9 +41,14 @@ class SidebarNav extends Component {
                     </div>
                     <div className={styles.sidebarTools}>
                         <Scrollbars>
-                            <Item icon="briefcase">The Pond</Item>
-                            <Item icon="leaf">Pet Projects</Item>
-                            <AddItem onClick={this.props.onCreateProjectModal} />
+                            {projects.map((p, i) => (
+                                <Item
+                                    key={i}
+                                    icon={p.icon||'leaf'}
+                                    onClick={()=>onSetActiveProject(p)}
+                                    active={project.id==p.id}>{p.name}</Item>
+                            ))}
+                            <AddItem onClick={this.props.onSetNewProject} />
                         </Scrollbars>
                     </div>
                     <div className={styles.sidebarBrand}>
@@ -50,9 +61,10 @@ class SidebarNav extends Component {
 }
 
 export default connect(
-    state => {
-        return {}
-    },
+    state => ({
+        projects: state.project.projects,
+        project: state.project.project || {}
+    }),
     dispatch => {
         return bindActionCreators({
             ...ProjectActions
