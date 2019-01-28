@@ -9,16 +9,22 @@ export default class SitesList extends Component {
 
         return (
             <Panel>
-                {websites.length && websites.map(w => (
-                    <Panel.Block
-                        renderAs="a"
-                        key={w.id}
-                        onClick={() => onSetEditWebsite(w)}
-                        active={w.id==editWebsite.id}>
-                        <Panel.Icon renderAs={Icon} icon="fa fa-globe" />
-                        {w.name}
-                    </Panel.Block>
-                ))}
+                {websites.length && websites.map(w => {
+                    const icon = w.canInstall()
+                        ? 'fa fa-certificate'
+                        : (w.canServe() ? 'fa fa-globe' : 'fa fa-question-circle');
+
+                    return (
+                        <Panel.Block
+                            renderAs="a"
+                            key={w.id}
+                            onClick={() => onSetEditWebsite(w)}
+                            active={w.id==editWebsite.id}>
+                            <Panel.Icon renderAs={Icon} icon={icon} />
+                            {w.name}
+                        </Panel.Block>
+                    )}
+                )}
                 <Panel.Block renderAs="a" onClick={onSetNewWebsite}>
                     <Panel.Icon renderAs={Icon} icon="fa fa-plus" />
                     Create new website

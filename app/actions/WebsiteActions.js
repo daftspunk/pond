@@ -1,4 +1,4 @@
-import { ONLINE, OFFLINE } from '../constants/EnvironmentConstants'
+import { ONLINE, OFFLINE, STARTING, STOPPING } from '../constants/EnvironmentConstants'
 import { CREATE_WEBSITE } from '../constants/SlideConstants'
 import { WEBSITE_UPDATE } from '../constants/ModalConstants'
 import { onOpenModal, onCloseModal } from '../actions/ModalActions'
@@ -27,8 +27,13 @@ const CREATE_LOG_TEXT = 'october/website/CREATE_LOG_TEXT';
 
 const UPDATE_SUCCESS = 'october/website/UPDATE_SUCCESS';
 
-const SET_STATUS = 'october/website/SET_STATUS';
+const START_SERVER_REQUEST = 'october/website/START_SERVER_REQUEST';
+const START_SERVER_SUCCESS = 'october/website/START_SERVER_SUCCESS';
+const START_SERVER_FAILURE = 'october/website/START_SERVER_FAILURE';
 
+const STOP_SERVER_REQUEST = 'october/website/STOP_SERVER_REQUEST';
+const STOP_SERVER_SUCCESS = 'october/website/STOP_SERVER_SUCCESS';
+const STOP_SERVER_FAILURE = 'october/website/STOP_SERVER_FAILURE';
 const LOG_EVENT = 'october/website/LOG_EVENT';
 
 //
@@ -41,7 +46,10 @@ const initialState = {
     newWebsiteStep: 0,
     newWebsiteLogText: "",
     websites: [],
-    editWebsite: null
+    editWebsite: null,
+    editWebsiteLoading: OFFLINE,
+    editWebsiteLogText: "",
+    editWebsiteLogger: null,
 }
 
 export default function reducer(state = initialState, action) {
@@ -92,6 +100,47 @@ export default function reducer(state = initialState, action) {
                 ...state,
                 editWebsite: action.website,
             };
+        case START_SERVER_REQUEST:
+            return {
+                ...state,
+                editWebsiteLoading: STARTING,
+            }
+        case START_SERVER_SUCCESS:
+            return {
+                ...state,
+                editWebsiteLoading: ONLINE,
+                editWebsiteLogger: action.logger,
+                editWebsiteLogText: action.logger.asText()
+            };
+        case START_SERVER_FAILURE:
+            return {
+                ...state,
+                editWebsiteLoading: OFFLINE,
+            }
+        case STOP_SERVER_REQUEST:
+            return {
+                ...state,
+                editWebsiteLoading: STOPPING,
+            }
+        case STOP_SERVER_SUCCESS:
+            if (state.editWebsiteLogger) {
+                state.editWebsiteLogger.destroy();
+            }
+            return {
+                ...state,
+                editWebsiteLoading: OFFLINE,
+                editWebsiteLogger: null,
+            }
+        case STOP_SERVER_FAILURE:
+            return {
+                ...state,
+                editWebsiteLoading: ONLINE,
+            }
+        case LOG_EVENT:
+            return {
+                ...state,
+                editWebsiteLogText: action.logText
+            }
         default:
             return state;
     }
@@ -108,9 +157,8 @@ export const WebsiteActions = {
     onFetchWebsites,
     onCreateWebsite,
     onUpdateWebsite,
-    onServerStarted,
-    onServerStopped,
-    onLogMessage,
+    onStartServer,
+    onStopServer,
 }
 
 export function onSetEditWebsite(website) {
@@ -191,6 +239,10 @@ export function onCreateWebsite(project, values) {
         catch (err) {
             dispatch(failure(err.toString()));
         }
+        finally {
+            logger.destroy();
+            logger = null;
+        }
     };
 
     function request(website) { return { type: CREATE_REQUEST, website } }
@@ -204,6 +256,7 @@ export function onUpdateWebsite(website, values) {
     return async dispatch => {
         try {
             website.fill(values);
+            website.fullPath = await website.makeFullPath();
             await website.save();
             dispatch(success(website));
             dispatch(onFetchWebsites(website.projectId));
@@ -217,26 +270,45 @@ export function onUpdateWebsite(website, values) {
     function success(website) { return { type: UPDATE_SUCCESS, website } }
 }
 
-export function onServerStarted(website) {
-    return {
-        type: SET_STATUS,
-        websiteId: website._id,
-        status: ONLINE
-    };
+export function onStartServer(website) {
+    return async dispatch => {
+        dispatch(request(website));
+
+        const logger = Logger.newLogger();
+
+        logger.on('log', message => {
+            dispatch(log(logger.asText()));
+        });
+
+        try {
+            await website.startServer(logger);
+            dispatch(success(logger));
+        }
+        catch (err) {
+            dispatch(failure(err.toString()));
+        }
+    }
+
+    function request(website) { return { type: START_SERVER_REQUEST, website } }
+    function success(logger) { return { type: START_SERVER_SUCCESS, logger } }
+    function failure(error) { return { type: START_SERVER_FAILURE, error } }
+    function log(logText) { return { type: LOG_EVENT, logText } }
 }
 
-export function onServerStopped(website) {
-    return {
-        type: SET_STATUS,
-        websiteId: website._id,
-        status: ONLINE
-    };
-}
+export function onStopServer(website) {
+    return async dispatch => {
+        dispatch(request(website));
 
-export function onLogMessage(website, message) {
-    return {
-        type: LOG_EVENT,
-        websiteId: website._id,
-        message: message
-    };
+        try {
+            await website.stopServer();
+            dispatch(success(website));
+        }
+        catch (err) {
+            dispatch(failure(err.toString()));
+        }
+    }
+
+    function request(website) { return { type: STOP_SERVER_REQUEST, website } }
+    function success(website) { return { type: STOP_SERVER_SUCCESS, website } }
+    function failure(error) { return { type: STOP_SERVER_FAILURE, error } }
 }

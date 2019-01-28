@@ -12,6 +12,10 @@ class Logger extends EventEmitter {
         this.maxLines = 100;
     }
 
+    destroy() {
+        this.removeAllListeners(['log', 'progress']);
+    }
+
     logFunc() {
         return message => this.log(message);
     }

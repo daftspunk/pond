@@ -1,5 +1,6 @@
 import { getPhpBinDir } from '../../utils/assets'
 import platforms from '../../utils/platforms'
+import fileSystem from '../../utils/filesystem'
 import { resolve } from 'path'
 
 //
@@ -8,6 +9,16 @@ import { resolve } from 'path'
 
 export function newServer(logger, websitePath, localPort, serverMode=true) {
     return new Server({ logger, websitePath, localPort, serverMode });
+}
+
+export function canServe(websitePath) {
+    return fileSystem.existsSync(resolve(websitePath)) &&
+        fileSystem.existsSync(resolve(websitePath + "/server.php"));
+}
+
+export function canInstall(websitePath) {
+    return canServe(websitePath) &&
+        fileSystem.existsSync(resolve(websitePath + "/install.php"));
 }
 
 class Server {
@@ -35,7 +46,7 @@ class Server {
             ? ['-S', 'localhost:'+this.localPort, 'server.php']
             : ['-S', 'localhost:'+this.localPort]
 
-        this.serverProcess = spawn(
+        this.serverProcess = await spawn(
             this.getChildProcessCommand(),
             childProcessArguments,
             childProcessOptions
@@ -73,7 +84,7 @@ class Server {
             this.waitWebServerStarted()
                 .then(_ => {
                     if (!this.terminated) {
-                        this.log('Server is ready');
+                        this.log('Server is ready listening on localhost:'+this.localPort);
                         resolve();
                     }
                     else {
@@ -95,11 +106,11 @@ class Server {
             return;
         }
 
-        this.serverProcess.kill();
+        await this.serverProcess.kill();
 
         this.log('Stopping the server...');
 
-        this.waitWebServerStopped();
+        await this.waitWebServerStopped();
 
         this.log('Server has stopped');
     }

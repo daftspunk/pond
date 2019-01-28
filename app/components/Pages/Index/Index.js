@@ -46,6 +46,8 @@ export default connect(
         return {
             websites: state.website.websites,
             editWebsite: state.website.editWebsite || {},
+            editWebsiteLoading: state.website.editWebsiteLoading,
+            editWebsiteLogText: state.website.editWebsiteLogText,
             project: state.project.project || {}
         }
     },

@@ -1,15 +1,30 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { Panel, Button, Level, Icon, Table } from '../../../Elements'
+import { Panel, Button, Level, Icon, Table, VBox } from '../../../Elements'
+import { LogPanel } from '../../../Controls'
 import { CREATE_WEBSITE } from '../../../../constants/SlideConstants'
+import { ONLINE, OFFLINE, STARTING, STOPPING } from '../../../../constants/EnvironmentConstants'
 import styles from '../Index.scss'
+import openLocalDir from '../../../../utils/openLocalDir'
 
 export default class SitesDetails extends Component {
+    openLocalDirectory(website) {
+        openLocalDir(website.fullPath);
+    }
+
     render() {
-        const { project, editWebsite, onSetEditWebsiteModal } = this.props;
+        const {
+            project,
+            editWebsite,
+            editWebsiteLogText,
+            editWebsiteLoading,
+            onSetEditWebsiteModal,
+            onStartServer,
+            onStopServer
+        } = this.props;
 
         return (
-            <div>
+            <VBox>
                 <div className={styles.siteTitle}>
                     <h4 className="title is-4">{editWebsite.name}</h4>
                     <p className="subtitle is-6">{project.name}</p>
@@ -24,11 +39,17 @@ export default class SitesDetails extends Component {
                 <div className={styles.siteActions}>
                     <Level>
                         <Level.Side align="left">
-                            <Button>
+                            <Button
+                                onClick={()=>onStartServer(editWebsite)}
+                                loading={editWebsiteLoading==STARTING}
+                                disabled={editWebsiteLoading==ONLINE}>
                                 <Icon icon="play" />
                                 <span>Start</span>
                             </Button>
-                            <Button>
+                            <Button
+                                onClick={()=>onStopServer(editWebsite)}
+                                loading={editWebsiteLoading==STOPPING}
+                                disabled={editWebsiteLoading==OFFLINE}>
                                 <Icon icon="stop" />
                                 <span>Stop</span>
                             </Button>
@@ -41,30 +62,36 @@ export default class SitesDetails extends Component {
                         </Level.Side>
                     </Level>
                 </div>
-                <div className={styles.siteDetails}>
+                <div className={`${styles.siteDetails} content`}>
                     <p>
                         {editWebsite.description}
                     </p>
-                    <hr />
-                    <h6 className="title is-6">Environment</h6>
                     <Table>
+                        <thead>
+                            <tr>
+                                <th colSpan="100">Environment</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             <tr>
                                 <td style={{width:100}}>Website</td>
-                                <td><a href="#">localhost:9291</a></td>
+                                <td><a href={editWebsite.publicUrl()}>{editWebsite.publicUrl()}</a></td>
                             </tr>
                             <tr>
                                 <td>Admin</td>
-                                <td><a href="#">localhost:9291/backend</a></td>
+                                <td><a href={editWebsite.adminUrl()}>{editWebsite.adminUrl()}</a></td>
                             </tr>
                             <tr>
                                 <td>Folder</td>
-                                <td><a href="#">Browse local directory</a></td>
+                                <td><a onClick={()=>this.openLocalDirectory(editWebsite)}>Browse local directory</a></td>
                             </tr>
                         </tbody>
                     </Table>
                 </div>
-            </div>
+                <VBox.Main>
+                    <LogPanel logText={editWebsiteLogText} />
+                </VBox.Main>
+            </VBox>
         );
     }
 }
