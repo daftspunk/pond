@@ -9,6 +9,7 @@ import OctoberIcon from '../../../Elements/Icon/Icons/OctoberIcon'
 import classnames from 'classnames'
 
 import { ProjectActions } from '../../../../actions/ProjectActions'
+import { WebsiteActions } from '../../../../actions/WebsiteActions'
 
 class SidebarNav extends Component {
 
@@ -28,6 +29,11 @@ class SidebarNav extends Component {
         </Button>
     );
 
+    setActiveProject(project) {
+        this.props.onFetchWebsites(project.id);
+        this.props.onSetActiveProject(project);
+    }
+
     render() {
         const Item = SidebarNav.NavItem;
         const AddItem = SidebarNav.AddItem;
@@ -45,7 +51,7 @@ class SidebarNav extends Component {
                                 <Item
                                     key={i}
                                     icon={p.icon||'leaf'}
-                                    onClick={()=>onSetActiveProject(p)}
+                                    onClick={()=>this.setActiveProject(p)}
                                     active={project.id==p.id}>{p.name}</Item>
                             ))}
                             <AddItem onClick={this.props.onSetNewProject} />
@@ -67,6 +73,7 @@ export default connect(
     }),
     dispatch => {
         return bindActionCreators({
+            ...WebsiteActions,
             ...ProjectActions
         }, dispatch)
     }

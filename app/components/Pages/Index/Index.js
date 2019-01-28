@@ -13,10 +13,10 @@ import SitesList from './Sites/Sites.List'
 import SitesDetail from './Sites/Sites.Detail'
 
 class Index extends Component {
-    componentDidMount() {
-        this.props.onFetchProjects();
-        this.props.onFetchWebsites();
-        this.props.onSetActiveProject();
+    async componentDidMount() {
+        await this.props.onFetchProjects();
+        await this.props.onSetActiveProject();
+        this.props.onFetchWebsites(this.props.project.id);
     }
 
     render() {

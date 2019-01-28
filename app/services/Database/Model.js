@@ -1,17 +1,57 @@
+import Builder from './Builder';
 import Connection from './Connection'
 
 export default class Model {
 
     constructor(...attributes) {
-        Object.assign(this, ...attributes);
+        if (attributes.length === 0) {
+            this._builder = new Builder(this);
+        } else {
+            Object.assign(this, ...attributes);
+        }
     }
 
     fill(...attributes) {
         Object.assign(this, ...attributes);
     }
 
+    //
+    // Setup
+    //
+
     connection() {
-        return Connection.get();
+        return Connection.get()
+            .then(db => this.applyIndexes(db));
+    }
+
+    applyIndexes(db) {
+        return new Promise((resolve, reject) => {
+            const indexPromises = [
+                db.createIndex({
+                    index: {
+                        fields: ['documentType']
+                    }
+                })
+            ];
+            this.indexes().map(index => {
+                indexPromises.push(db.createIndex({
+                    index: {
+                        fields: index
+                    }
+                }))
+            })
+
+            Promise.all(indexPromises)
+                .then(() => resolve(db))
+                .catch(reject);
+        });
+    }
+
+    indexes() {
+        return [
+            // ['name'],
+            // ['documentType', 'name']
+        ];
     }
 
     primaryKey() {
@@ -32,11 +72,40 @@ export default class Model {
 
     hasId() {
         const id = this.getPrimaryKey();
+
         return this.isValidId(id);
     }
 
     isValidId(id) {
         return id !== undefined && id !== 0 && id !== '';
+    }
+
+    /**
+     * Query
+     */
+
+    where(field, value) {
+        this._builder.where(field, value);
+
+        return this;
+    }
+
+    whereIn(field, array) {
+        this._builder.whereIn(field, array);
+
+        return this;
+    }
+
+    orderBy(...args) {
+        this._builder.orderBy(...args);
+
+        return this;
+    }
+
+    limit(value) {
+        this._builder.limit(value);
+
+        return this;
     }
 
     /**
@@ -69,24 +138,24 @@ export default class Model {
             }
             catch (err) {
                 console.log(err);
-                return null
+                return null;
             }
         });
     }
 
     get() {
         return this.connection().then(async db => {
-            const result = await db.find({
-                selector: {
-                    documentType: this.resource(),
-                    // name: {
-                    //     $gt: null
-                    // }
-                },
-                // sort: ['name']
-            });
+            let lookup = this._builder.query();
+
+            lookup.selector = {
+                ...lookup.selector || {},
+                documentType: this.resource()
+            }
+
+            const result = await db.find(lookup);
 
             let collection = result.docs;
+
             collection = Array.isArray(collection) ? collection : [collection];
 
             collection = collection.map(c => {

@@ -20,6 +20,12 @@ export default class Website extends Model {
         return (new ProjectModel).find(this.projectId);
     }
 
+    indexes() {
+        return [
+            ['documentType', 'projectId']
+        ];
+    }
+
     async fullPath() {
         const project = await this.project();
         return project.basePath + '/' + this.folderName;

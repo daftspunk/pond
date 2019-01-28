@@ -33,16 +33,18 @@ class Connection {
             Promise.all([
                 // Uncomment to clean up the database. Restart the app after that.
                 // this.database.destroy(),
-                this.database.createIndex({
-                    index: {
-                        fields: ['name']
-                    }
-                }),
-                this.database.createIndex({
-                    index: {
-                        fields: ['documentType', 'name']
-                    }
-                })
+
+                // These are here in case there is a need for global indexes
+                // this.database.createIndex({
+                //     index: {
+                //         fields: ['name']
+                //     }
+                // }),
+                // this.database.createIndex({
+                //     index: {
+                //         fields: ['documentType', 'name']
+                //     }
+                // })
             ]).then(() => {
                 resolve(this.database);
             }).catch(reject);

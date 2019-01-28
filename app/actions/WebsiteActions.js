@@ -120,9 +120,9 @@ export function onSetNewWebsite(flag=true) {
     }
 }
 
-export function onFetchWebsites() {
+export function onFetchWebsites(projectId) {
     return async (dispatch) => {
-        const websites = await (new WebsiteModel).get()
+        const websites = await (new WebsiteModel).where('projectId', projectId).get();
 
         dispatch(success(websites));
     };
