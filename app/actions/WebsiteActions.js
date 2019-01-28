@@ -1,5 +1,7 @@
 import { ONLINE, OFFLINE } from '../constants/EnvironmentConstants'
 import { CREATE_WEBSITE } from '../constants/SlideConstants'
+import { WEBSITE_UPDATE } from '../constants/ModalConstants'
+import { onOpenModal, onCloseModal } from '../actions/ModalActions'
 import { onOpenSlides, onCloseSlides } from '../actions/SlideActions'
 import { SubmissionError } from 'redux-form'
 import WebsiteModel from '../models/Website'
@@ -23,6 +25,8 @@ const CREATE_FAILURE = 'october/website/CREATE_FAILURE';
 const CREATE_PROGRESS = 'october/website/CREATE_PROGRESS';
 const CREATE_LOG_TEXT = 'october/website/CREATE_LOG_TEXT';
 
+const UPDATE_SUCCESS = 'october/website/UPDATE_SUCCESS';
+
 const SET_STATUS = 'october/website/SET_STATUS';
 
 const LOG_EVENT = 'october/website/LOG_EVENT';
@@ -43,8 +47,11 @@ const initialState = {
 export default function reducer(state = initialState, action) {
     switch (action.type) {
         case FETCH_WEBSITES_SUCCESS:
+            // If no edit website is found, use the first available
+            const editWebsite = state.editWebsite || action.websites && action.websites[0] || null;
             return {
                 ...state,
+                editWebsite,
                 websites: action.websites,
             };
         case CREATE_LOG_TEXT:
@@ -79,6 +86,7 @@ export default function reducer(state = initialState, action) {
                 newWebsite: action.flag,
                 newWebsiteLoading: false
             };
+        case UPDATE_SUCCESS:
         case SET_WEBSITE_EDIT:
             return {
                 ...state,
@@ -95,9 +103,11 @@ export default function reducer(state = initialState, action) {
 
 export const WebsiteActions = {
     onSetEditWebsite,
+    onSetEditWebsiteModal,
     onSetNewWebsite,
     onFetchWebsites,
     onCreateWebsite,
+    onUpdateWebsite,
     onServerStarted,
     onServerStopped,
     onLogMessage,
@@ -117,6 +127,17 @@ export function onSetNewWebsite(flag=true) {
         }
 
         dispatch({ type: SET_WEBSITE_NEW, flag });
+    }
+}
+
+export function onSetEditWebsiteModal(flag=true) {
+    return (dispatch) => {
+        if (flag) {
+            dispatch(onOpenModal({ type: WEBSITE_UPDATE }));
+        }
+        else {
+            dispatch(onCloseModal({ type: WEBSITE_UPDATE }));
+        }
     }
 }
 
@@ -142,10 +163,9 @@ export function onCreateWebsite(project, values) {
         const website = new WebsiteModel;
         website.projectId = project.id;
         website.fill(values);
+        website.fullPath = await website.makeFullPath();
 
-        const fullPath = await website.fullPath();
-
-        let err = Installer.canDeploy(fullPath);
+        let err = Installer.canDeploy(website.fullPath);
         if (err != null) {
             throw new SubmissionError({ folderName: err.toString() });
         }
@@ -162,7 +182,7 @@ export function onCreateWebsite(project, values) {
         });
 
         try {
-            await Installer.deployInstaller(logger, fullPath);
+            await Installer.deployInstaller(logger, website.fullPath);
 
             await website.save();
 
@@ -178,6 +198,23 @@ export function onCreateWebsite(project, values) {
     function failure(error) { return { type: CREATE_FAILURE, error } }
     function progress(step) { return { type: CREATE_PROGRESS, step } }
     function log(logText) { return { type: CREATE_LOG_TEXT, logText } }
+}
+
+export function onUpdateWebsite(website, values) {
+    return async dispatch => {
+        try {
+            website.fill(values);
+            await website.save();
+            dispatch(success(website));
+            dispatch(onFetchWebsites(website.projectId));
+            return website;
+        }
+        catch (error) {
+            return Promise.reject(error);
+        }
+    }
+
+    function success(website) { return { type: UPDATE_SUCCESS, website } }
 }
 
 export function onServerStarted(website) {

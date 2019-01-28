@@ -6,14 +6,18 @@ import styles from '../Index.scss'
 
 export default class SitesDetails extends Component {
     render() {
-        const { project, editWebsite } = this.props;
+        const { project, editWebsite, onSetEditWebsiteModal } = this.props;
 
         return (
             <div>
                 <div className={styles.siteTitle}>
                     <h4 className="title is-4">{editWebsite.name}</h4>
                     <p className="subtitle is-6">{project.name}</p>
-                    <Button title="Settings" className={styles.siteSettings} rounded>
+                    <Button
+                        title="Settings"
+                        className={styles.siteSettings}
+                        onClick={onSetEditWebsiteModal}
+                        rounded>
                         <Icon icon="cog" />
                     </Button>
                 </div>
@@ -39,7 +43,7 @@ export default class SitesDetails extends Component {
                 </div>
                 <div className={styles.siteDetails}>
                     <p>
-                        Static landing pages for various ACME marketing campaigns, hosted on a separte server. Project in basecamp
+                        {editWebsite.description}
                     </p>
                     <hr />
                     <h6 className="title is-6">Environment</h6>

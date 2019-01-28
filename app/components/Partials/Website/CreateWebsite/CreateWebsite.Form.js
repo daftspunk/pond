@@ -50,7 +50,7 @@ class CreateWebsiteForm extends Component {
 
         return (
             <React.Fragment>
-                <SlideLayout.Title title={project.name||'Pond'} subtitle="Create a new website" />
+                <SlideLayout.Title title={project.name||'Pond'} subtitle="Create a New Website" />
                 <SlideLayout.Content>
                     <Form>
                         <Form.Field name="name" label="Website name" placeholder="Pick a name for your new website" autoFocus />

@@ -43,13 +43,9 @@ class Index extends Component {
 
 export default connect(
     state => {
-        // If no edit website is found, use the first available
-        const websites = state.website.websites || [];
-        const editWebsite = state.website.editWebsite || websites && websites[0] || {};
-
         return {
-            websites,
-            editWebsite,
+            websites: state.website.websites,
+            editWebsite: state.website.editWebsite || {},
             project: state.project.project || {}
         }
     },

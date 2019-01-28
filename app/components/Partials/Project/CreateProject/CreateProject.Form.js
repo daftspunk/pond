@@ -26,29 +26,29 @@ class CreateProjectForm extends PureComponent {
         const { onClose, handleSubmit, onCreateProject, onSetNewProject } = this.props;
 
         return (
-            <Form>
-                <Modal.Card>
-                    <Modal.Card.Head onClose={onClose}>
-                        <Modal.Card.Title>
-                            Add another project
-                        </Modal.Card.Title>
-                    </Modal.Card.Head>
-                    <Modal.Card.Body>
+            <Modal.Card>
+                <Modal.Card.Head onClose={onClose}>
+                    <Modal.Card.Title>
+                        Add another project
+                    </Modal.Card.Title>
+                </Modal.Card.Head>
+                <Modal.Card.Body>
+                    <Form>
                         <Form.Field name="name" label="Project name" placeholder="Pick a name for this project" rules="required"  autoFocus fullwidth />
                         <Form.Field name="directory" label="Project directory" component="fileupload" fullwidth directory />
                         <Form.Field name="description" label="Description" component="textarea" fullwidth />
                         <Form.Field name="icon" label="Icon" component="text" fullwidth />
-                    </Modal.Card.Body>
-                    <Modal.Card.Foot>
-                        <Button onClick={()=>onSetNewProject(false)}>
-                            Cancel
-                        </Button>
-                        <Button color="info" onClick={handleSubmit(this.handleSubmit)}>
-                            Create Project
-                        </Button>
-                    </Modal.Card.Foot>
-                </Modal.Card>
-            </Form>
+                    </Form>
+                </Modal.Card.Body>
+                <Modal.Card.Foot>
+                    <Button onClick={()=>onSetNewProject(false)}>
+                        Cancel
+                    </Button>
+                    <Button color="info" onClick={handleSubmit(this.handleSubmit)}>
+                        Create Project
+                    </Button>
+                </Modal.Card.Foot>
+            </Modal.Card>
         )
     }
 }

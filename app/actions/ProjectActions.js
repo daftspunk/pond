@@ -28,6 +28,8 @@ const initialState = {
 export default function reducer(state = initialState, action) {
     switch (action.type) {
         case FETCH_PROJECTS_SUCCESS:
+            // If no selected project is found, use the first available
+            const project = state.project || action.projects && action.projects[0] || null;
             return {
                 ...state,
                 projects: action.projects

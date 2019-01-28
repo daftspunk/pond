@@ -6,6 +6,7 @@ import ProjectModel from './Project'
  * - name
  * - projectId
  * - folderName
+ * - fullPath
  * - description
  * - localPort
  * - isRemoteEnabled
@@ -26,7 +27,7 @@ export default class Website extends Model {
         ];
     }
 
-    async fullPath() {
+    async makeFullPath() {
         const project = await this.project();
         return project.basePath + '/' + this.folderName;
     }

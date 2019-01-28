@@ -1,12 +1,13 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { ALERT, CONFIRM, PROJECT_CREATE } from '../../../../constants/ModalConstants';
-import { ModalActions } from '../../../../actions/ModalActions';
-import AlertModal from './GlobalModals.Alert';
-import ConfirmModal from './GlobalModals.Confirm';
+import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
+import { ALERT, CONFIRM, PROJECT_CREATE, WEBSITE_UPDATE } from '../../../../constants/ModalConstants'
+import { ModalActions } from '../../../../actions/ModalActions'
+import AlertModal from './GlobalModals.Alert'
+import ConfirmModal from './GlobalModals.Confirm'
 
-import CreateProject from '../../../Partials/Project/CreateProject/CreateProject';
+import CreateProject from '../../../Partials/Project/CreateProject/CreateProject'
+import UpdateWebsite from '../../../Partials/Website/UpdateWebsite/UpdateWebsite'
 
 class GlobalModals extends Component {
     static Alert = AlertModal;
@@ -16,6 +17,7 @@ class GlobalModals extends Component {
         [ALERT]: AlertModal,
         [CONFIRM]: ConfirmModal,
         [PROJECT_CREATE]: CreateProject,
+        [WEBSITE_UPDATE]: UpdateWebsite,
     };
 
     render() {

@@ -4,10 +4,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal } from '../../../Controls';
 import { Button } from '../../../Elements';
-import ProjectForm from './CreateProject.Form';
-import { ProjectActions } from '../../../../actions/ProjectActions';
+import WebsiteForm from './UpdateWebsite.Form';
+import { WebsiteActions } from '../../../../actions/WebsiteActions';
 
-class CreateProject extends Component {
+class UpdateWebsite extends Component {
     static propTypes = {
         item: PropTypes.object,
     };
@@ -24,10 +24,15 @@ class CreateProject extends Component {
     }
 
     render() {
+        const { onClose, editWebsite } = this.props;
+
         return (
             <React.Fragment>
-                <Modal showClose={false} onClose={this.props.onClose}>
-                    <ProjectForm {...this.props} onClose={this.onClose} />
+                <Modal showClose={false} onClose={onClose}>
+                    <WebsiteForm
+                        {...this.props}
+                        initialValues={editWebsite}
+                        onClose={this.onClose} />
                 </Modal>
             </React.Fragment>
         )
@@ -36,9 +41,9 @@ class CreateProject extends Component {
 
 export default connect(
     state => ({
-        newProject: state.project.newProject,
+        editWebsite: state.website.editWebsite,
     }),
     dispatch => bindActionCreators({
-        ...ProjectActions
+        ...WebsiteActions
     }, dispatch)
-)(CreateProject)
+)(UpdateWebsite)
