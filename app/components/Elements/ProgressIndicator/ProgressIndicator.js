@@ -12,7 +12,7 @@ const ProgressIndicator = ({
         <div {...props} className={styles.progressContainer}>
             <ul>
                 {steps.map((step, index) => (
-                    <li className={classnames({
+                    <li key={index} className={classnames({
                         [styles.active]: index == currentStepIndex,
                         [styles.done]: index < currentStepIndex
                     })}>

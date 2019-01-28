@@ -7,14 +7,14 @@ import { CREATE_WEBSITE } from '../../../constants/SlideConstants'
 
 export default class NoSites extends Component {
     static propTypes = {
-        onOpenSlides: PropTypes.func,
+        onSetNewWebsite: PropTypes.func,
     };
 
     static defaultProps = {
     }
 
     render() {
-        const { project, onOpenSlides } = this.props;
+        const { project, onSetNewWebsite } = this.props;
 
         return (
             <section className={`hero is-fullheight ${styles.noSitesContainer}`}>
@@ -27,7 +27,7 @@ export default class NoSites extends Component {
                             Create your first and enjoy October CMS!
                         </p>
                         <p>
-                            <Button color="info" onClick={() => onOpenSlides(CREATE_WEBSITE)}>
+                            <Button color="info" onClick={onSetNewWebsite}>
                                 Create your first website
                             </Button>
                         </p>

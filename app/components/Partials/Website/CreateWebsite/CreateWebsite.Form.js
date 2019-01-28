@@ -6,7 +6,7 @@ import { Field, Control, Input } from '../../../Controls/Form'
 import { Button, Level } from '../../../Elements'
 import SlideLayout from '../../../Layouts/Slide/Slide'
 import { CREATE_WEBSITE_FORM } from '../../../../constants/FormConstants'
-import { reset } from 'redux-form'
+// import { reset } from 'redux-form'
 
 class CreateWebsiteForm extends Component {
     static propTypes = {
@@ -22,9 +22,9 @@ class CreateWebsiteForm extends Component {
 
     handleSubmit = async (values) => {
         const { onCreateWebsite, onSetNewWebsite } = this.props;
-        await onCreateWebsite(values);
-        reset(CREATE_WEBSITE_FORM);
-        onSetNewWebsite(false);
+        await onCreateWebsite(this.props.project, values);
+        // reset(CREATE_WEBSITE_FORM);
+        // onSetNewWebsite(false);
     }
 
     handleRemoteToggle = event => {
@@ -54,9 +54,9 @@ class CreateWebsiteForm extends Component {
                 <SlideLayout.Content>
                     <Form>
                         <Form.Field name="name" label="Website name" placeholder="Pick a name for your new website" autoFocus />
-                        <Form.Field name="folderName" label="Folder name" placeholder="Directory to store the website files" />
-                        <Form.Field name="description" label="Description" fullwidth />
-                        <Form.Field name="port" label="Port" component={this.renderPortField()} />
+                        <Form.Field name="folderName" label="Folder name" comment={`Folder will be created in ${project.basePath}`} placeholder="Directory to store the website files" />
+                        <Form.Field name="description" label="Description" component="textarea" fullwidth />
+                        <Form.Field name="localPort" label="Preferred port number" component={this.renderPortField()} />
                         <Form.EmptyField>
                             <p className="has-text-grey">
                                 Pick a preferred port number for your website.

@@ -6,6 +6,10 @@ export default class Model {
         Object.assign(this, ...attributes);
     }
 
+    fill(...attributes) {
+        Object.assign(this, ...attributes);
+    }
+
     connection() {
         return Connection.get();
     }

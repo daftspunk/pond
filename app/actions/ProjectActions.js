@@ -117,20 +117,11 @@ export function onCreateProject(values) {
         project.name = values.name;
         project.basePath = values.directory[0].path;
         project.description = values.description;
+        project.icon = values.icon;
         project.save();
 
         dispatch(success(project));
     };
 
     function success(project) { return { type: CREATE_SUCCESS, project } }
-    // return async (dispatch) => {
-    //     let project = {
-    //         location: getDistDir() + '/../'
-    //     };
-    //     console.log(project);
-
-    //     let scanner = createScanner(project);
-    //     const test = await scanner.run();
-    //     console.log(test);
-    // };
 }

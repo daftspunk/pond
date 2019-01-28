@@ -10,14 +10,14 @@ import WebsiteProgress from './CreateWebsite.Progress'
 
 class CreateWebsite extends Component {
     render() {
-        const { onCloseSlides } = this.props;
+        const { onCloseSlides, newWebsiteBuilding, initialWebsiteValues } = this.props;
 
         return (
             <SlideLayout close={<Button remove size="medium" onClick={onCloseSlides} />}>
-                {true ? (
+                {newWebsiteBuilding ? (
                     <WebsiteProgress {...this.props} />
                 ) : (
-                    <WebsiteForm {...this.props} />
+                    <WebsiteForm {...this.props} initialValues={initialWebsiteValues} />
                 )}
             </SlideLayout>
         )
@@ -25,9 +25,17 @@ class CreateWebsite extends Component {
 }
 
 export default connect(
-    state => ({
-        project: state.project.project || {}
-    }),
+    state => {
+        const initialWebsiteValues = {
+            localPort: 8080
+        }
+
+        return {
+            project: state.project.project || {},
+            newWebsiteBuilding: state.website.newWebsiteBuilding,
+            initialWebsiteValues
+        }
+    },
     dispatch => bindActionCreators({
         ...SlideActions,
         ...WebsiteActions

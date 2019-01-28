@@ -1,4 +1,4 @@
-import Model from '../services/Database/Model';
+import Model from '../services/Database/Model'
 import app from '../utils/app'
 
 /**
@@ -6,6 +6,7 @@ import app from '../utils/app'
  * - name
  * - basePath
  * - description
+ * - icon
  */
 export default class Project extends Model {
     resource() {
@@ -18,6 +19,8 @@ export default class Project extends Model {
         project.name = 'The Pond';
 
         project.basePath = app().storagePath();
+
+        project.icon = null;
 
         return project;
     }

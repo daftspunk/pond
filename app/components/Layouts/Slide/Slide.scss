@@ -32,8 +32,17 @@ $close-width: 3em;
     border-bottom: 1px solid #ccc;
 }
 
+.contentVBox {
+    background: $white;
+}
+
 .content {
     padding: 1.5rem 2rem 1rem;
+    background: $white;
+    height: 100%;
+}
+
+.plainContent {
     background: $white;
     height: 100%;
 }

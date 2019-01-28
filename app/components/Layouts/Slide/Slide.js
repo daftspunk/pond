@@ -17,8 +17,16 @@ export default class Slide extends Component {
     );
 
     static Content = props => (
-        <VBox.Main scrollbars>
+        <VBox.Main className={styles.contentVBox} scrollbars>
             <div className={styles.content}>
+                {props.children}
+            </div>
+        </VBox.Main>
+    );
+
+    static PlainContent = props => (
+        <VBox.Main className={styles.contentVBox}>
+            <div className={styles.plainContent}>
                 {props.children}
             </div>
         </VBox.Main>

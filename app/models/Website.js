@@ -1,8 +1,10 @@
-import Model from '../services/Database/Model';
+import Model from '../services/Database/Model'
+import ProjectModel from './Project'
 
 /**
  * Website model
  * - name
+ * - projectId
  * - folderName
  * - description
  * - localPort
@@ -12,5 +14,14 @@ import Model from '../services/Database/Model';
 export default class Website extends Model {
     resource() {
         return 'website';
+    }
+
+    project() {
+        return (new ProjectModel).find(this.projectId);
+    }
+
+    async fullPath() {
+        const project = await this.project();
+        return project.basePath + '/' + this.folderName;
     }
 }

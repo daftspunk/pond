@@ -5,7 +5,7 @@ import { CREATE_WEBSITE } from '../../../../constants/SlideConstants'
 
 export default class SitesList extends Component {
     render() {
-        const { websites, editWebsite, onSetEditWebsite, onOpenSlides } = this.props;
+        const { websites, editWebsite, onSetEditWebsite, onSetNewWebsite } = this.props;
 
         return (
             <Panel>
@@ -19,7 +19,7 @@ export default class SitesList extends Component {
                         {w.name}
                     </Panel.Block>
                 ))}
-                <Panel.Block renderAs="a" onClick={() => onOpenSlides(CREATE_WEBSITE)}>
+                <Panel.Block renderAs="a" onClick={onSetNewWebsite}>
                     <Panel.Icon renderAs={Icon} icon="fa fa-plus" />
                     Create new website
                 </Panel.Block>

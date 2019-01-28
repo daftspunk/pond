@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import { reduxForm } from 'redux-form'
 import PropTypes from 'prop-types'
-import { Button, ProgressIndicator } from '../../../Elements'
+import { Button, ProgressIndicator, VBox } from '../../../Elements'
+import { LogPanel } from '../../../Controls'
 import SlideLayout from '../../../Layouts/Slide/Slide'
-import styles from './CreateWebsite.scss';
+import styles from './CreateWebsite.scss'
 
 export default class CreateWebsiteProgress extends Component {
     static propTypes = {
@@ -26,15 +27,17 @@ export default class CreateWebsiteProgress extends Component {
         return (
             <React.Fragment>
                 <SlideLayout.Title title={project.name||'Pond'} subtitle="Provisioning" />
-                <SlideLayout.Buttons>
-                    <div className={styles.progressIndicator}>
-                        <h5 className="title is-5">Building your project</h5>
-                        <ProgressIndicator steps={steps} currentStepIndex={0} />
-                    </div>
-                </SlideLayout.Buttons>
-                <SlideLayout.Content>
-                    Console
-                </SlideLayout.Content>
+                <SlideLayout.PlainContent>
+                    <VBox>
+                        <div className={styles.progressIndicator}>
+                            <h5 className="title is-5">Building your project</h5>
+                            <ProgressIndicator steps={steps} currentStepIndex={0} />
+                        </div>
+                        <VBox.Main>
+                            <LogPanel toolbarControls={false} />
+                        </VBox.Main>
+                    </VBox>
+                </SlideLayout.PlainContent>
             </React.Fragment>
         )
     }

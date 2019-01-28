@@ -16,7 +16,9 @@ const SET_WEBSITE_NEW = 'october/website/SET_WEBSITE_NEW';
 
 const SET_WEBSITE_EDIT = 'october/website/SET_WEBSITE_EDIT';
 
+const CREATE_REQUEST = 'october/website/CREATE_REQUEST';
 const CREATE_SUCCESS = 'october/website/CREATE_SUCCESS';
+const CREATE_FAILURE = 'october/website/CREATE_FAILURE';
 
 const SET_STATUS = 'october/website/SET_STATUS';
 
@@ -28,16 +30,28 @@ const LOG_EVENT = 'october/website/LOG_EVENT';
 
 const initialState = {
     newWebsite: false,
+    newWebsiteBuilding: false,
     websites: [],
     editWebsite: null
 }
 
 export default function reducer(state = initialState, action) {
     switch (action.type) {
+        case CREATE_REQUEST:
+            return {
+                ...state,
+                newWebsiteBuilding: true
+            };
+        case CREATE_FAILURE:
+            return {
+                ...state,
+                newWebsiteBuilding: false
+            };
         case SET_WEBSITE_NEW:
             return {
                 ...state,
                 newWebsite: action.flag,
+                newWebsiteBuilding: false
             };
         default:
             return state;
@@ -85,7 +99,7 @@ export function onFetchWebsites() {
     function success(websites) { return { type: FETCH_WEBSITES_SUCCESS, websites } }
 }
 
-export function onCreateWebsite(values) {
+export function onCreateWebsite(project, values) {
     return async (dispatch) => {
         if (!values.name) {
             throw new SubmissionError({ name: "Required" });
@@ -94,14 +108,26 @@ export function onCreateWebsite(values) {
             throw new SubmissionError({ folderName: "Required" });
         }
 
+        dispatch(request(values));
+
+        const website = new WebsiteModel;
+        website.projectId = project.id;
+        website.fill(values);
+
+        console.log(website);
+        console.log(await website.fullPath());
+
         // var webPath = '/mnt/c/some/path';
 
         // await Installer.deployInstaller(webPath);
 
         // dispatch(success(website));
+        // dispatch(failure());
     };
 
+    function request(website) { return { type: CREATE_REQUEST, website } }
     function success(website) { return { type: CREATE_SUCCESS, website } }
+    function failure(error) { return { type: CREATE_FAILURE, error } }
 }
 
 export function onServerStarted(website) {

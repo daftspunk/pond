@@ -51,8 +51,7 @@ export default connect(
     dispatch => {
         return bindActionCreators({
             ...WebsiteActions,
-            ...ProjectActions,
-            ...SlideActions
+            ...ProjectActions
         }, dispatch)
     }
 )(Index)
