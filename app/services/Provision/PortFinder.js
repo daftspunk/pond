@@ -15,29 +15,29 @@ export function isInUseByAWebsite(port, websites) {
     return websites.find(website => website.localPort == port);
 }
 
-export async function getNextPort(startingPort, hostname) {
+export async function getNextPort(logger, startingPort, hostname) {
     if (!hostname) {
         hostname = 'localhost';
     }
 
     for (var port = startingPort; port <= 65535; port++) {
-        if (!await this.isInUseByAnotherApp(port, hostname)) {
+        if (!await this.isInUseByAnotherApp(logger, port, hostname)) {
             return port;
         }
     }
 }
 
-export function isInUseByAnotherApp(port, hostname) {
+export function isInUseByAnotherApp(logger, port, hostname) {
     const net = window.require('net');
     const server = new net.Server();
 
     return new Promise((resolve, reject) => {
         server.on('error', err => {
-            console.log(`Error listening port ${hostname}:${port}. Error: ${err}`);
+            logger(`Error listening port ${hostname}:${port}. Error: ${err}`);
             server.close();
 
             if (err.code === 'ENOTFOUND') {
-                console.log(`Ignore DNS ENOTFOUND error, get free port ${hostname}:${port}`);
+                logger(`Ignore DNS ENOTFOUND error, get free port ${hostname}:${port}`);
                 resolve(false);
                 return;
             }
@@ -49,7 +49,7 @@ export function isInUseByAnotherApp(port, hostname) {
             port = server.address().port;
             server.close();
 
-            console.log(`Found available port ${hostname}:${port}`);
+            logger(`Found available port ${hostname}:${port}`);
             resolve(false);
         })
     })

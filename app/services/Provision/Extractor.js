@@ -23,9 +23,9 @@ export async function cleanupExtractor(websitePath) {
     await fileSystem.unlink(scriptDest);
 }
 
-export function runExtractor(localPort, logger) {
+export function runExtractor(logger, localPort) {
     const net = require('electron').remote.net
-    logger('Extracting the archive')
+    logger('Extracting the archive');
 
     return new Promise((resolve, reject) => {
         let request = net.request({

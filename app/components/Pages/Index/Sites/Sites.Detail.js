@@ -6,13 +6,13 @@ import styles from '../Index.scss'
 
 export default class SitesDetails extends Component {
     render() {
-        const { editWebsite } = this.props;
+        const { project, editWebsite } = this.props;
 
         return (
             <div>
                 <div className={styles.siteTitle}>
-                    <h4 className="title is-4">Landing pages minisite</h4>
-                    <p className="subtitle is-6">The Pond Project</p>
+                    <h4 className="title is-4">{editWebsite.name}</h4>
+                    <p className="subtitle is-6">{project.name}</p>
                     <Button title="Settings" className={styles.siteSettings} rounded>
                         <Icon icon="cog" />
                     </Button>

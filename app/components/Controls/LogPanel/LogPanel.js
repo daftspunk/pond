@@ -20,24 +20,23 @@ export default class LogPanel extends Component {
     }
 
     componentDidMount() {
-        var editor = brace.edit(this.getViewerPanel())
-        editor.setReadOnly(true)
-        editor.setShowPrintMargin(false)
-        editor.setHighlightActiveLine(false)
-        editor.container.style.lineHeight = 2
-        editor.renderer.updateFontSize()
-        editor.$blockScrolling = Infinity
-        editor.getSession().setUseWrapMode(true)
-        // editor.setOption("firstLineNumber", this.log.getFirstLineNumber())
+        var editor = brace.edit(this.getViewerPanel());
+        editor.setReadOnly(true);
+        editor.setShowPrintMargin(false);
+        editor.setHighlightActiveLine(false);
+        editor.container.style.lineHeight = 2;
+        editor.renderer.updateFontSize();
+        editor.$blockScrolling = Infinity;
+        editor.getSession().setUseWrapMode(true);
+        editor.setValue(this.props.logText, 1);
+        // editor.setOption("firstLineNumber", this.log.getFirstLineNumber());
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.logText != this.props.logText) {
-            var editor = brace.edit(this.getViewerPanel())
-            editor.setValue(this.props.logText, 1)
-            // editor.scrollToLine(this.log.lines.length, false, false)
-            // editor.setOption("firstLineNumber", this.log.getFirstLineNumber())
-        }
+        var editor = brace.edit(this.getViewerPanel());
+        editor.setValue(this.props.logText, 1);
+        // editor.scrollToLine(this.log.lines.length, false, false);
+        // editor.setOption("firstLineNumber", this.log.getFirstLineNumber());
     }
 
     render() {
@@ -57,9 +56,7 @@ export default class LogPanel extends Component {
                         </React.Fragment>
                     )}
                 </div>
-                <div className={styles.textViewer} ref="textViewer">
-                    {logText}
-                </div>
+                <div className={styles.textViewer} ref="textViewer"></div>
             </div>
         );
     }

@@ -6,15 +6,15 @@ import { resolve } from 'path'
 // API
 //
 
-export function newServer(websitePath, localPort, logger, serverMode=true) {
-    return new Server({ websitePath, localPort, logger, serverMode });
+export function newServer(logger, websitePath, localPort, serverMode=true) {
+    return new Server({ logger, websitePath, localPort, serverMode });
 }
 
 class Server {
-    constructor({ websitePath, localPort, logger, serverMode }) {
+    constructor({ logger, websitePath, localPort, serverMode }) {
+        this.logger = logger;
         this.websitePath = websitePath;
         this.localPort = localPort;
-        this.logger = logger;
         this.serverMode = serverMode;
 
         this.serverProcess = null;

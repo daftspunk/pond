@@ -15,13 +15,14 @@ export default class CreateWebsiteProgress extends Component {
     };
 
     render() {
-        const { project, onCloseSlides } = this.props;
+        const { project, newWebsiteStep, newWebsiteLogText, onCloseSlides } = this.props;
 
         const steps = [
+            'Preparation',
             'Downloading',
-            'Initializing Environment',
+            'Extracting',
             'Copying Installer',
-            'Finished',
+            'Clean up',
         ];
 
         return (
@@ -31,10 +32,10 @@ export default class CreateWebsiteProgress extends Component {
                     <VBox>
                         <div className={styles.progressIndicator}>
                             <h5 className="title is-5">Building your project</h5>
-                            <ProgressIndicator steps={steps} currentStepIndex={0} />
+                            <ProgressIndicator steps={steps} currentStepIndex={newWebsiteStep} />
                         </div>
                         <VBox.Main>
-                            <LogPanel toolbarControls={false} />
+                            <LogPanel toolbarControls={false} logText={newWebsiteLogText} />
                         </VBox.Main>
                     </VBox>
                 </SlideLayout.PlainContent>

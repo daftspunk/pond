@@ -15,6 +15,7 @@ import SitesDetail from './Sites/Sites.Detail'
 class Index extends Component {
     componentDidMount() {
         this.props.onFetchProjects();
+        this.props.onFetchWebsites();
         this.props.onSetActiveProject();
     }
 
@@ -42,10 +43,14 @@ class Index extends Component {
 
 export default connect(
     state => {
+        // If no edit website is found, use the first available
+        const websites = state.website.websites || [];
+        const editWebsite = state.website.editWebsite || websites && websites[0] || {};
+
         return {
-            project: state.project.project || {},
-            websites: state.website.websites,
-            editWebsite: state.website.editWebsite
+            websites,
+            editWebsite,
+            project: state.project.project || {}
         }
     },
     dispatch => {

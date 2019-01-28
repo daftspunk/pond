@@ -9,7 +9,7 @@ export default class SitesList extends Component {
 
         return (
             <Panel>
-                {websites && websites.map(w => (
+                {websites.length && websites.map(w => (
                     <Panel.Block
                         renderAs="a"
                         key={w.id}
