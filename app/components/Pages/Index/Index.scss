@@ -13,16 +13,33 @@ section.noSitesContainer {
     background: #f0f0f0;
 }
 
-.sitesDetail {
+.siteDetails {
+    margin-bottom: 0 !important;
 }
 
 .siteTitle {
     border-bottom: 1px solid #ccc;
     padding: 1.5rem;
+    position: relative;
 
     p {
         margin-bottom: 0 !important;
     }
+}
+
+.serverStatus {
+    position: absolute;
+    left: 1.2rem;
+    top: 1.6rem;
+    color: $grey;
+}
+
+.serverStatusActive {
+    color: $green;
+}
+
+.websiteInfo {
+    margin-left: 1.8rem;
 }
 
 .siteSettings {
@@ -34,8 +51,19 @@ section.noSitesContainer {
 .siteActions {
     border-bottom: 1px solid #ccc;
     padding: 0 1.5rem;
+
+    button {
+        border: none !important;
+    }
+    button:first-child {
+        margin-left: -.5em;
+    }
 }
 
 .siteDetails {
     padding: 1rem 1.5rem;
+}
+
+.environmentTable {
+    margin: 0 -.75em;
 }

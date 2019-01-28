@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { Panel, Button, Level, Icon, Table, VBox } from '../../../Elements'
+import { Panel, Button, Level, Icon, Table, VBox, Notification } from '../../../Elements'
 import { LogPanel } from '../../../Controls'
 import { CREATE_WEBSITE } from '../../../../constants/SlideConstants'
 import { ONLINE, OFFLINE, STARTING, STOPPING } from '../../../../constants/EnvironmentConstants'
 import styles from '../Index.scss'
 import openLocalDir from '../../../../utils/openLocalDir'
+import classnames from 'classnames'
 
 export default class SitesDetails extends Component {
     openLocalDirectory(website) {
@@ -16,18 +17,27 @@ export default class SitesDetails extends Component {
         const {
             project,
             editWebsite,
-            editWebsiteLogText,
-            editWebsiteLoading,
+            serverLogText,
+            serverStatus,
             onSetEditWebsiteModal,
             onStartServer,
             onStopServer
         } = this.props;
 
+        const serveDisabled = editWebsite && !editWebsite.canServe();
+
         return (
             <VBox>
                 <div className={styles.siteTitle}>
-                    <h4 className="title is-4">{editWebsite.name}</h4>
-                    <p className="subtitle is-6">{project.name}</p>
+                    <div className={classnames(styles.serverStatus, {
+                        [styles.serverStatusActive]: serverStatus==ONLINE
+                    })}>
+                        <Icon icon="circle" />
+                    </div>
+                    <div className={styles.websiteInfo}>
+                        <h4 className="title is-4">{editWebsite.name}</h4>
+                        <p className="subtitle is-6">{project.name}</p>
+                    </div>
                     <Button
                         title="Settings"
                         className={styles.siteSettings}
@@ -41,32 +51,33 @@ export default class SitesDetails extends Component {
                         <Level.Side align="left">
                             <Button
                                 onClick={()=>onStartServer(editWebsite)}
-                                loading={editWebsiteLoading==STARTING}
-                                disabled={editWebsiteLoading==ONLINE}>
+                                loading={serverStatus==STARTING}
+                                disabled={serveDisabled || serverStatus==ONLINE}>
                                 <Icon icon="play" />
                                 <span>Start</span>
                             </Button>
                             <Button
                                 onClick={()=>onStopServer(editWebsite)}
-                                loading={editWebsiteLoading==STOPPING}
-                                disabled={editWebsiteLoading==OFFLINE}>
+                                loading={serverStatus==STOPPING}
+                                disabled={serveDisabled || serverStatus==OFFLINE}>
                                 <Icon icon="stop" />
                                 <span>Stop</span>
                             </Button>
                         </Level.Side>
                         <Level.Side align="right">
-                            <Button color="info">
+                            <Button color="info" outlined disabled>
                                 <Icon icon="cloud" />
                                 <span>Deploy</span>
                             </Button>
                         </Level.Side>
                     </Level>
                 </div>
+
                 <div className={`${styles.siteDetails} content`}>
                     <p>
                         {editWebsite.description}
                     </p>
-                    <Table>
+                    <Table className={styles.environmentTable}>
                         <thead>
                             <tr>
                                 <th colSpan="100">Environment</th>
@@ -88,8 +99,13 @@ export default class SitesDetails extends Component {
                         </tbody>
                     </Table>
                 </div>
+                {serveDisabled && (
+                    <Notification color="danger">
+                        The local directory could not be found.
+                    </Notification>
+                )}
                 <VBox.Main>
-                    <LogPanel logText={editWebsiteLogText} />
+                    <LogPanel logText={serverLogText} />
                 </VBox.Main>
             </VBox>
         );

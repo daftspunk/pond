@@ -4,9 +4,10 @@ import { connect } from 'react-redux'
 import Layout from '../../Layouts/Default/Default'
 import SidebarNav from '../../Partials/Site/SidebarNav/SidebarNav'
 import { Button, Columns } from '../../Elements'
+import { OFFLINE } from '../../../constants/EnvironmentConstants'
 import styles from './Index.scss'
-import { SlideActions } from '../../../actions/SlideActions'
 import { ProjectActions } from '../../../actions/ProjectActions'
+import { ServerActions } from '../../../actions/ServerActions'
 import { WebsiteActions } from '../../../actions/WebsiteActions'
 import NoSites from './Index.NoSites'
 import SitesList from './Sites/Sites.List'
@@ -43,16 +44,18 @@ class Index extends Component {
 
 export default connect(
     state => {
+        const id = state.website.editWebsite && state.website.editWebsite.id || 0;
         return {
             websites: state.website.websites,
             editWebsite: state.website.editWebsite || {},
-            editWebsiteLoading: state.website.editWebsiteLoading,
-            editWebsiteLogText: state.website.editWebsiteLogText,
+            serverStatus: state.server.status[id] || OFFLINE,
+            serverLogText: state.server.logText[id],
             project: state.project.project || {}
         }
     },
     dispatch => {
         return bindActionCreators({
+            ...ServerActions,
             ...WebsiteActions,
             ...ProjectActions
         }, dispatch)

@@ -1,4 +1,5 @@
 export { default as ProgressIndicator } from './ProgressIndicator/ProgressIndicator'
+export { default as Notification } from './Notification/Notification'
 export { default as AutoSizer } from './AutoSizer/AutoSizer'
 export { default as Columns } from './Columns/Columns'
 export { default as Button } from './Button/Button'

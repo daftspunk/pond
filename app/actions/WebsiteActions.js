@@ -1,13 +1,9 @@
-import { ONLINE, OFFLINE, STARTING, STOPPING } from '../constants/EnvironmentConstants'
 import { CREATE_WEBSITE } from '../constants/SlideConstants'
 import { WEBSITE_UPDATE } from '../constants/ModalConstants'
 import { onOpenModal, onCloseModal } from '../actions/ModalActions'
 import { onOpenSlides, onCloseSlides } from '../actions/SlideActions'
 import { SubmissionError } from 'redux-form'
 import WebsiteModel from '../models/Website'
-
-import * as Installer from '../services/Provision/Installer'
-import * as Logger from '../services/Support/Logger'
 
 //
 // Actions
@@ -27,14 +23,7 @@ const CREATE_LOG_TEXT = 'october/website/CREATE_LOG_TEXT';
 
 const UPDATE_SUCCESS = 'october/website/UPDATE_SUCCESS';
 
-const START_SERVER_REQUEST = 'october/website/START_SERVER_REQUEST';
-const START_SERVER_SUCCESS = 'october/website/START_SERVER_SUCCESS';
-const START_SERVER_FAILURE = 'october/website/START_SERVER_FAILURE';
-
-const STOP_SERVER_REQUEST = 'october/website/STOP_SERVER_REQUEST';
-const STOP_SERVER_SUCCESS = 'october/website/STOP_SERVER_SUCCESS';
-const STOP_SERVER_FAILURE = 'october/website/STOP_SERVER_FAILURE';
-const LOG_EVENT = 'october/website/LOG_EVENT';
+const SET_ACTIVE_PROJECT = 'october/project/SET_ACTIVE_PROJECT';
 
 //
 // Reducers
@@ -47,13 +36,15 @@ const initialState = {
     newWebsiteLogText: "",
     websites: [],
     editWebsite: null,
-    editWebsiteLoading: OFFLINE,
-    editWebsiteLogText: "",
-    editWebsiteLogger: null,
 }
 
 export default function reducer(state = initialState, action) {
     switch (action.type) {
+        case SET_ACTIVE_PROJECT:
+            return {
+                ...state,
+                websites: [],
+            };
         case FETCH_WEBSITES_SUCCESS:
             // If no edit website is found, use the first available
             const editWebsite = state.editWebsite || action.websites && action.websites[0] || null;
@@ -100,47 +91,6 @@ export default function reducer(state = initialState, action) {
                 ...state,
                 editWebsite: action.website,
             };
-        case START_SERVER_REQUEST:
-            return {
-                ...state,
-                editWebsiteLoading: STARTING,
-            }
-        case START_SERVER_SUCCESS:
-            return {
-                ...state,
-                editWebsiteLoading: ONLINE,
-                editWebsiteLogger: action.logger,
-                editWebsiteLogText: action.logger.asText()
-            };
-        case START_SERVER_FAILURE:
-            return {
-                ...state,
-                editWebsiteLoading: OFFLINE,
-            }
-        case STOP_SERVER_REQUEST:
-            return {
-                ...state,
-                editWebsiteLoading: STOPPING,
-            }
-        case STOP_SERVER_SUCCESS:
-            if (state.editWebsiteLogger) {
-                state.editWebsiteLogger.destroy();
-            }
-            return {
-                ...state,
-                editWebsiteLoading: OFFLINE,
-                editWebsiteLogger: null,
-            }
-        case STOP_SERVER_FAILURE:
-            return {
-                ...state,
-                editWebsiteLoading: ONLINE,
-            }
-        case LOG_EVENT:
-            return {
-                ...state,
-                editWebsiteLogText: action.logText
-            }
         default:
             return state;
     }
@@ -157,8 +107,6 @@ export const WebsiteActions = {
     onFetchWebsites,
     onCreateWebsite,
     onUpdateWebsite,
-    onStartServer,
-    onStopServer,
 }
 
 export function onSetEditWebsite(website) {
@@ -268,47 +216,4 @@ export function onUpdateWebsite(website, values) {
     }
 
     function success(website) { return { type: UPDATE_SUCCESS, website } }
-}
-
-export function onStartServer(website) {
-    return async dispatch => {
-        dispatch(request(website));
-
-        const logger = Logger.newLogger();
-
-        logger.on('log', message => {
-            dispatch(log(logger.asText()));
-        });
-
-        try {
-            await website.startServer(logger);
-            dispatch(success(logger));
-        }
-        catch (err) {
-            dispatch(failure(err.toString()));
-        }
-    }
-
-    function request(website) { return { type: START_SERVER_REQUEST, website } }
-    function success(logger) { return { type: START_SERVER_SUCCESS, logger } }
-    function failure(error) { return { type: START_SERVER_FAILURE, error } }
-    function log(logText) { return { type: LOG_EVENT, logText } }
-}
-
-export function onStopServer(website) {
-    return async dispatch => {
-        dispatch(request(website));
-
-        try {
-            await website.stopServer();
-            dispatch(success(website));
-        }
-        catch (err) {
-            dispatch(failure(err.toString()));
-        }
-    }
-
-    function request(website) { return { type: STOP_SERVER_REQUEST, website } }
-    function success(website) { return { type: STOP_SERVER_SUCCESS, website } }
-    function failure(error) { return { type: STOP_SERVER_FAILURE, error } }
 }
