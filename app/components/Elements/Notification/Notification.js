@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import styles from './Notification.scss';
 import * as colors from '../../../constants/ColorConstants';
+import styles from './Notification.scss';
 
 const colorMap = [null].concat(Object.keys(colors).map(key => colors[key]));
 

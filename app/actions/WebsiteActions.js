@@ -1,8 +1,8 @@
+import { SubmissionError } from 'redux-form'
 import { CREATE_WEBSITE } from '../constants/SlideConstants'
 import { WEBSITE_UPDATE } from '../constants/ModalConstants'
 import { onOpenModal, onCloseModal } from '../actions/ModalActions'
 import { onOpenSlides, onCloseSlides } from '../actions/SlideActions'
-import { SubmissionError } from 'redux-form'
 import WebsiteModel from '../models/Website'
 
 //
@@ -39,6 +39,7 @@ const initialState = {
 }
 
 export default function reducer(state = initialState, action) {
+    let editWebsite;
     switch (action.type) {
         case SET_ACTIVE_PROJECT:
             return {
@@ -47,7 +48,7 @@ export default function reducer(state = initialState, action) {
             };
         case FETCH_WEBSITES_SUCCESS:
             // If no edit website is found, use the first available
-            const editWebsite = state.editWebsite || action.websites && action.websites[0] || null;
+            editWebsite = state.editWebsite || action.websites && action.websites[0] || null;
             return {
                 ...state,
                 editWebsite,

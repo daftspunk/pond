@@ -39,7 +39,7 @@ export default class Slide extends Component {
     )
 
     render() {
-        const { close, children, title } = this.props;
+        const { close, children } = this.props;
         return (
             <div className={styles.slideView}>
                 <div className={styles.close}>

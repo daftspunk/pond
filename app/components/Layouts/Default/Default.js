@@ -1,7 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import * as routes from '../../../constants/RouteConstants';
 import GlobalModals from '../../Partials/Site/GlobalModals/GlobalModals';
 import GlobalSlides from '../../Partials/Site/GlobalSlides/GlobalSlides';
 import styles from './Default.scss';
@@ -13,13 +11,14 @@ export default class Default extends Component {
     };
 
     render() {
+        const { sidebar, children } = this.props;
         return (
             <React.Fragment>
                 <div className={styles.sidebarContainer}>
-                    {this.props.sidebar}
+                    {sidebar}
                 </div>
                 <div className={styles.mainContainer}>
-                    {this.props.children}
+                    {children}
                 </div>
                 <GlobalModals />
                 <GlobalSlides />

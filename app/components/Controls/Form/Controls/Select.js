@@ -23,7 +23,7 @@ export default class Select extends PureComponent {
             PropTypes.number,
         ]),
         name: PropTypes.string,
-        options: PropTypes.array,
+        options: PropTypes.arrayOf(PropTypes.shape([])),
     }
 
     static defaultProps = {
@@ -42,9 +42,7 @@ export default class Select extends PureComponent {
         options: null,
     }
 
-    renderOptions(options) {
-        return options.map((option, index) => <option key={index} value={option[0]}>{option[1]}</option>)
-    }
+    renderOptions = (options) => options.map((option, index) => <option key={index} value={option[0]}>{option[1]}</option>)
 
     render() {
         const {

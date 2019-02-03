@@ -11,25 +11,24 @@ const Checkbox = ({
     value,
     name,
     ...props
-}) => {
-    return (
-        <label
+}) => (
+    <label
+        htmlFor={name}
+        disabled={disabled}
+        className={classnames('checkbox', className)}
+        style={style}
+    >
+        <input
+            {...props}
+            name={name}
+            type="checkbox"
+            value={checkedValue ? '1' :'0'}
             disabled={disabled}
-            className={classnames('checkbox', className)}
-            style={style}
-        >
-            <input
-                {...props}
-                name={name}
-                type="checkbox"
-                value={checkedValue ? '1' :'0'}
-                disabled={disabled}
-                checked={value}
-            />
-            {children}
-        </label>
-    )
-}
+            checked={value}
+        />
+        {children}
+    </label>
+)
 
 Checkbox.propTypes = {
     children: PropTypes.node,
@@ -37,7 +36,10 @@ Checkbox.propTypes = {
     style: PropTypes.shape({}),
     disabled: PropTypes.bool,
     checkedValue: PropTypes.string,
-    value: PropTypes.any,
+    value: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+    ]),
     name: PropTypes.string,
 }
 

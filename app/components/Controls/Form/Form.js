@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react'
+import { FormSection } from 'redux-form'
 import InputControl from './Controls/Input'
 import TextareaControl from './Controls/Textarea'
 import SelectControl from './Controls/Select'
@@ -8,7 +9,6 @@ import FileControl from './Controls/File'
 import { Columns } from '../../Elements'
 import FormField from './Form.Field'
 import styles from './Form.scss'
-import { FormSection } from 'redux-form'
 
 export default class Form extends PureComponent {
     static Text = props => <InputControl {...props} />
@@ -34,7 +34,7 @@ export default class Form extends PureComponent {
         'checkbox': Form.Checkbox,
     }
 
-    static Section = (props) => <FormSection component={(props) => <React.Fragment {...props} />} {...props} />
+    static Section = (props) => <FormSection component={(propss) => <React.Fragment {...propss} />} {...props} />
 
     static EmptyField = (props) => <Columns.Column size={6} {...props} />
 

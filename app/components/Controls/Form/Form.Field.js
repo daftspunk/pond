@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
-import { Columns } from '../../Elements'
-import { Form, Field, Control, Label, Help } from './'
 import { Field as ReduxFormField } from 'redux-form'
+import { Columns } from '../../Elements'
+import { Form, Field, Control, Label, Help } from '.'
 
 export default class FormField extends PureComponent {
     // input{ name, onBlur, onChange, onDragStart, onDrop, onFocus, value }
@@ -16,9 +16,9 @@ export default class FormField extends PureComponent {
     }) => {
         const Element = render
         const colSize = fullwidth ? 12 : 6
-        let fieldLabel = Element.hasInlineLabel ? null : label
-        let fieldChildren = Element.hasInlineLabel ? label : null
-        let fieldProps = { indent: !!indent }
+        const fieldLabel = Element.hasInlineLabel ? null : label
+        const fieldChildren = Element.hasInlineLabel ? label : null
+        const fieldProps = { indent: !!indent }
 
         return (
             <Columns.Column size={colSize}>
@@ -42,9 +42,9 @@ export default class FormField extends PureComponent {
     render() {
         const { component, ...props } = this.props
 
-        let fieldType = Form.stringToControlMap[component] || component || Form.Text
+        const fieldType = Form.stringToControlMap[component] || component || Form.Text
 
-        let fieldComponent = this.createRenderer(fieldType)
+        const fieldComponent = this.createRenderer(fieldType)
 
         return <ReduxFormField {...props} component={fieldComponent} />
     }
