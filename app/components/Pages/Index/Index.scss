@@ -7,6 +7,9 @@ img.welcomeImage {
 
 section.noSitesContainer {
     min-height: calc(100% - #{$titlebar-height}) !important;
+
+    h4 { padding: 1rem }
+    h4 + p { padding-bottom: 2rem; }
 }
 
 .sitesList {

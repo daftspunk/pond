@@ -1,11 +1,12 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Modal } from '../../../Controls';
-import { Button } from '../../../Elements';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Modal } from '../../../Controls'
+import { Button } from '../../../Elements'
 
 export default class Alert extends Component {
     static propTypes = {
-        item: PropTypes.object,
+        onClose: PropTypes.func.isRequired,
+        item: PropTypes.shape({}),
     };
 
     static defaultProps = {
@@ -13,16 +14,20 @@ export default class Alert extends Component {
     };
 
     onClose() {
-        if (this.props.item.onClose) {
-            this.props.item.onClose();
-            this.props.onClose(this.props.item);
+        const { item, onClose } = this.props;
+
+        if (item.onClose) {
+            item.onClose();
+            onClose(item);
         } else {
-            this.props.onClose(this.props.item);
+            onClose(item);
         }
     }
 
     render() {
-        const { title, text } = this.props.item;
+        const { item } = this.props;
+        const { title, text } = item;
+
         return (
             <Modal showClose={false}>
                 <Modal.Card>

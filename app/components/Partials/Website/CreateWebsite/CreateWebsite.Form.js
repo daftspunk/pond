@@ -10,10 +10,14 @@ import { CREATE_WEBSITE_FORM } from '../../../../constants/FormConstants'
 
 class CreateWebsiteForm extends Component {
     static propTypes = {
-        onCloseSlides: PropTypes.func,
+        onCloseSlides: PropTypes.func.isRequired,
+        onSetNewWebsite: PropTypes.func.isRequired,
+        handleSubmit: PropTypes.func.isRequired,
+        project: PropTypes.shape({}),
     };
 
     static defaultProps = {
+        project: {},
     };
 
     state = {
@@ -21,8 +25,8 @@ class CreateWebsiteForm extends Component {
     }
 
     handleSubmit = async (values) => {
-        const { onCreateWebsite, onSetNewWebsite } = this.props;
-        await onCreateWebsite(this.props.project, values);
+        const { onCreateWebsite, onSetNewWebsite, project } = this.props;
+        await onCreateWebsite(project, values);
         // reset(CREATE_WEBSITE_FORM);
         // onSetNewWebsite(false);
     }
@@ -31,7 +35,7 @@ class CreateWebsiteForm extends Component {
         this.setState({ isRemoteEnabled: event.target.checked });
     }
 
-    renderPortField() {
+    renderPortField = () => {
         return props => (
             <Field kind="addons">
                 <Control>
@@ -72,13 +76,13 @@ class CreateWebsiteForm extends Component {
                 <SlideLayout.Buttons>
                     <Level>
                         <Level.Side align="left">
-                            <Button onClick={onCloseSlides}>
-                                Go Back
+                            <Button color="info" onClick={handleSubmit(this.handleSubmit)}>
+                                Continue
                             </Button>
                         </Level.Side>
                         <Level.Side align="right">
-                            <Button color="info" onClick={handleSubmit(this.handleSubmit)}>
-                                Create
+                            <Button onClick={onCloseSlides}>
+                                Go Back
                             </Button>
                         </Level.Side>
                     </Level>

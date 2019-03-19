@@ -1,17 +1,29 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Button, Icon } from '../../../Elements'
 import { Scrollbars } from 'react-custom-scrollbars'
-import * as routes from '../../../../constants/RouteConstants'
+import classnames from 'classnames'
+import { Button, Icon } from '../../../Elements'
 import styles from '../../../Layouts/Default/Default.scss'
 import OctoberIcon from '../../../Elements/Icon/Icons/OctoberIcon'
-import classnames from 'classnames'
 
 import { ProjectActions } from '../../../../actions/ProjectActions'
 import { WebsiteActions } from '../../../../actions/WebsiteActions'
 
 class SidebarNav extends Component {
+    static propTypes = {
+        onFetchWebsites: PropTypes.func.isRequired,
+        onSetActiveProject: PropTypes.func.isRequired,
+        onSetNewProject: PropTypes.func.isRequired,
+        project: PropTypes.shape({}),
+        projects: PropTypes.arrayOf(PropTypes.shape({})),
+    };
+
+    static defaultProps = {
+        project: {},
+        projects: [],
+    };
 
     static NavItem = ({ active, ...props }) => (
         <Button
@@ -30,31 +42,34 @@ class SidebarNav extends Component {
     );
 
     setActiveProject(project) {
-        this.props.onFetchWebsites(project.id);
-        this.props.onSetActiveProject(project);
+        const { onFetchWebsites, onSetActiveProject } = this.props;
+
+        onFetchWebsites(project.id);
+        onSetActiveProject(project);
     }
 
     render() {
-        const Item = SidebarNav.NavItem;
-        const AddItem = SidebarNav.AddItem;
-        const { projects, project, onSetActiveProject } = this.props;
+        const { NavItem, AddItem } = SidebarNav;
+        const { projects, project, onSetNewProject } = this.props;
 
         return (
             <div>
                 <div className={styles.sidebar}>
+                    {/*
                     <div className={styles.sidebarSettings}>
-                        <Item icon="cog">Settings</Item>
+                        <NavItem icon="cog" />
                     </div>
+                    */}
                     <div className={styles.sidebarTools}>
                         <Scrollbars>
-                            {projects.map((p, i) => (
-                                <Item
-                                    key={i}
+                            {projects.map(p => (
+                                <NavItem
+                                    key={p.name}
                                     icon={p.icon||'leaf'}
                                     onClick={()=>this.setActiveProject(p)}
-                                    active={project.id==p.id}>{p.name}</Item>
+                                    active={project.id===p.id}>{p.name}</NavItem>
                             ))}
-                            <AddItem onClick={this.props.onSetNewProject} />
+                            <AddItem onClick={onSetNewProject} />
                         </Scrollbars>
                     </div>
                     <div className={styles.sidebarBrand}>
@@ -71,10 +86,8 @@ export default connect(
         projects: state.project.projects,
         project: state.project.project || {}
     }),
-    dispatch => {
-        return bindActionCreators({
-            ...WebsiteActions,
-            ...ProjectActions
-        }, dispatch)
-    }
+    dispatch => bindActionCreators({
+        ...WebsiteActions,
+        ...ProjectActions
+    }, dispatch)
 )(SidebarNav)

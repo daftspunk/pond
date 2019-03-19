@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Layout from '../../Layouts/Default/Default'
 import SidebarNav from '../../Partials/Site/SidebarNav/SidebarNav'
-import { Button, Columns } from '../../Elements'
+import { Columns } from '../../Elements'
 import { OFFLINE } from '../../../constants/EnvironmentConstants'
 import styles from './Index.scss'
 import { ProjectActions } from '../../../actions/ProjectActions'
@@ -14,10 +15,25 @@ import SitesList from './Sites/Sites.List'
 import SitesDetail from './Sites/Sites.Detail'
 
 class Index extends Component {
+    static propTypes = {
+        onFetchProjects: PropTypes.func.isRequired,
+        onSetActiveProject: PropTypes.func.isRequired,
+        onFetchWebsites: PropTypes.func.isRequired,
+        project: PropTypes.shape({}),
+        websites: PropTypes.arrayOf(PropTypes.shape({})),
+    };
+
+    static defaultProps = {
+        project: {},
+        websites: [],
+    }
+
     async componentDidMount() {
-        await this.props.onFetchProjects();
-        await this.props.onSetActiveProject();
-        this.props.onFetchWebsites(this.props.project.id);
+        const { onFetchProjects, onSetActiveProject, onFetchWebsites, project } = this.props;
+
+        await onFetchProjects();
+        await onSetActiveProject();
+        onFetchWebsites(project.id);
     }
 
     render() {
@@ -53,11 +69,9 @@ export default connect(
             project: state.project.project || {}
         }
     },
-    dispatch => {
-        return bindActionCreators({
-            ...ServerActions,
-            ...WebsiteActions,
-            ...ProjectActions
-        }, dispatch)
-    }
+    dispatch => bindActionCreators({
+        ...ServerActions,
+        ...WebsiteActions,
+        ...ProjectActions
+    }, dispatch)
 )(Index)

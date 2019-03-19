@@ -1,11 +1,13 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Modal } from '../../../Controls';
-import { Button } from '../../../Elements';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Modal } from '../../../Controls'
+import { Button } from '../../../Elements'
 
 export default class Confirm extends Component {
     static propTypes = {
-        item: PropTypes.object,
+        onClose: PropTypes.func.isRequired,
+        onConfirm: PropTypes.func.isRequired,
+        item: PropTypes.shape({}),
     };
 
     static defaultProps = {
@@ -13,23 +15,29 @@ export default class Confirm extends Component {
     };
 
     onClose() {
-        if (this.props.item.onClose) {
-            this.props.item.onClose();
-            this.props.onClose(this.props.item);
+        const { item, onClose } = this.props;
+
+        if (item.onClose) {
+            item.onClose();
+            onClose(item);
         } else {
-            this.props.onClose(this.props.item);
+            onClose(item);
         }
     }
 
     onConfirm() {
-        if (this.props.item.onConfirm) {
-            this.props.item.onConfirm();
-            this.props.onClose(this.props.item);
+        const { item, onConfirm } = this.props;
+
+        if (item.onConfirm) {
+            item.onConfirm();
+            onConfirm(item);
         }
     }
 
     render() {
-        const { title, text } = this.props.item;
+        const { item } = this.props;
+        const { title, text } = item;
+
         return (
             <Modal showClose={false}>
                 <Modal.Card>

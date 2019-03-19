@@ -1,8 +1,8 @@
 @import "../../../styles/utils.scss";
 
-$sidebar-width: 4.5rem;
-$sidebar-settings-height: 70px;
-$sidebar-brand-height: 65px;
+$sidebar-width: 6.4rem;
+$sidebar-settings-height: 1px;
+$sidebar-brand-height: 75px;
 
 div.sidebarContainer {
     display: block;
@@ -33,11 +33,13 @@ div.sidebar {
 
     :global {
         .button {
-            width: 50px;
-            height: 50px;
+            box-shadow: none;
+            width: 55px;
+            height: 55px;
             margin: .25em 0;
             color: rgba(255,255,255,.8);
-            background: rgba(255,255,255,.2);
+            /*background: rgba(0,0,0,.05);*/
+            background: transparent;
             border-color: transparent;
 
             i, img {
@@ -45,7 +47,7 @@ div.sidebar {
             }
             i {
                 display: block;
-                font-size: 1.8rem;
+                font-size: 2rem;
                 width: 100%;
             }
             img {
@@ -65,25 +67,44 @@ div.sidebar {
     }
 }
 
-div.sidebarTools {
+div.sidebar div.sidebarTools {
     overflow-x: hidden;
     padding-top: .2em;
     text-align: center;
     height: calc(100% - #{$sidebar-settings-height} - #{$sidebar-brand-height});
 
     button.navItemActive {
+        color: #fff;
+        i, img { opacity: 1; }
+
         &:after {
-            position: absolute;
-            margin-top: -15px;
-            height: 30px;
-            width: 10px;
-            border-top-right-radius: 5px;
-            border-bottom-right-radius: 5px;
-            background: #fff;
-            content: "";
+            // The side notch (removed)
+            // position: absolute;
+            // margin-top: -20px;
+            // height: 40px;
+            // width: 10px;
+            // border-top-right-radius: 5px;
+            // border-bottom-right-radius: 5px;
+            // background: #fff;
+            // content: "";
+            // display: block;
+            // top: 50%;
+            // left: -22px;
+        }
+
+    }
+
+    button {
+        margin: .25em 0 1em;
+
+        &:before {
+            content: attr(title);
             display: block;
-            top: 50%;
-            left: -14px;
+            position: absolute;
+            bottom: -13px;
+            left: 0;
+            right: 0;
+            font-size: 12px;
         }
     }
 
@@ -91,6 +112,11 @@ div.sidebarTools {
         border-style: dashed;
         background: transparent;
         border-color: rgba(255,255,255,.2);
+        margin-top: .75em;
+
+        &:before {
+            display: none;
+        }
 
         &:hover {
             border-color: rgba(255,255,255,.7);
@@ -104,7 +130,7 @@ div.sidebarSettings {
     height: $sidebar-settings-height;
 
     &::after {
-        content:"";
+        content: "";
         position: absolute;
         width: 40%;
         border-bottom: 1px solid rgba(255,255,255,.2);

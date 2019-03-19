@@ -59,7 +59,8 @@
       "error",
       { "extensions": [".js", ".jsx"] }
     ],
-    "react/prefer-stateless-function": "off"
+    "react/prefer-stateless-function": "off",
+    "react/no-unescaped-entities": "off"
   },
   "plugins": ["flowtype", "import", "promise", "compat", "react"],
   "settings": {

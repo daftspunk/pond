@@ -1,8 +1,8 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
-import GlobalModals from '../../Partials/Site/GlobalModals/GlobalModals';
-import GlobalSlides from '../../Partials/Site/GlobalSlides/GlobalSlides';
-import styles from './Default.scss';
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import GlobalModals from '../../Partials/Site/GlobalModals/GlobalModals'
+import GlobalSlides from '../../Partials/Site/GlobalSlides/GlobalSlides'
+import styles from './Default.scss'
 
 export default class Default extends Component {
     static propTypes = {

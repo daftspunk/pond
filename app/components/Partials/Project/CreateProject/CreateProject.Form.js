@@ -34,7 +34,7 @@ class CreateProjectForm extends PureComponent {
                 </Modal.Card.Head>
                 <Modal.Card.Body>
                     <Form>
-                        <Form.Field name="name" label="Project name" placeholder="Pick a name for this project" rules="required"  autoFocus fullwidth />
+                        <Form.Field name="name" label="Project name" placeholder="Pick a name for this project" rules="required" autoFocus fullwidth />
                         <Form.Field name="directory" label="Project directory" component="fileupload" fullwidth directory />
                         <Form.Field name="description" label="Description" component="textarea" fullwidth />
                         <Form.Field name="icon" label="Icon" component="text" fullwidth />

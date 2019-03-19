@@ -1,21 +1,23 @@
 import React, { Component } from 'react'
-import { reduxForm } from 'redux-form'
 import PropTypes from 'prop-types'
-import { Button, ProgressIndicator, VBox } from '../../../Elements'
+import { ProgressIndicator, VBox } from '../../../Elements'
 import { LogPanel } from '../../../Controls'
 import SlideLayout from '../../../Layouts/Slide/Slide'
 import styles from './CreateWebsite.scss'
 
 export default class CreateWebsiteProgress extends Component {
     static propTypes = {
-        onCloseSlides: PropTypes.func,
+        newWebsiteStep: PropTypes.string.isRequired,
+        newWebsiteLogText: PropTypes.string.isRequired,
+        project: PropTypes.shape({}),
     };
 
     static defaultProps = {
+        project: {},
     };
 
     render() {
-        const { project, newWebsiteStep, newWebsiteLogText, onCloseSlides } = this.props;
+        const { project, newWebsiteStep, newWebsiteLogText } = this.props;
 
         const steps = [
             'Preparation',

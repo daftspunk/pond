@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import { Button, Level } from '../../../Elements'
+import PropTypes from 'prop-types'
+import { Button } from '../../../Elements'
 import { WebsiteActions } from '../../../../actions/WebsiteActions'
 import { SlideActions } from '../../../../actions/SlideActions'
 import SlideLayout from '../../../Layouts/Slide/Slide'
@@ -9,6 +10,16 @@ import WebsiteForm from './CreateWebsite.Form'
 import WebsiteProgress from './CreateWebsite.Progress'
 
 class CreateWebsite extends Component {
+    static propTypes = {
+        onCloseSlides: PropTypes.func.isRequired,
+        newWebsiteLoading: PropTypes.func.isRequired,
+        initialWebsiteValues: PropTypes.shape({}),
+    };
+
+    static defaultProps = {
+        initialWebsiteValues: {},
+    };
+
     render() {
         const { onCloseSlides, newWebsiteLoading, initialWebsiteValues } = this.props;
 

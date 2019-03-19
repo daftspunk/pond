@@ -1,12 +1,38 @@
 @import '~bulma/sass/utilities/initial-variables.sass';
 
 // Fix hero referencing navbar
-$navbar-height: 3.25rem !default
+$navbar-height: 3.25rem !default;
+
+// Colors
+$color-midnight-blue: #283F4D;
+$color-silver: #BAC3C7;
+$color-silver-light: #E9EFF0;
+$color-silver-superlight: #F5F8F8;
+$color-dark-skies: #464F4F;
+$color-white: #FFFFFF;
+$color-clouds: #EAF0F1;
+$color-peter-river: #3498db;
+$color-belize-hole: #2980b9;
+$color-concrete: #95a5a6;
+$color-asbestos: #798D8D;
+$color-grass: #8AC252;
+$color-grass-dark: #72A93B;
+
+$color-danger: #BA1720;
+$color-warning: #DD8F22;
 
 // Set your brand colors
-$blue: #3498db;
+$grey-darker: $color-dark-skies;
+$blue: $color-peter-river;
+
+$button-color: $color-concrete;
+$button-padding-horizontal: 1em;
 
 $body-size: 14px;
+
+$radius: 2px;
+$radius-small: 1px;
+$radius-large: 4px;
 
 // Update Bulma's global variables
 $family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -20,9 +46,18 @@ $body-background-color: $white;
 $control-border-width: 1px;
 //$input-border-color: transparent;
 $input-shadow: none;
+$input-focus-box-shadow-size: 0;
 
 // Global variables
 $titlebar-height: 2rem;
-$sidebar-background-color: #283f4d;
+$sidebar-background-color: $color-midnight-blue;
+
+// Titles
+$title-weight: 400;
+
+.input,
+.textarea {
+    border-bottom: 1px solid $color-silver;
+}
 
 @import '~bulma/sass/utilities/_all.sass';
