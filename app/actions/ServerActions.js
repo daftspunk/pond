@@ -3,20 +3,7 @@ import * as Installer from '../services/Provision/Installer'
 import * as Logger from '../services/Support/Logger'
 
 //
-// Actions
-//
-
-const START_SERVER_REQUEST = 'october/website/START_SERVER_REQUEST';
-const START_SERVER_SUCCESS = 'october/website/START_SERVER_SUCCESS';
-const START_SERVER_FAILURE = 'october/website/START_SERVER_FAILURE';
-
-const STOP_SERVER_REQUEST = 'october/website/STOP_SERVER_REQUEST';
-const STOP_SERVER_SUCCESS = 'october/website/STOP_SERVER_SUCCESS';
-const STOP_SERVER_FAILURE = 'october/website/STOP_SERVER_FAILURE';
-const LOG_EVENT = 'october/website/LOG_EVENT';
-
-//
-// Reducers
+// API
 //
 
 const initialState = {
@@ -24,6 +11,28 @@ const initialState = {
     logText: {},
     loggers: {},
 }
+
+export const ServerActions = {
+    onStartServer,
+    onStopServer,
+}
+
+//
+// Actions
+//
+
+const START_SERVER_REQUEST = 'october/website/START_SERVER_REQUEST'
+const START_SERVER_SUCCESS = 'october/website/START_SERVER_SUCCESS'
+const START_SERVER_FAILURE = 'october/website/START_SERVER_FAILURE'
+
+const STOP_SERVER_REQUEST = 'october/website/STOP_SERVER_REQUEST'
+const STOP_SERVER_SUCCESS = 'october/website/STOP_SERVER_SUCCESS'
+const STOP_SERVER_FAILURE = 'october/website/STOP_SERVER_FAILURE'
+const LOG_EVENT = 'october/website/LOG_EVENT'
+
+//
+// Reducers
+//
 
 export default function reducer(state = initialState, action) {
     const id = action.website && action.website.id;
@@ -78,11 +87,6 @@ export default function reducer(state = initialState, action) {
 //
 // Action Creators
 //
-
-export const ServerActions = {
-    onStartServer,
-    onStopServer,
-}
 
 export function onStartServer(website) {
     return async dispatch => {

@@ -4,29 +4,12 @@ import { WEBSITE_UPDATE } from '../constants/ModalConstants'
 import { onOpenModal, onCloseModal } from '../actions/ModalActions'
 import { onOpenSlides, onCloseSlides } from '../actions/SlideActions'
 import WebsiteModel from '../models/Website'
+import * as Installer from '../services/Provision/Installer'
+import * as Logger from '../services/Support/Logger'
+
 
 //
-// Actions
-//
-
-const FETCH_WEBSITES_SUCCESS = 'october/website/FETCH_WEBSITES_SUCCESS';
-
-const SET_WEBSITE_NEW = 'october/website/SET_WEBSITE_NEW';
-
-const SET_WEBSITE_EDIT = 'october/website/SET_WEBSITE_EDIT';
-
-const CREATE_REQUEST = 'october/website/CREATE_REQUEST';
-const CREATE_SUCCESS = 'october/website/CREATE_SUCCESS';
-const CREATE_FAILURE = 'october/website/CREATE_FAILURE';
-const CREATE_PROGRESS = 'october/website/CREATE_PROGRESS';
-const CREATE_LOG_TEXT = 'october/website/CREATE_LOG_TEXT';
-
-const UPDATE_SUCCESS = 'october/website/UPDATE_SUCCESS';
-
-const SET_ACTIVE_PROJECT = 'october/project/SET_ACTIVE_PROJECT';
-
-//
-// Reducers
+// API
 //
 
 const initialState = {
@@ -37,6 +20,39 @@ const initialState = {
     websites: [],
     editWebsite: null,
 }
+
+export const WebsiteActions = {
+    onSetEditWebsite,
+    onSetEditWebsiteModal,
+    onSetNewWebsite,
+    onFetchWebsites,
+    onCreateWebsite,
+    onUpdateWebsite,
+}
+
+//
+// Actions
+//
+
+const FETCH_WEBSITES_SUCCESS = 'october/website/FETCH_WEBSITES_SUCCESS'
+
+const SET_WEBSITE_NEW = 'october/website/SET_WEBSITE_NEW'
+
+const SET_WEBSITE_EDIT = 'october/website/SET_WEBSITE_EDIT'
+
+const CREATE_REQUEST = 'october/website/CREATE_REQUEST'
+const CREATE_SUCCESS = 'october/website/CREATE_SUCCESS'
+const CREATE_FAILURE = 'october/website/CREATE_FAILURE'
+const CREATE_PROGRESS = 'october/website/CREATE_PROGRESS'
+const CREATE_LOG_TEXT = 'october/website/CREATE_LOG_TEXT'
+
+const UPDATE_SUCCESS = 'october/website/UPDATE_SUCCESS'
+
+const SET_ACTIVE_PROJECT = 'october/project/SET_ACTIVE_PROJECT'
+
+//
+// Reducers
+//
 
 export default function reducer(state = initialState, action) {
     let editWebsite;
@@ -101,15 +117,6 @@ export default function reducer(state = initialState, action) {
 // Action Creators
 //
 
-export const WebsiteActions = {
-    onSetEditWebsite,
-    onSetEditWebsiteModal,
-    onSetNewWebsite,
-    onFetchWebsites,
-    onCreateWebsite,
-    onUpdateWebsite,
-}
-
 export function onSetEditWebsite(website) {
     return { type: SET_WEBSITE_EDIT, website }
 }
@@ -142,10 +149,8 @@ export function onFetchWebsites(projectId) {
     return async (dispatch) => {
         const websites = await (new WebsiteModel).where('projectId', projectId).get();
 
-        dispatch(success(websites));
+        dispatch({ type: FETCH_WEBSITES_SUCCESS, websites });
     };
-
-    function success(websites) { return { type: FETCH_WEBSITES_SUCCESS, websites } }
 }
 
 export function onCreateWebsite(project, values) {
@@ -169,7 +174,7 @@ export function onCreateWebsite(project, values) {
 
         dispatch(request(values));
 
-        const logger = Logger.newLogger();
+        let logger = Logger.newLogger();
 
         logger.on('progress', stepIndex => {
             dispatch(progress(stepIndex));

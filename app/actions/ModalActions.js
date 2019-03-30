@@ -2,20 +2,31 @@ import uuid from 'uuid'
 import { ALERT, CONFIRM } from '../constants/ModalConstants'
 
 //
-// Actions
-//
-
-const OPEN_MODAL = 'october/modal/OPEN_MODAL';
-const CLOSE_MODAL = 'october/modal/CLOSE_MODAL';
-const CLOSE_MODAL_BY_TYPE = 'october/modal/CLOSE_MODAL_BY_TYPE';
-
-//
-// Reducers
+// API
 //
 
 const initialState = {
     modals: [],
 }
+
+export const ModalActions = {
+    onOpenAlert,
+    onOpenConfirm,
+    onOpenModal,
+    onCloseModal
+}
+
+//
+// Actions
+//
+
+const OPEN_MODAL = 'october/modal/OPEN_MODAL'
+const CLOSE_MODAL = 'october/modal/CLOSE_MODAL'
+const CLOSE_MODAL_BY_TYPE = 'october/modal/CLOSE_MODAL_BY_TYPE'
+
+//
+// Reducers
+//
 
 export default function reducer(state = initialState, action) {
     switch (action.type) {
@@ -42,13 +53,6 @@ export default function reducer(state = initialState, action) {
 //
 // Action Creators
 //
-
-export const ModalActions = {
-    onOpenAlert,
-    onOpenConfirm,
-    onOpenModal,
-    onCloseModal
-}
 
 /*
 function onConfirmAction() {

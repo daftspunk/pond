@@ -11,18 +11,20 @@ export default class NoSites extends Component {
     };
 
     static defaultProps = {
-        project: {},
+        project: null,
     }
 
     render() {
         const { project, onSetNewWebsite } = this.props;
+
+        const projectName = project && project.name || 'Pond';
 
         return (
             <section className={`hero is-fullheight ${styles.noSitesContainer}`}>
                 <div className="hero-body">
                     <div className="container has-text-centered">
                         <img src={image} className={styles.welcomeImage} alt="" />
-                        <h4 className="title is-4 is-spaced">Welcome to {project.name||'Pond'}</h4>
+                        <h4 className="title is-4 is-spaced">Welcome to {projectName}</h4>
                         <p className="subtitle is-6">
                             You don't have any websites in this project yet.
                             Create your first and enjoy October CMS!

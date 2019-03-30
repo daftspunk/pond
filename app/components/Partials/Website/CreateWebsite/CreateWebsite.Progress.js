@@ -7,7 +7,7 @@ import styles from './CreateWebsite.scss'
 
 export default class CreateWebsiteProgress extends Component {
     static propTypes = {
-        newWebsiteStep: PropTypes.string.isRequired,
+        newWebsiteStep: PropTypes.number.isRequired,
         newWebsiteLogText: PropTypes.string.isRequired,
         project: PropTypes.shape({}),
     };

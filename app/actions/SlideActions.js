@@ -1,3 +1,16 @@
+//
+// API
+//
+
+const initialState = {
+    isOpen: false,
+    activeSlide: null
+}
+
+export const SlideActions = {
+    onOpenSlides,
+    onCloseSlides,
+}
 
 //
 // Actions
@@ -9,11 +22,6 @@ const CLOSE_SLIDE = 'october/slides/CLOSE_SLIDE'
 //
 // Reducers
 //
-
-const initialState = {
-    isOpen: false,
-    activeSlide: null
-}
 
 export default function reducer(state = initialState, action) {
     switch (action.type) {
@@ -32,11 +40,6 @@ export default function reducer(state = initialState, action) {
 //
 // Action Creators
 //
-
-export const SlideActions = {
-    onOpenSlides,
-    onCloseSlides,
-}
 
 export function onOpenSlides(slide) {
     return { type: OPEN_SLIDE, slide }

@@ -4,19 +4,7 @@ import { SubmissionError } from 'redux-form'
 import ProjectModel from '../models/Project'
 
 //
-// Actions
-//
-
-const FETCH_PROJECTS_SUCCESS = 'october/project/FETCH_PROJECTS_SUCCESS';
-
-const SET_PROJECT_NEW = 'october/project/SET_PROJECT_NEW';
-
-const SET_ACTIVE_PROJECT = 'october/project/SET_ACTIVE_PROJECT';
-
-const CREATE_SUCCESS = 'october/project/CREATE_SUCCESS';
-
-//
-// Reducers
+// API
 //
 
 const initialState = {
@@ -24,6 +12,29 @@ const initialState = {
     projects: [],
     project: null
 }
+
+export const ProjectActions = {
+    onFetchProjects,
+    onCreateProject,
+    onSetActiveProject,
+    onSetNewProject
+}
+
+//
+// Actions
+//
+
+const FETCH_PROJECTS_SUCCESS = 'october/project/FETCH_PROJECTS_SUCCESS'
+
+const SET_PROJECT_NEW = 'october/project/SET_PROJECT_NEW'
+
+const SET_ACTIVE_PROJECT = 'october/project/SET_ACTIVE_PROJECT'
+
+const CREATE_SUCCESS = 'october/project/CREATE_SUCCESS'
+
+//
+// Reducers
+//
 
 export default function reducer(state = initialState, action) {
     switch (action.type) {
@@ -58,13 +69,6 @@ export default function reducer(state = initialState, action) {
 // Action Creators
 //
 
-export const ProjectActions = {
-    onFetchProjects,
-    onCreateProject,
-    onSetActiveProject,
-    onSetNewProject
-}
-
 export function onSetActiveProject(project=null) {
     return async (dispatch) => {
         if (!project) {
@@ -72,6 +76,7 @@ export function onSetActiveProject(project=null) {
         }
 
         dispatch({ type: SET_ACTIVE_PROJECT, project });
+        return project;
     }
 }
 

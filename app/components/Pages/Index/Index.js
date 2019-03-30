@@ -24,15 +24,15 @@ class Index extends Component {
     };
 
     static defaultProps = {
-        project: {},
+        project: null,
         websites: [],
     }
 
     async componentDidMount() {
-        const { onFetchProjects, onSetActiveProject, onFetchWebsites, project } = this.props;
-
+        const { onFetchProjects, onSetActiveProject, onFetchWebsites } = this.props;
         await onFetchProjects();
-        await onSetActiveProject();
+
+        const project = await onSetActiveProject();
         onFetchWebsites(project.id);
     }
 
@@ -66,12 +66,12 @@ export default connect(
             editWebsite: state.website.editWebsite || {},
             serverStatus: state.server.status[id] || OFFLINE,
             serverLogText: state.server.logText[id],
-            project: state.project.project || {}
+            project: state.project.project,
         }
     },
     dispatch => bindActionCreators({
         ...ServerActions,
         ...WebsiteActions,
-        ...ProjectActions
+        ...ProjectActions,
     }, dispatch)
 )(Index)

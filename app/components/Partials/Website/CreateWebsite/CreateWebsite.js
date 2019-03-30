@@ -12,7 +12,7 @@ import WebsiteProgress from './CreateWebsite.Progress'
 class CreateWebsite extends Component {
     static propTypes = {
         onCloseSlides: PropTypes.func.isRequired,
-        newWebsiteLoading: PropTypes.func.isRequired,
+        newWebsiteLoading: PropTypes.bool.isRequired,
         initialWebsiteValues: PropTypes.shape({}),
     };
 

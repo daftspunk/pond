@@ -189,13 +189,10 @@ export default class Model {
 
     _create() {
         return this.connection().then(async db => {
-            var objClone = Object.assign({}, this);
 
-            objClone.documentType = this.resource();
+            const saveData = this._makeForSave();
 
-            delete objClone[this.primaryKey()];
-
-            const putResult = await db.post(objClone);
+            const putResult = await db.post(saveData);
 
             return this._fillFromSave(putResult);
         });
@@ -203,16 +200,25 @@ export default class Model {
 
     _update() {
         return this.connection().then(async db => {
-            var objClone = Object.assign({}, this);
 
-            objClone.documentType = this.resource();
-
-            delete objClone[this.primaryKey()];
+            const saveData = this._makeForSave();
 
             const putResult = await db.put(objClone);
 
             return this._fillFromSave(putResult);
         });
+    }
+
+    _makeForSave() {
+        var objClone = Object.assign({}, this);
+
+        objClone.documentType = this.resource();
+
+        delete objClone[this.primaryKey()];
+
+        delete objClone._builder;
+
+        return objClone;
     }
 
     _fillFromSave(putResult) {
