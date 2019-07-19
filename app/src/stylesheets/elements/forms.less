@@ -1,0 +1,244 @@
+form {
+    margin-bottom: 0;
+}
+
+.form-control {
+    box-shadow: none;
+    border-bottom-color: @color-form-input-border-inactive;
+
+    &:focus {
+        box-shadow: none;
+        outline: none;
+    }
+}
+
+textarea.form-control {
+    resize: none;
+}
+
+.form-group {
+    margin-bottom: @standard-padding;
+
+    &.required label:after {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 4px;
+        background: @brand-danger;
+        vertical-align: super;
+        margin-left: 5px;
+        border-radius: 10px;
+    }
+
+    input.invalid {
+        border-bottom: 1px solid @color-danger;
+
+        + span.validation-error {
+            display: block;
+        }
+
+        &:focus {
+            border-bottom-color: @color-form-input-border-active;
+        }
+    }
+
+    span.description {
+        display: block;
+        margin-top: 5px;
+        color: @color-form-description;
+    }
+
+    label + span.description  {
+        margin-top: 0;
+        margin-bottom: 5px;
+    }
+}
+
+.field-prefixed {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: flex-start;
+    position: relative;
+
+    > .prefix {
+        order: 0;
+        flex: 0 1 auto;
+        align-self: flex-end;
+        padding-bottom: 6px;
+        padding-right: 3px;
+        color: @color-form-label;
+    }
+
+    > .field {
+        order: 0;
+        flex: 1 1 auto;
+        align-self: auto;
+
+        .field-prefixed-marker {
+            display: block;
+            content: '';
+            border-top: 1px solid @color-form-input-border-inactive;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        input:focus + .field-prefixed-marker {
+            border-top-color: @color-form-input-border-active;
+        }
+    }
+
+    &.invalid {
+        > .field {
+            .field-prefixed-marker {
+                border-top-color: @color-danger;
+            }
+        }
+
+        + .validation-error {
+            display: block;
+        }
+    }
+}
+
+//
+// Custom form elements
+//
+
+.radio {
+    label {
+        position: relative;
+        user-select: none;
+
+        input {
+            display: none;
+
+            + span.radio-label {
+                &:before {
+                    .icons-sprite-pseudo(15px, 15px, 83px, 143px);
+                    position: absolute;
+                    top: 2px;
+                    left: 0;
+                    cursor: pointer;
+                }
+            }
+
+            &:checked + span.radio-label:before {
+                .icons-sprite-pseudo(15px, 15px, 83px, 163px);
+            }
+        }
+    }
+
+    + .radio {
+        margin-top: 15px;
+    }
+}
+
+.toggle {
+    label {
+        position: relative;
+        padding-left: 40px;
+        margin: 10px 0;
+        display: block;
+        user-select: none;
+        cursor: pointer;
+
+        input {
+            display: none;
+
+            + span.toggle-label {
+                &:before {
+                    .icons-sprite-pseudo(31px, 19px, 0, 201px);
+                    position: absolute;
+
+                    top: 1px;
+                    left: 0;
+                    cursor: pointer;
+                }
+            }
+
+            &:checked + span.toggle-label:before {
+                .icons-sprite-pseudo(31px, 19px, 40px, 201px);
+            }
+        }
+    }
+}
+
+div.toggle-control-group {
+    padding-left: 40px;
+}
+
+label {
+    font-weight: normal;
+    color: @color-form-label;
+}
+
+.directory-selector {
+    cursor: pointer;
+
+    input[type="file"] {
+        display: none;
+
+        &.invalid {
+            + div.directory-location {
+                border-bottom: 1px solid @color-danger;
+
+                + span.validation-error {
+                    display: block;
+                }
+            }
+        }
+    }
+
+    // Note - directory location widget is a 
+    // part of the directory location control.
+    // The control is editable, the widget is
+    // read-only. That's why we define some
+    // stuff here and not in directory-location.less
+    div.directory-location {
+        height: auto;
+        min-height: 30px;
+
+        div.placeholder {
+            color: @color-form-label-inactive;
+            line-height: 20px;
+        }
+
+        ul {
+            margin-top: -5px;
+            margin-bottom: -5px;
+        }
+
+        &:after {
+            position: absolute;
+            right: 12px;
+            top: 14px;
+            .icons-sprite-pseudo(16px, 4px, 142px, 129px);
+        }
+
+        &:hover:after {
+            .icons-sprite-pseudo(16px, 4px, 163px, 129px);
+        }
+    }
+}
+
+.validation-error {
+    display: none;
+    color: @color-danger;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+h4.invalid {
+    color: @color-danger;
+
+    + .validation-error {
+        display: block;
+        margin-top: -15px;
+        margin-bottom: @standard-padding;
+    }
+}

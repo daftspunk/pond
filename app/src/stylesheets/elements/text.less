@@ -1,0 +1,39 @@
+body {
+    -webkit-font-smoothing: antialiased;
+    line-height: 150%;
+}
+
+a {
+    text-decoration: underline;
+}
+
+p {
+    margin: 0 0 @standard-padding 0;
+}
+
+h2, h3, h4, h5, h6, p {
+    margin-top: 0;
+
+    &.standard-padding-bottom {
+        margin-bottom: @standard-padding;
+        padding-bottom: 0;
+    }
+}
+
+h4 {
+    // Also used for form section headers
+
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: normal;
+    margin-bottom: 13px;
+}
+
+table {
+    line-height: inherit;
+}

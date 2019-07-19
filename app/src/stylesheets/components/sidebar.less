@@ -1,0 +1,62 @@
+div.sidebar {
+    background: @color-sidebar-bg;
+    position: relative;
+
+    &:after {
+        .icons-sprite-pseudo(31px, 42px, 86px, 10px);
+        position: absolute;
+        bottom: 26px;
+        left: 30px;
+    }
+
+    ul {
+        list-style: none;
+        padding: 20px 0 0 0;
+        margin: 0; 
+
+        li {
+            a {
+                display: block;
+                padding: 0 0 30px 0;
+                text-align: center;
+                color: @color-sidebar-inactive-text;
+                text-decoration: none;
+                
+                &.router-link-active {
+                    color: @color-sidebar-active-text;
+                }
+
+                &:before {
+                    display: block!important;
+                    position: relative;
+                    left: 28px;
+                    margin-bottom: 8px;
+                }
+            }
+
+            &.projects {
+                a {
+                    &:before {
+                        .icons-sprite-pseudo(32px, 30px, 4px, 5px);
+                    }
+
+                    &.router-link-active:before {
+                        .icons-sprite-pseudo(32px, 30px, 4px, 45px);
+                    }
+                }
+            }
+
+            &.settings {
+                a {
+                    &:before {
+                        .icons-sprite-pseudo(32px, 30px, 44px, 6px);
+                    }
+
+                    &.router-link-active:before {
+                        .icons-sprite-pseudo(32px, 30px, 44px, 46px);
+                    }
+                }
+            }
+        }
+    }
+}

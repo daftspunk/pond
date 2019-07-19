@@ -1,0 +1,90 @@
+.current-project-view-panel {
+    position: relative;
+
+    .screen-header {
+        padding-left: 0;
+        padding-right: 0;
+
+        h3, h4 {
+            width: calc(~"100% - 120px");
+        }
+
+        h4 {
+            margin-left: 47px;
+        }
+
+        a.settings-link, a.star-indicator {
+            display: inline-block;
+            cursor: pointer;
+            position: absolute;
+            top: 19px;
+            user-select: none;
+        }
+
+        a.settings-link {
+            width: 17px;
+            height: 20px;
+            right: 23px;
+            .hide-text();
+
+            &:before {
+                .icons-sprite-pseudo(17px, 20px, 162px, 62px);
+            }
+
+            &:hover:before {
+                .icons-sprite-pseudo(17px, 20px, 162px, 42px);
+            }
+        }
+
+        a.star-indicator {
+            width: 16px;
+            height: 15px;
+            right: 56px;
+
+            &:before {
+                .icons-sprite-pseudo(16px, 15px, 142px, 63px);
+            }
+
+            &.starred:before {
+                .icons-sprite-pseudo(16px, 15px, 142px, 43px);
+            }
+        }
+
+        div.project-status {
+            margin: 20px 10px 0 @standard-padding;
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            float: left;
+
+            &:before {
+                .icons-sprite-pseudo(12px, 12px, 124px, 85px);
+            }
+
+            &.online:before {
+                .icons-sprite-pseudo(12px, 12px, 104px, 85px);
+            }
+        }
+    }
+
+    .no-project-selected {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+
+        > div {
+            &:before {
+                .icons-sprite-pseudo(80px, 88px, 200px, 1px);
+                display: inline-block;
+                margin-bottom: 30px;
+            }
+
+            h3 {
+                font-size: 18px;
+                margin: 0 0 15px 0;
+            }
+        }
+    }
+}

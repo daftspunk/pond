@@ -1,0 +1,23 @@
+div.app-container {
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: stretch;
+
+    > div.flex-item {
+        align-self: auto;
+
+        &.sidebar {
+            flex: 0 1 auto;
+            width: 90px;
+            min-width: 90px;
+        }
+
+        &.main-view {
+            flex: 1 0 auto;
+        }
+    }
+}

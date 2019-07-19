@@ -1,0 +1,57 @@
+table.numbered-message-list {
+    width: 100%;
+    font-size: @font-size-base;
+    margin-bottom: @standard-padding;
+
+    th, td {
+        vertical-align: top;
+        padding: 10px 0;
+
+        > *:last-child {
+            margin-bottom: 0;
+        }
+
+        border-bottom: 1px solid @color-layout-grid-lines;
+    }
+
+    th {
+        font-weight: normal;
+        text-align: right;
+        padding-right: 7px;
+        width: 15px;
+
+        > div {
+            display: inline-block;
+            padding: 3px;
+            line-height: 100%;
+            border-radius: 2px;
+            font-weight: bold;
+            font-size: 11px;
+            margin-top: 1px;
+            text-align: center;
+            min-width: 15px;
+            color: white;
+
+            &.error {
+                background: @color-danger;
+            }
+
+            &.warning {
+                background: @color-warning;
+            }
+        }
+    }
+
+    tr:first-child {
+        th, td {
+            padding-top: 0;
+        }
+    }
+
+    tr:last-child {
+        th, td {
+            padding-bottom: 0;
+            border-bottom: none;
+       }
+    }
+}

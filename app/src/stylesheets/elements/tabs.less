@@ -1,0 +1,38 @@
+.material-tabs {
+    ul.tabs {
+        list-style: none;
+        padding: 0 @standard-padding;
+        margin: 0;
+        white-space: nowrap;
+        border-bottom: 1px solid @color-layout-grid-lines;
+        user-select: none;
+
+        li {
+            display: inline-block;
+            margin: 0 10px -1 0;
+            padding-bottom: 2px;
+            
+            a {
+                display: block;
+                text-decoration: none;
+                color: @color-text-minor;
+            }
+
+            &.active {
+                border-bottom: 2px solid @brand-primary;
+
+                a {
+                    color: @text-color;
+                }
+            }
+
+            &:last-child {
+                margin-right: 0;
+            }
+
+            .badge {
+                font-size: 11px;
+            }
+        }
+    }
+}
