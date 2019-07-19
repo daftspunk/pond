@@ -1,0 +1,25 @@
+div.projects-side-panel {
+    background: @color-projects-side-panel-bg;
+    border-right: 1px solid @color-layout-grid-lines;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    align-items: flex-start;
+
+    > .projects-side-panel-search {
+        order: 0;
+        flex: 0 1 auto;
+        align-self: auto;
+        width: 100%;
+    }
+
+    > .project-list {
+        order: 0;
+        flex: 1 0 auto;
+        align-self: auto;
+        width: 100%;
+    }
+}

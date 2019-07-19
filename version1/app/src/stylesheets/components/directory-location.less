@@ -1,0 +1,37 @@
+div.directory-location {
+    line-height: 30px;
+    padding-right: 30px;
+    position: relative;
+
+    ul {
+        margin: 0;
+        padding: 0;
+
+        li {
+            display: inline-block;
+            color: @text-color;
+            margin-right: 7px;
+
+            &:before {
+                .icons-sprite-pseudo(14px, 12px, 123px, 124px);
+                margin-right: 5px;
+            }
+
+            &:after {
+                margin-left: 5px;
+                vertical-align: middle;
+                position: relative;
+                top: -1px;
+                .icons-sprite-pseudo(4px, 5px, 188px, 128px);
+            }
+
+            &:last-child {
+                margin-right: 0;
+
+                &:after {
+                    display: none;
+                }
+            }
+        }
+    }
+}

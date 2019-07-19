@@ -1,0 +1,18 @@
+div.control-toolbar {
+    padding: @standard-padding;
+
+    .btn {
+        margin-right: 5px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+
+        &.disabled,
+        &[disabled] {
+            .opacity(1);
+            background-color: @btn-disabled-bg;
+            color: @btn-disabled-color;
+        }
+    }
+}
