@@ -1,0 +1,134 @@
+$color-progress-indicator-active: #72A93B;
+$color-progress-indicator-inactive: #BAC3C7;
+$color-progress-indicator-active-text: #72A93B;
+
+.progressContainer {
+    display: inline-block;
+    margin-top: 15px;
+
+    ul {
+        font-size: 0;
+        white-space: nowrap;
+        text-align: center;
+
+        li {
+            display: inline-block;
+            width: 150px;
+
+            h6 {
+                font-size: 1rem;
+                color: $color-progress-indicator-inactive;
+                font-weight: normal;
+                margin-bottom: 9px;
+            }
+
+            &:last-child {
+                .progressWidget:before {
+                    display: none;
+                }
+
+                .progressIndicator {
+                    display: none !important;
+                }
+            }
+
+            &.active, &.done {
+                h6 {
+                    color: $color-progress-indicator-active-text;
+                }
+
+                .progressWidget:after {
+                    background: $color-progress-indicator-active;
+                }
+            }
+
+            &.active {
+                .progressIndicator {
+                    display: block;
+                }
+            }
+
+            &.done {
+                .progressWidget {
+                    &:after {
+                        box-shadow: 0 0 0 5px white, 0 0 10px 14px rgba(0, 0, 0, 0.07);
+                    }
+                }
+
+                .progressIndicator {
+                    display: block;
+
+                    &:after {
+                        width: 100%;
+                    }
+                }
+            }
+        }
+    }
+}
+
+.progressWidget {
+    position: relative;
+
+    &:after {
+        content: '';
+        display: inline-block;
+        position: relative;
+        z-index: 5;
+        width: 14px;
+        height: 14px;
+        top: 14px;
+        border-radius: 14px;
+        background: $color-progress-indicator-inactive;
+        transition: box-shadow 0.2s ease-in, background-color 0.2s ease-in;
+    }
+
+    &:before {
+        content: '';
+        position: absolute;
+        z-index: 3;
+        width: 150px;
+        height: 2px;
+        left: 6px;
+        top: 6px;
+        background: $color-progress-indicator-inactive;
+    }
+}
+
+.progressIndicator {
+    width: 150px;
+    height: 2px;
+    position: absolute;
+    left: 6px;
+    top: 6px;
+    z-index: 4;
+    display: none;
+
+    &:after, &:before {
+        height: 2px;
+        position: absolute;
+        width: 0;
+        transition: width 0.1s ease-in;
+        content: '';
+        display: block;
+        background: $color-progress-indicator-active;
+    }
+
+    &:before {
+        animation: infinite-loader 60s linear;
+    }
+}
+
+@keyframes oc-infinite-loader{
+    0% { width:0 }
+    10% { width:42% }
+    20% { width:63% }
+    30% { width:78.75% }
+    40% { width:88.59375% }
+    50% { width:94.130859375% }
+    60% { width:97.07244873046875% }
+    70% { width:98.58920574188232% }
+    80% { width:99.35943391174078% }
+    90% { width:99.74755670045852% }
+    100% { width:99.9423761471391% }
+}

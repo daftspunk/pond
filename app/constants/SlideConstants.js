@@ -1,0 +1,2 @@
+
+export const CREATE_WEBSITE = 'CREATE_WEBSITE'

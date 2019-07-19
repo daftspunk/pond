@@ -1,0 +1,40 @@
+@import "../../../styles/utils.scss";
+
+:global {
+    @import "~bulma/sass/elements/form.sass";
+
+    .field {
+        &.is-indent {
+            padding-left: 1.1rem;
+        }
+    }
+
+    label.label {
+        font-size: $size-normal - .1rem;
+        &:not(:last-child) {
+            margin-bottom: .25em;
+        }
+    }
+
+    .control {
+        label.checkbox input[type="checkbox"],
+        label.radio input[type="radio"] {
+            top: 2px;
+            position: relative;
+            margin-right: 2px;
+        }
+
+        .checkbox + .checkbox,
+        .radio + .radio {
+            margin-left: 1em;
+        }
+    }
+
+    .select {
+        &:not(.is-multiple):not(.is-loading):after {
+            border-color: #999;
+            border-width: 2px;
+            border-radius: 1px;
+        }
+    }
+}

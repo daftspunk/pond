@@ -1,0 +1,166 @@
+@import "../../../styles/utils.scss";
+
+$sidebar-width: 6.4rem;
+$sidebar-settings-height: 1px;
+$sidebar-brand-height: 75px;
+
+div.sidebarContainer {
+    display: block;
+}
+
+div.mainContainer {
+    background: $body-background-color;
+    position: absolute;
+    bottom: 0;
+    left: $sidebar-width;
+    width: calc(100% - #{$sidebar-width});
+    height: calc(100% - #{$titlebar-height});
+    overflow-y: auto;
+}
+
+//
+// Sidebar
+//
+
+div.sidebar {
+    background: $sidebar-background-color;
+    position: fixed;
+    top: $titlebar-height;
+    left: 0;
+    height: calc(100% - #{$titlebar-height});
+    width: $sidebar-width;
+    text-align: center;
+
+    :global {
+        .button {
+            box-shadow: none;
+            width: 55px;
+            height: 55px;
+            margin: .25em 0;
+            color: rgba(255,255,255,.8);
+            /*background: rgba(0,0,0,.05);*/
+            background: transparent;
+            border-color: transparent;
+
+            i, img {
+                opacity: .9;
+            }
+            i {
+                display: block;
+                font-size: 2rem;
+                width: 100%;
+            }
+            img {
+                width: 55%;
+            }
+            &:active, &:focus {
+                box-shadow: none;
+            }
+            &:hover {
+                i, img { opacity: 1; }
+            }
+            &.is-active {
+                box-shadow: none;
+                i, img { opacity: 1; }
+            }
+        }
+    }
+}
+
+div.sidebar div.sidebarTools {
+    overflow-x: hidden;
+    padding-top: .2em;
+    text-align: center;
+    height: calc(100% - #{$sidebar-settings-height} - #{$sidebar-brand-height});
+
+    button.navItemActive {
+        color: #fff;
+        i, img { opacity: 1; }
+
+        &:after {
+            // The side notch (removed)
+            // position: absolute;
+            // margin-top: -20px;
+            // height: 40px;
+            // width: 10px;
+            // border-top-right-radius: 5px;
+            // border-bottom-right-radius: 5px;
+            // background: #fff;
+            // content: "";
+            // display: block;
+            // top: 50%;
+            // left: -22px;
+        }
+
+    }
+
+    button {
+        margin: .25em 0 1em;
+
+        &:before {
+            content: attr(title);
+            display: block;
+            position: absolute;
+            bottom: -13px;
+            left: 0;
+            right: 0;
+            font-size: 12px;
+        }
+    }
+
+    button.newNavItem {
+        border-style: dashed;
+        background: transparent;
+        border-color: rgba(255,255,255,.2);
+        margin-top: .75em;
+
+        &:before {
+            display: none;
+        }
+
+        &:hover {
+            border-color: rgba(255,255,255,.7);
+        }
+    }
+}
+
+div.sidebarSettings {
+    position: relative;
+    text-align: center;
+    height: $sidebar-settings-height;
+
+    &::after {
+        content: "";
+        position: absolute;
+        width: 40%;
+        border-bottom: 1px solid rgba(255,255,255,.2);
+        bottom: .3em;
+        left: 30%;
+    }
+
+    :global {
+        .button {
+            color: $white;
+            border: none;
+            background: transparent;
+
+            i {
+                font-size: 2.1rem;
+                opacity: .8;
+            }
+            &:hover i {
+                opacity: 1;
+            }
+        }
+    }
+}
+
+div.sidebarBrand {
+    padding-top: .5em;
+    text-align: center;
+    height: $sidebar-brand-height;
+
+    img {
+        width: 35px;
+    }
+}
