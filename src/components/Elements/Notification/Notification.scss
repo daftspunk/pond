@@ -1,0 +1,5 @@
+@import "../../assets/scss/utils.scss";
+
+:global {
+    @import '~bulma/sass/elements/notification.sass'
+}

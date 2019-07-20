@@ -1,0 +1,96 @@
+$color-text: #464F4F;
+$color-log-panel-lines: #EAF0F1;
+$color-text-minor: #95a5a6;
+
+.textViewer {
+    flex: 1;
+}
+
+.logPanelContainer :global {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    .ace_content {
+        color: $color-text;
+
+        .ace_cursor {
+            display: none;
+        }
+    }
+
+    .ace-tm .ace_gutter {
+        background-color: transparent;
+        border-right: 1px solid $color-log-panel-lines;
+        color: $color-text-minor;
+
+        .ace_gutter-cell {
+            background-color: white;
+        }
+    }
+}
+
+.panelControls {
+    height: 35px;
+    border-bottom: 1px solid $color-log-panel-lines;
+    padding: 0 25px;
+    box-shadow: 0 2px 2px rgba(127, 127, 127, 0.1);
+
+    a {
+        // Hide text
+        font-size: 0;
+        color: transparent;
+        text-shadow: none;
+        background-color: transparent;
+        border: 0;
+
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        margin: 9px 10px 0 0;
+
+        &.refresh {
+            &:before {
+                content: '';
+                width: 16px;
+                height: 16px;
+                display: inline-block;
+                background-image: url(../../assets/images/refresh-grey.png);
+                background-size: 16px 16px;
+            }
+
+            &:hover:before {
+                content: '';
+                width: 16px;
+                height: 16px;
+                display: inline-block;
+                background-image: url(../../assets/images/refresh-hover.png);
+                background-size: 16px 16px;
+            }
+        }
+
+        &.clear {
+            &:before {
+                content: '';
+                width: 16px;
+                height: 16px;
+                display: inline-block;
+                background-image: url(../../assets/images/delete-grey.png);
+                background-size: 16px 16px;
+            }
+
+            &:hover:before {
+                content: '';
+                width: 16px;
+                height: 16px;
+                display: inline-block;
+                background-image: url(../../assets/images/delete-hover.png);
+                background-size: 16px 16px;
+            }
+        }
+    }
+
+    &:empty {
+        height: 2px;
+    }
+}

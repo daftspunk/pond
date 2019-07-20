@@ -1,0 +1,17 @@
+@import "../../assets/scss/utils.scss";
+
+:global {
+    @import "~bulma/sass/components/modal.sass";
+
+    .modal-card-foot {
+        justify-content: flex-end;
+    }
+
+    .modal-card-foot.align-left {
+        justify-content: flex-start;
+    }
+
+    .modal-card-foot.align-spaced {
+        justify-content: space-between;
+    }
+}

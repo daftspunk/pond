@@ -1,0 +1,300 @@
+{
+    "name": "october-pond",
+    "productName": "October Pond",
+    "version": "0.0.1",
+    "description": "Local website manager",
+    "scripts": {
+        "build": "concurrently \"yarn build-main\" \"yarn build-renderer\"",
+        "build-dll": "cross-env NODE_ENV=development webpack --config ./config/webpack.config.renderer.dev.dll.babel.js --colors -r dotenv/config",
+        "build-e2e": "cross-env E2E_BUILD=true yarn build -r dotenv/config",
+        "build-main": "cross-env NODE_ENV=production webpack --config ./config/webpack.config.main.prod.babel.js --colors -r dotenv/config",
+        "build-renderer": "cross-env NODE_ENV=production webpack --config ./config/webpack.config.renderer.prod.babel.js --colors -r dotenv/config",
+        "dev": "cross-env START_HOT=1 node -r @babel/register ./src/release/internals/scripts/CheckPortInUse.js && cross-env START_HOT=1 yarn start-renderer-dev",
+        "dev-web": "cross-env START_HOT=1 node -r @babel/register ./src/release/internals/scripts/CheckPortInUse.js && cross-env START_HOT=1 yarn start-web-dev",
+        "lint": "cross-env NODE_ENV=development eslint --cache --format=pretty .",
+        "lint-fix": "yarn --silent lint --fix; exit 0",
+        "lint-styles": "stylelint --ignore-path .eslintignore '**/*.*(css|scss)' --syntax scss",
+        "lint-styles-fix": "yarn --silent lint-styles --fix; exit 0",
+        "package": "yarn build && electron-builder build --publish never",
+        "package-all": "yarn build && electron-builder build -mwl",
+        "package-ci": "yarn postinstall && yarn build && electron-builder --publish always",
+        "package-linux": "yarn build && electron-builder build --linux",
+        "package-win": "yarn build && electron-builder build --win --x64",
+        "postinstall": "yarn electron-builder install-app-deps package.json && yarn build-dll && opencollective-postinstall",
+        "postlint-fix": "prettier --ignore-path .eslintignore --single-quote --write '**/*.{*{js,jsx,json},babelrc,eslintrc,prettierrc,stylelintrc}'",
+        "postlint-styles-fix": "prettier --ignore-path .eslintignore --single-quote --write '**/*.{css,scss}'",
+        "prestart": "yarn build",
+        "start": "cross-env NODE_ENV=production electron ./dist/app/main.prod.js",
+        "start-main-dev": "cross-env HOT=1 NODE_ENV=development electron -r @babel/register ./src/app/main.dev.js",
+        "start-renderer-dev": "cross-env NODE_ENV=development webpack-dev-server --config config/webpack.config.renderer.dev.babel.js -r dotenv/config",
+        "start-web-dev": "cross-env NODE_ENV=development node --trace-warnings -r @babel/register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config config/webpack.config.web.dev.js -r dotenv/config",
+        "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 jest",
+        "test-all": "yarn lint && yarn build && yarn test && yarn build-e2e && yarn test-e2e",
+        "test-watch": "yarn test --watch"
+    },
+    "lint-staged": {
+        "*.{js,jsx}": [
+            "cross-env NODE_ENV=development eslint --cache --format=pretty",
+            "prettier --ignore-path .eslintignore --single-quote --write",
+            "git add"
+        ],
+        "{*.json,.{babelrc,eslintrc,prettierrc,stylelintrc}}": [
+            "prettier --ignore-path .eslintignore --parser json --write",
+            "git add"
+        ],
+        "*.{css,scss}": [
+            "stylelint --ignore-path .eslintignore --syntax scss --fix",
+            "prettier --ignore-path .eslintignore --single-quote --write",
+            "git add"
+        ],
+        "*.{yml,md}": [
+            "prettier --ignore-path .eslintignore --single-quote --write",
+            "git add"
+        ]
+    },
+    "main": "./dist/app/main.prod.js",
+    "build": {
+        "productName": "OctoberPond",
+        "appId": "org.octobercms.OctoberPond",
+        "files": [
+            "dist/",
+            "package.json"
+        ],
+        "dmg": {
+            "contents": [
+                {
+                    "x": 130,
+                    "y": 220
+                },
+                {
+                    "x": 410,
+                    "y": 220,
+                    "type": "link",
+                    "path": "/Applications"
+                }
+            ]
+        },
+        "win": {
+            "target": [
+                "nsis",
+                "msi"
+            ]
+        },
+        "linux": {
+            "target": [
+                "deb",
+                "rpm",
+                "snap",
+                "AppImage"
+            ],
+            "category": "Development"
+        },
+        "directories": {
+            "buildResources": "resources",
+            "output": "release"
+        },
+        "publish": {
+            "provider": "github",
+            "owner": "octobercms",
+            "repo": "pond",
+            "private": false
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/octobercms/pond.git"
+    },
+    "author": {
+        "name": "October CMS",
+        "email": "hello@octobercms.com",
+        "url": "https://octobercms.com"
+    },
+    "contributors": [
+        {
+            "name": "Alexey Bobkov",
+            "email": "aleksey.bobkov@gmail.com",
+            "url": "https://github.com/alekseybobkov"
+        },
+        {
+            "name": "Samuel Georges",
+            "email": "daftspunky@gmail.com",
+            "url": "https://github.com/daftspunk"
+        }
+    ],
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/octobercms/pond/issues"
+    },
+    "keywords": [
+        "octobercms",
+        "october",
+        "pond"
+    ],
+    "homepage": "https://github.com/octobercms/pond#readme",
+    "jest": {
+        "testURL": "http://localhost/",
+        "verbose": false,
+        "moduleNameMapper": {
+            "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/src/release/internals/mocks/fileMock.js",
+            "\\.(css|less|sass|scss)$": "identity-obj-proxy",
+            "^@modules(.*)$": "<rootDir>/src/modules$1",
+            "^@components(.*)$": "<rootDir>/src/components$1",
+            "^@constants(.*)$": "<rootDir>/src/modules/system/constants$1",
+            "^@packages(.*)$": "<rootDir>/src/packages$1"
+        },
+        "moduleFileExtensions": [
+            "js",
+            "jsx",
+            "json"
+        ],
+        "transform": {
+            "^.+\\.jsx?$": "babel-jest"
+        },
+        "setupFiles": [
+            "./src/release/internals/scripts/CheckBuiltsExist.js"
+        ]
+    },
+    "devDependencies": {
+        "@babel/core": "^7.4.5",
+        "@babel/plugin-proposal-class-properties": "^7.4.4",
+        "@babel/plugin-proposal-decorators": "^7.4.4",
+        "@babel/plugin-proposal-do-expressions": "^7.2.0",
+        "@babel/plugin-proposal-export-default-from": "^7.2.0",
+        "@babel/plugin-proposal-export-namespace-from": "^7.2.0",
+        "@babel/plugin-proposal-function-bind": "^7.2.0",
+        "@babel/plugin-proposal-function-sent": "^7.2.0",
+        "@babel/plugin-proposal-json-strings": "^7.2.0",
+        "@babel/plugin-proposal-logical-assignment-operators": "^7.2.0",
+        "@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",
+        "@babel/plugin-proposal-numeric-separator": "^7.2.0",
+        "@babel/plugin-proposal-optional-chaining": "^7.2.0",
+        "@babel/plugin-proposal-pipeline-operator": "^7.3.2",
+        "@babel/plugin-proposal-throw-expressions": "^7.2.0",
+        "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+        "@babel/plugin-syntax-import-meta": "^7.2.0",
+        "@babel/plugin-transform-react-constant-elements": "^7.2.0",
+        "@babel/plugin-transform-react-inline-elements": "^7.2.0",
+        "@babel/plugin-transform-strict-mode": "^7.2.0",
+        "@babel/preset-env": "^7.4.5",
+        "@babel/preset-react": "^7.0.0",
+        "@babel/register": "^7.4.4",
+        "babel-core": "7.0.0-bridge.0",
+        "babel-eslint": "^10.0.2",
+        "babel-jest": "^24.8.0",
+        "babel-loader": "^8.0.6",
+        "babel-plugin-dev-expression": "^0.2.1",
+        "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
+        "bsv": "^0.27.1",
+        "chai-enzyme": "^1.0.0-beta.1",
+        "chalk": "^2.4.1",
+        "concurrently": "^4.1.1",
+        "cross-env": "^5.2.0",
+        "cross-spawn": "^6.0.5",
+        "css-loader": "^1.0.1",
+        "detect-port": "^1.3.0",
+        "electron": "^5.0.5",
+        "electron-builder": "^20.44.4",
+        "electron-devtools-installer": "^2.2.4",
+        "enzyme": "^3.10.0",
+        "enzyme-adapter-react-16": "^1.14.0",
+        "enzyme-to-json": "^3.3.5",
+        "eslint": "^6.0.1",
+        "eslint-config-airbnb": "^17.1.0",
+        "eslint-config-prettier": "^6.0.0",
+        "eslint-formatter-pretty": "^2.1.1",
+        "eslint-import-resolver-webpack": "^0.11.1",
+        "eslint-plugin-compat": "^3.1.2",
+        "eslint-plugin-import": "^2.18.0",
+        "eslint-plugin-jest": "^22.7.1",
+        "eslint-plugin-jsx-a11y": "^6.2.1",
+        "eslint-plugin-promise": "^4.2.1",
+        "eslint-plugin-react": "^7.14.2",
+        "eslint-plugin-testcafe": "^0.2.1",
+        "file-loader": "^4.0.0",
+        "html-loader": "^0.5.5",
+        "html-webpack-plugin": "^3.2.0",
+        "husky": "^2.5.0",
+        "identity-obj-proxy": "^3.0.0",
+        "jest": "^24.8.0",
+        "lint-staged": "^8.2.1",
+        "mini-css-extract-plugin": "^0.7.0",
+        "node-sass": "^4.12.0",
+        "opencollective-postinstall": "^2.0.2",
+        "optimize-css-assets-webpack-plugin": "^5.0.1",
+        "prettier": "^1.18.2",
+        "react-test-renderer": "^16.8.6",
+        "redux-logger": "^3.0.6",
+        "redux-mock-store": "^1.5.3",
+        "rimraf": "^2.6.3",
+        "sass-loader": "^7.1.0",
+        "sinon": "^7.3.2",
+        "spectron": "^7.0.0",
+        "style-loader": "^0.23.1",
+        "stylelint": "^10.1.0",
+        "stylelint-config-prettier": "^5.2.0",
+        "stylelint-config-standard": "^18.3.0",
+        "terser-webpack-plugin": "^1.3.0",
+        "testcafe": "^1.3.2",
+        "testcafe-browser-provider-electron": "0.0.10",
+        "testcafe-live": "^0.1.4",
+        "testcafe-react-selectors": "^3.1.0",
+        "url-loader": "^2.0.1",
+        "webpack": "^4.35.0",
+        "webpack-bundle-analyzer": "^3.3.2",
+        "webpack-cli": "^3.3.5",
+        "webpack-dev-server": "^3.7.2",
+        "webpack-merge": "^4.2.1",
+        "yarn": "^1.16.0"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.9.0",
+        "axios": "^0.19.0",
+        "brace": "^0.11.1",
+        "bulma": "^0.7.5",
+        "classnames": "^2.2.6",
+        "connected-react-router": "^6.4.0",
+        "copy-webpack-plugin": "^5.0.3",
+        "devtron": "^1.4.0",
+        "dotenv": "^8.0.0",
+        "electron-debug": "^3.0.0",
+        "electron-log": "^3.0.6",
+        "electron-updater": "^4.0.6",
+        "fs-extra": "^8.1.0",
+        "highcharts": "^7.1.2",
+        "history": "^4.7.2",
+        "is-electron": "^2.2.0",
+        "lodash": "^4.17.14",
+        "moment": "^2.24.0",
+        "node-gyp": "^5.0.1",
+        "pouchdb": "^7.1.1",
+        "pouchdb-find": "^7.1.1",
+        "prop-types": "^15.7.2",
+        "qrcode.react": "^0.9.3",
+        "react": "^16.8.6",
+        "react-custom-scrollbars": "^4.2.1",
+        "react-dom": "^16.8.6",
+        "react-hot-loader": "^4.11.1",
+        "react-jsx-highcharts": "^3.6.0",
+        "react-jsx-highstock": "^3.6.0",
+        "react-moment": "^0.9.2",
+        "react-redux": "^7.1.0",
+        "react-router": "^5.0.1",
+        "react-router-dom": "^5.0.1",
+        "react-transition-group": "^4.1.1",
+        "recharts": "^1.6.2",
+        "redux": "^4.0.1",
+        "redux-form": "^8.2.4",
+        "redux-thunk": "^2.3.0",
+        "source-map-support": "^0.5.9",
+        "uuid": "^3.3.2"
+    },
+    "devEngines": {
+        "node": ">=7.x",
+        "npm": ">=4.x",
+        "yarn": ">=0.21.3"
+    },
+    "collective": {
+        "url": "https://opencollective.com/electron-react-boilerplate-594"
+    },
+    "browserslist": "electron 1.6"
+}

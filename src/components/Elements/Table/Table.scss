@@ -1,0 +1,49 @@
+@import "../../assets/scss/utils.scss";
+
+:global {
+    @import "~bulma/sass/elements/table.sass";
+
+    .table {
+        font-size: .9rem;
+        th, td {
+            padding: .3em .75em;
+            &.is-75 { width: 75px; }
+            &.is-100 { width: 100px; }
+            &.is-125 { width: 125px; }
+            &.is-150 { width: 150px; }
+            &.is-200 { width: 200px; }
+        }
+
+        td.is-nowrap {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 0;
+        }
+
+        tr.subhead th {
+            padding-top: .5rem;
+            padding-bottom: .5rem;
+            font-size: .7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: $grey-dark;
+            border-color: hsl(0, 0%, 90%);
+            font-weight: 500;
+        }
+    }
+
+    .table.is-clickable {
+        tbody tr:not(.is-selected) {
+            cursor: pointer;
+            &:hover {
+                background-color: $table-row-hover-background-color
+            }
+        }
+        &.is-striped tbody tr:not(.is-selected) {
+            &:hover {
+                background-color: $table-striped-row-even-hover-background-color
+            }
+        }
+    }
+}
