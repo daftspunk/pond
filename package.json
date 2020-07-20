@@ -263,7 +263,7 @@
         "highcharts": "^7.1.2",
         "history": "^4.7.2",
         "is-electron": "^2.2.0",
-        "lodash": "^4.17.14",
+        "lodash": "^4.17.19",
         "moment": "^2.24.0",
         "node-gyp": "^5.0.1",
         "pouchdb": "^7.1.1",
